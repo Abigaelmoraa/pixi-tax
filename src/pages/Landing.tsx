@@ -79,7 +79,7 @@ const Landing = () => {
             <div className="w-10 h-10 gradient-primary rounded-xl flex items-center justify-center">
               <Calculator className="w-6 h-6 text-primary-foreground" />
             </div>
-            <span className="font-display text-xl font-bold">Pixi Tax</span>
+            <span className="font-display text-xl font-bold">Pixi</span>
           </div>
           <div className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">Features</a>
@@ -124,9 +124,6 @@ const Landing = () => {
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </Link>
-            <Button size="lg" variant="outline" className="h-14 px-8 text-lg">
-              Watch Demo
-            </Button>
           </div>
           
           {/* Dashboard Preview */}
@@ -183,55 +180,6 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="py-20 px-6">
-        <div className="container mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="font-display text-4xl font-bold mb-4">Simple Pricing</h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Choose the plan that fits your practice. No hidden fees.
-            </p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {plans.map((plan, index) => (
-              <div 
-                key={plan.name}
-                className={`relative bg-card border rounded-2xl p-8 animate-fade-in ${
-                  plan.popular ? "border-primary shadow-glow" : "border-border"
-                }`}
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 gradient-primary text-primary-foreground text-sm font-medium rounded-full">
-                    Most Popular
-                  </div>
-                )}
-                <h3 className="font-display text-2xl font-semibold mb-2">{plan.name}</h3>
-                <div className="flex items-baseline gap-1 mb-6">
-                  <span className="text-4xl font-bold">{plan.price}</span>
-                  <span className="text-muted-foreground">{plan.period}</span>
-                </div>
-                <ul className="space-y-4 mb-8">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-center gap-3">
-                      <Check className="w-5 h-5 text-success" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Button 
-                  className={`w-full ${plan.popular ? "gradient-primary text-primary-foreground hover:opacity-90" : ""}`}
-                  variant={plan.popular ? "default" : "outline"}
-                >
-                  Get Started
-                  <ChevronRight className="ml-2 w-4 h-4" />
-                </Button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* CTA Section */}
       <section className="py-20 px-6">
         <div className="container mx-auto">
@@ -245,7 +193,7 @@ const Landing = () => {
                 Ready to Transform Your Tax Practice?
               </h2>
               <p className="text-xl opacity-80 max-w-2xl mx-auto mb-10">
-                Join thousands of tax professionals who trust Pixi Tax to manage their workflow efficiently.
+                Join thousands of tax professionals who trust Pixi to manage their workflow efficiently.
               </p>
               <Link to="/register">
                 <Button size="lg" className="bg-primary-foreground text-foreground hover:bg-primary-foreground/90 h-14 px-10 text-lg">
@@ -266,7 +214,7 @@ const Landing = () => {
               <div className="w-10 h-10 gradient-primary rounded-xl flex items-center justify-center">
                 <Calculator className="w-6 h-6 text-primary-foreground" />
               </div>
-              <span className="font-display text-xl font-bold">Pixi Tax</span>
+              <span className="font-display text-xl font-bold">Pixi</span>
             </div>
             <div className="flex items-center gap-8 text-muted-foreground">
               <a href="#" className="hover:text-foreground transition-colors">Privacy</a>
@@ -274,7 +222,7 @@ const Landing = () => {
               <a href="#" className="hover:text-foreground transition-colors">Support</a>
             </div>
             <p className="text-muted-foreground">
-              © 2024 Pixi Tax. All rights reserved.
+              © 2024 Pixi. All rights reserved.
             </p>
           </div>
         </div>

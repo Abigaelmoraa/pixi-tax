@@ -60,7 +60,7 @@ const DashboardSidebar = () => {
             <div className="w-9 h-9 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20">
               <Calculator className="w-5 h-5 text-white" />
             </div>
-            <span className="font-display text-lg font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Pixi Tax</span>
+            <span className="font-display text-lg font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Pixi</span>
           </div>
         )}
         {collapsed && (
@@ -144,39 +144,6 @@ const DashboardSidebar = () => {
         ))}
       </nav>
 
-      {/* User Section */}
-      <div className="border-t border-sidebar-border/50 p-4">
-        {!collapsed ? (
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 via-cyan-500 to-blue-500 flex items-center justify-center text-white font-semibold shadow-lg shadow-cyan-500/20">
-              JD
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-medium text-sidebar-foreground truncate">John Doe</p>
-              <p className="text-sm text-sidebar-foreground/60 truncate">john@company.com</p>
-            </div>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={handleLogout}
-              className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
-            >
-              <LogOut className="w-5 h-5" />
-            </Button>
-          </div>
-        ) : (
-          <div className="flex justify-center">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={handleLogout}
-              className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
-            >
-              <LogOut className="w-5 h-5" />
-            </Button>
-          </div>
-        )}
-      </div>
     </aside>
   );
 };
