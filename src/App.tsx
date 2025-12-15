@@ -7,7 +7,7 @@ import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import DashboardLayout from "./layouts/DashboardLayout";
-import Overview from "./pages/dashboard/Overview";
+import Overview from "./components/Overview";
 import PRNRequests from "./pages/dashboard/PRNRequests";
 import PaymentRequests from "./pages/dashboard/PaymentRequests";
 import TaxPayoutResponse from "./pages/dashboard/TaxPayoutResponse";

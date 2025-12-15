@@ -105,7 +105,7 @@ const Clients = () => {
             <div className="flex items-center gap-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input placeholder="Search clients..." className="pl-9 w-64" />
+                <Input placeholder="Search " className="pl-9 w-64" />
               </div>
               <Button variant="outline" size="icon">
                 <Filter className="w-4 h-4" />

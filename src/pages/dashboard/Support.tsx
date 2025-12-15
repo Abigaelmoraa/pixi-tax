@@ -67,7 +67,7 @@ const Support = () => {
             <div className="max-w-xl mx-auto relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 opacity-60" />
               <Input 
-                placeholder="Search for help..." 
+                placeholder="Search " 
                 className="pl-12 h-12 bg-sidebar-foreground/10 border-sidebar-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50"
               />
             </div>

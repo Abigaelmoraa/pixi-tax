@@ -6,14 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { 
-  User,
-  Bell,
-  Shield,
-  Palette,
-  Globe,
-  Save
-} from "lucide-react";
+import { Save } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
@@ -26,9 +19,9 @@ import { toast } from "sonner";
 
 const Settings = () => {
   const [notifications, setNotifications] = useState({
-    email: true,
-    push: true,
-    deadlines: true,
+    email: false,
+    push: false,
+    deadlines: false,
     marketing: false
   });
 
@@ -42,201 +35,150 @@ const Settings = () => {
         title="Settings" 
         subtitle="Manage your account preferences"
       />
-      
+
       <div className="flex-1 overflow-y-auto p-6">
         <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList className="bg-muted">
-            <TabsTrigger value="profile" className="gap-2">
-              <User className="w-4 h-4" />
+          <TabsList className="bg-gradient-to-r from-purple-100 to-blue-100 rounded-lg p-1">
+            <TabsTrigger
+              value="profile"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-blue-500 data-[state=active]:text-white rounded-lg transition-all"
+            >
               Profile
             </TabsTrigger>
-            <TabsTrigger value="notifications" className="gap-2">
-              <Bell className="w-4 h-4" />
+            <TabsTrigger
+              value="notifications"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-yellow-400 data-[state=active]:to-orange-400 data-[state=active]:text-white rounded-lg transition-all"
+            >
               Notifications
             </TabsTrigger>
-            <TabsTrigger value="security" className="gap-2">
-              <Shield className="w-4 h-4" />
+            <TabsTrigger
+              value="security"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-400 data-[state=active]:to-pink-500 data-[state=active]:text-white rounded-lg transition-all"
+            >
               Security
             </TabsTrigger>
-            <TabsTrigger value="appearance" className="gap-2">
-              <Palette className="w-4 h-4" />
+            <TabsTrigger
+              value="appearance"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-400 data-[state=active]:to-teal-500 data-[state=active]:text-white rounded-lg transition-all"
+            >
               Appearance
             </TabsTrigger>
           </TabsList>
 
+          {/* Profile Tab */}
           <TabsContent value="profile">
-            <Card className="border-border">
+            <Card className="shadow-lg border-0 bg-gradient-to-r from-purple-50 to-blue-50">
               <CardHeader>
-                <CardTitle>Profile Information</CardTitle>
-                <CardDescription>Update your personal details</CardDescription>
+                <CardTitle className="text-purple-700">Profile Information</CardTitle>
+                <CardDescription className="text-purple-600">Update your personal details</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="flex items-center gap-6">
-                  <div className="w-24 h-24 rounded-full gradient-accent flex items-center justify-center text-accent-foreground text-2xl font-bold">
-                    JD
-                  </div>
-                  <div>
-                    <Button variant="outline">Upload Photo</Button>
-                    <p className="text-sm text-muted-foreground mt-2">JPG, PNG or GIF. Max 2MB</p>
-                  </div>
-                </div>
-
-                <Separator />
-
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="firstName">First Name</Label>
-                    <Input id="firstName" defaultValue="John" />
+                    <Input id="firstName" placeholder="Enter first name" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="lastName">Last Name</Label>
-                    <Input id="lastName" defaultValue="Doe" />
+                    <Input id="lastName" placeholder="Enter last name" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" defaultValue="john@company.com" />
+                    <Input id="email" type="email" placeholder="Enter email" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="phone">Phone</Label>
-                    <Input id="phone" defaultValue="(555) 123-4567" />
+                    <Input id="phone" placeholder="Enter phone number" />
                   </div>
                   <div className="space-y-2 md:col-span-2">
                     <Label htmlFor="company">Company</Label>
-                    <Input id="company" defaultValue="Doe Tax Services" />
+                    <Input id="company" placeholder="Enter company name" />
                   </div>
                 </div>
 
                 <div className="flex justify-end">
-                  <Button onClick={handleSave} className="gradient-primary text-primary-foreground hover:opacity-90">
-                    <Save className="w-4 h-4 mr-2" />
-                    Save Changes
+                  <Button
+                    onClick={handleSave}
+                    className="bg-gradient-to-r from-purple-500 to-blue-500 text-white border-0 hover:from-purple-600 hover:to-blue-600"
+                  >
+                    <Save className="w-4 h-4 mr-2" /> Save Changes
                   </Button>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
 
+          {/* Notifications Tab */}
           <TabsContent value="notifications">
-            <Card className="border-border">
+            <Card className="shadow-lg border-0 bg-gradient-to-r from-yellow-50 to-orange-50">
               <CardHeader>
-                <CardTitle>Notification Preferences</CardTitle>
-                <CardDescription>Choose how you want to be notified</CardDescription>
+                <CardTitle className="text-yellow-700">Notification Preferences</CardTitle>
+                <CardDescription className="text-yellow-600">Choose how you want to be notified</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Email Notifications</p>
-                    <p className="text-sm text-muted-foreground">Receive updates via email</p>
+                {["email", "push", "deadlines", "marketing"].map((type) => (
+                  <div key={type} className="flex items-center justify-between">
+                    <div className="capitalize font-medium">{type.replace(/([A-Z])/g, ' $1')}</div>
+                    <Switch
+                      checked={notifications[type as keyof typeof notifications]}
+                      onCheckedChange={(checked) =>
+                        setNotifications({ ...notifications, [type]: checked })
+                      }
+                    />
                   </div>
-                  <Switch 
-                    checked={notifications.email}
-                    onCheckedChange={(checked) => setNotifications({ ...notifications, email: checked })}
-                  />
-                </div>
-
-                <Separator />
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Push Notifications</p>
-                    <p className="text-sm text-muted-foreground">Receive push notifications in browser</p>
-                  </div>
-                  <Switch 
-                    checked={notifications.push}
-                    onCheckedChange={(checked) => setNotifications({ ...notifications, push: checked })}
-                  />
-                </div>
-
-                <Separator />
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Deadline Reminders</p>
-                    <p className="text-sm text-muted-foreground">Get notified about upcoming tax deadlines</p>
-                  </div>
-                  <Switch 
-                    checked={notifications.deadlines}
-                    onCheckedChange={(checked) => setNotifications({ ...notifications, deadlines: checked })}
-                  />
-                </div>
-
-                <Separator />
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Marketing Emails</p>
-                    <p className="text-sm text-muted-foreground">Receive tips and product updates</p>
-                  </div>
-                  <Switch 
-                    checked={notifications.marketing}
-                    onCheckedChange={(checked) => setNotifications({ ...notifications, marketing: checked })}
-                  />
-                </div>
+                ))}
 
                 <div className="flex justify-end">
-                  <Button onClick={handleSave} className="gradient-primary text-primary-foreground hover:opacity-90">
-                    <Save className="w-4 h-4 mr-2" />
-                    Save Preferences
+                  <Button
+                    onClick={handleSave}
+                    className="bg-gradient-to-r from-yellow-400 to-orange-400 text-white border-0 hover:from-yellow-500 hover:to-orange-500"
+                  >
+                    <Save className="w-4 h-4 mr-2" /> Save Preferences
                   </Button>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
 
+          {/* Security Tab */}
           <TabsContent value="security">
-            <Card className="border-border">
+            <Card className="shadow-lg border-0 bg-gradient-to-r from-red-50 to-pink-50">
               <CardHeader>
-                <CardTitle>Security Settings</CardTitle>
-                <CardDescription>Manage your account security</CardDescription>
+                <CardTitle className="text-red-700">Security Settings</CardTitle>
+                <CardDescription className="text-red-600">Manage your account security</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-4">
-                  <h4 className="font-medium">Change Password</h4>
-                  <div className="grid gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="currentPassword">Current Password</Label>
-                      <Input id="currentPassword" type="password" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="newPassword">New Password</Label>
-                      <Input id="newPassword" type="password" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                      <Input id="confirmPassword" type="password" />
-                    </div>
-                  </div>
-                  <Button variant="outline">Update Password</Button>
+                  <Label htmlFor="currentPassword">Current Password</Label>
+                  <Input id="currentPassword" type="password" placeholder="Enter current password" />
+                </div>
+                <div className="space-y-4">
+                  <Label htmlFor="newPassword">New Password</Label>
+                  <Input id="newPassword" type="password" placeholder="Enter new password" />
+                </div>
+                <div className="space-y-4">
+                  <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                  <Input id="confirmPassword" type="password" placeholder="Confirm new password" />
                 </div>
 
-                <Separator />
-
-                <div className="space-y-4">
-                  <h4 className="font-medium">Two-Factor Authentication</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Add an extra layer of security to your account
-                  </p>
-                  <Button variant="outline">Enable 2FA</Button>
-                </div>
-
-                <Separator />
-
-                <div className="space-y-4">
-                  <h4 className="font-medium text-destructive">Danger Zone</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Permanently delete your account and all data
-                  </p>
-                  <Button variant="destructive">Delete Account</Button>
+                <div className="flex justify-end">
+                  <Button
+                    onClick={handleSave}
+                    className="bg-gradient-to-r from-red-400 to-pink-500 text-white border-0 hover:from-red-500 hover:to-pink-600"
+                  >
+                    <Save className="w-4 h-4 mr-2" /> Save Security Settings
+                  </Button>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
 
+          {/* Appearance Tab */}
           <TabsContent value="appearance">
-            <Card className="border-border">
+            <Card className="shadow-lg border-0 bg-gradient-to-r from-emerald-50 to-teal-50">
               <CardHeader>
-                <CardTitle>Appearance Settings</CardTitle>
-                <CardDescription>Customize how the app looks</CardDescription>
+                <CardTitle className="text-emerald-700">Appearance Settings</CardTitle>
+                <CardDescription className="text-emerald-600">Customize your preferences</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-4">
@@ -253,8 +195,6 @@ const Settings = () => {
                   </Select>
                 </div>
 
-                <Separator />
-
                 <div className="space-y-4">
                   <Label>Language</Label>
                   <Select defaultValue="en">
@@ -270,27 +210,12 @@ const Settings = () => {
                   </Select>
                 </div>
 
-                <Separator />
-
-                <div className="space-y-4">
-                  <Label>Timezone</Label>
-                  <Select defaultValue="est">
-                    <SelectTrigger className="w-full md:w-[300px]">
-                      <SelectValue placeholder="Select timezone" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="est">Eastern Time (ET)</SelectItem>
-                      <SelectItem value="cst">Central Time (CT)</SelectItem>
-                      <SelectItem value="mst">Mountain Time (MT)</SelectItem>
-                      <SelectItem value="pst">Pacific Time (PT)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
                 <div className="flex justify-end">
-                  <Button onClick={handleSave} className="gradient-primary text-primary-foreground hover:opacity-90">
-                    <Save className="w-4 h-4 mr-2" />
-                    Save Preferences
+                  <Button
+                    onClick={handleSave}
+                    className="bg-gradient-to-r from-emerald-400 to-teal-500 text-white border-0 hover:from-emerald-500 hover:to-teal-600"
+                  >
+                    <Save className="w-4 h-4 mr-2" /> Save Preferences
                   </Button>
                 </div>
               </CardContent>

@@ -1,20 +1,62 @@
-import { ClipboardList, Search, Filter, Download, Eye, Trophy, XCircle, Clock, TrendingUp, TrendingDown } from "lucide-react";
+import { ClipboardList, Search, Filter, Plus, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
+
+interface BetOutcomeFormData {
+  betId: string;
+  outcome: string;
+  payout: string;
+  outcomedate: string;
+  winnings: string;
+  withholdingtax: string;
+  walletbalanceoutcome: string;
+  sentToKra: string;
+}
 
 const BetOutcomeLog = () => {
-  const outcomes: { id: string; user: string; event: string; selection: string; odds: string; stake: string; payout: string; date: string; outcome: string }[] = [];
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState<BetOutcomeFormData>({
+    betId: "",
+    outcome: "",
+    payout: "",
+    outcomedate: "",
+    winnings: "",
+    withholdingtax: "",
+    walletbalanceoutcome: "",
+    sentToKra: "",
+  });
+
+  const outcomes: BetOutcomeFormData[] = [
+    // Sample data from backend
+  ];
+
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Form saved:", formData);
+    setFormData({
+      betId: "",
+      outcome: "",
+      payout: "",
+      outcomedate: "",
+      winnings: "",
+      withholdingtax: "",
+      walletbalanceoutcome: "",
+      sentToKra: "",
+    });
+    setShowForm(false);
+  };
 
   const getOutcomeBadge = (outcome: string) => {
-    switch (outcome) {
+    switch (outcome.toLowerCase()) {
       case "won":
-        return <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white border-0"><Trophy className="w-3 h-3 mr-1" /> Won</Badge>;
+        return <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white border-0">Won</Badge>;
       case "lost":
-        return <Badge className="bg-gradient-to-r from-red-500 to-pink-500 text-white border-0"><XCircle className="w-3 h-3 mr-1" /> Lost</Badge>;
+        return <Badge className="bg-gradient-to-r from-red-500 to-pink-500 text-white border-0">Lost</Badge>;
       case "pending":
-        return <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0"><Clock className="w-3 h-3 mr-1" /> Pending</Badge>;
+        return <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0">Pending</Badge>;
       default:
         return <Badge>{outcome}</Badge>;
     }
@@ -22,67 +64,119 @@ const BetOutcomeLog = () => {
 
   return (
     <div className="p-6 space-y-6 animate-fade-in">
-      {/* Main Content */}
       <Card className="shadow-lg border-0">
-        <CardHeader className="border-b bg-gradient-to-r from-yellow-50 to-amber-50">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <CardTitle className="text-yellow-600 flex items-center gap-2">
-              <ClipboardList className="w-5 h-5" /> Bet Outcome Log
-            </CardTitle>
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input placeholder="Search outcomes..." className="pl-9 w-64" />
-              </div>
-              <Button variant="outline" size="icon" className="border-yellow-200 hover:bg-yellow-50">
-                <Filter className="w-4 h-4 text-yellow-500" />
-              </Button>
-              <Button variant="outline" className="border-yellow-200 text-yellow-600 hover:bg-yellow-50">
-                <Download className="w-4 h-4 mr-2" /> Export
-              </Button>
-            </div>
+        {/* Header */}
+        <CardHeader className="border-b bg-gradient-to-r from-yellow-50 to-amber-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <CardTitle className="text-yellow-600 flex items-center gap-2">
+            <ClipboardList className="w-5 h-5" /> Bet Outcome Log
+          </CardTitle>
+          <div className="flex items-center gap-2">
+            {!showForm && (
+              <>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input placeholder="Search " className="pl-9 w-64" />
+                </div>
+                <Button variant="outline" size="icon" className="border-yellow-200 hover:bg-yellow-50">
+                  <Filter className="w-4 h-4 text-yellow-500" />
+                </Button>
+                <Button
+                  className="bg-gradient-to-r from-yellow-500 to-amber-500 text-white flex items-center"
+                  onClick={() => setShowForm(true)}
+                >
+                  <Plus className="w-4 h-4 mr-2" /> New Bet Outcome
+                </Button>
+              </>
+            )}
           </div>
         </CardHeader>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-muted/50">
-                <tr>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Bet ID</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">User</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Event</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Selection</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Odds</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Stake</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Payout</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Outcome</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {outcomes.map((bet) => (
-                  <tr key={bet.id} className="hover:bg-gradient-to-r hover:from-yellow-50/50 hover:to-amber-50/50 transition-colors">
-                    <td className="px-4 py-3 font-mono text-yellow-600 font-medium">{bet.id}</td>
-                    <td className="px-4 py-3 font-mono text-sm">{bet.user}</td>
-                    <td className="px-4 py-3 font-medium">{bet.event}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{bet.selection}</td>
-                    <td className="px-4 py-3 text-purple-600 font-medium">{bet.odds}</td>
-                    <td className="px-4 py-3 font-medium">{bet.stake}</td>
-                    <td className={`px-4 py-3 font-semibold ${bet.outcome === 'won' ? 'text-green-600' : bet.outcome === 'lost' ? 'text-red-500' : 'text-muted-foreground'}`}>
-                      {bet.payout}
-                    </td>
-                    <td className="px-4 py-3">{getOutcomeBadge(bet.outcome)}</td>
-                    <td className="px-4 py-3 text-right">
-                      <Button variant="ghost" size="icon" className="hover:bg-yellow-100 hover:text-yellow-600">
-                        <Eye className="w-4 h-4" />
-                      </Button>
-                    </td>
+
+        {/* Form */}
+        {showForm && (
+          <CardContent>
+            <form onSubmit={handleSave} className="flex flex-col gap-5">
+              {[
+                { label: "Bet ID", key: "betId", placeholder: "Enter Bet ID" },
+                { label: "Outcome", key: "outcome", placeholder: "Won/Lost/Pending" },
+                { label: "Payout", key: "payout", placeholder: "Enter Payout" },
+                { label: "Outcome Date", key: "outcomedate", placeholder: "YYYY-MM-DD HH:MM" },
+                { label: "Winnings", key: "winnings", placeholder: "Enter Winnings" },
+                { label: "Withholding Tax", key: "withholdingtax", placeholder: "Enter Withholding Tax" },
+                { label: "Wallet Balance Outcome", key: "walletbalanceoutcome", placeholder: "Enter Wallet Balance" },
+                { label: "Sent To Kra", key: "sentToKra", placeholder: "Yes/No" },
+              ].map((field) => (
+                <div key={field.key} className="flex flex-col gap-1">
+                  <label className="text-sm font-semibold text-muted-foreground">{field.label}</label>
+                  <Input
+                    placeholder={field.placeholder}
+                    value={formData[field.key as keyof BetOutcomeFormData]}
+                    onChange={(e) => setFormData({ ...formData, [field.key]: e.target.value })}
+                    required
+                  />
+                </div>
+              ))}
+
+              <div className="flex justify-end gap-3 pt-4">
+                <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" className="bg-gradient-to-r from-yellow-500 to-amber-500 text-white">
+                  Save
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        )}
+
+        {/* Table */}
+        {!showForm && (
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-muted/50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Bet ID</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Outcome</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Payout</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Outcome Date</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Winnings</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Withholding Tax</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Wallet Balance Outcome</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Sent To Kra</th>
+                    <th className="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
+                </thead>
+                <tbody className="divide-y">
+                  {outcomes.length === 0 ? (
+                    <tr>
+                      <td colSpan={9} className="text-center py-6 text-muted-foreground">
+                        No data available
+                      </td>
+                    </tr>
+                  ) : (
+                    outcomes.map((bet) => (
+                      <tr key={bet.betId} className="hover:bg-gradient-to-r hover:from-yellow-50/50 hover:to-amber-50/50 transition-colors">
+                        <td className="px-4 py-3 font-mono text-yellow-600 font-medium">{bet.betId}</td>
+                        <td className="px-4 py-3">{getOutcomeBadge(bet.outcome)}</td>
+                        <td className="px-4 py-3 font-semibold">{bet.payout}</td>
+                        <td className="px-4 py-3">{bet.outcomedate}</td>
+                        <td className="px-4 py-3">{bet.winnings}</td>
+                        <td className="px-4 py-3">{bet.withholdingtax}</td>
+                        <td className="px-4 py-3">{bet.walletbalanceoutcome}</td>
+                        <td className="px-4 py-3">{bet.sentToKra}</td>
+                        <td className="px-4 py-3 text-right">
+                          <Button variant="ghost" size="icon" className="hover:bg-yellow-100 hover:text-yellow-600">
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        )}
       </Card>
     </div>
   );
