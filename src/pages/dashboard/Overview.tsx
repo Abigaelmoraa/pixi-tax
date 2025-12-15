@@ -28,72 +28,45 @@ const Overview = () => {
   const stats = [
     {
       title: "PRN Requests",
-      value: "1,234",
-      change: "+12%",
+      value: "0",
+      change: "--",
       trend: "up",
       icon: FileText,
       color: "bg-primary/10 text-primary"
     },
     {
       title: "Payments Processed",
-      value: "856",
-      change: "+8%",
+      value: "0",
+      change: "--",
       trend: "up",
       icon: DollarSign,
       color: "bg-success/10 text-success"
     },
     {
       title: "Total Stakes",
-      value: "45,678",
-      change: "+23%",
+      value: "0",
+      change: "--",
       trend: "up",
       icon: TrendingUp,
       color: "bg-warning/10 text-warning"
     },
     {
       title: "Tax Collected",
-      value: "KES 156M",
-      change: "+15%",
+      value: "KES 0",
+      change: "--",
       trend: "up",
       icon: Users,
       color: "bg-info/10 text-info"
     }
   ];
 
-  const revenueData = [
-    { month: "Jan", value: 32000 },
-    { month: "Feb", value: 38000 },
-    { month: "Mar", value: 45000 },
-    { month: "Apr", value: 52000 },
-    { month: "May", value: 48000 },
-    { month: "Jun", value: 58000 },
-    { month: "Jul", value: 62000 },
-  ];
+  const revenueData: { month: string; value: number }[] = [];
 
-  const returnsData = [
-    { month: "Jan", completed: 32, pending: 8 },
-    { month: "Feb", completed: 45, pending: 12 },
-    { month: "Mar", completed: 78, pending: 15 },
-    { month: "Apr", completed: 65, pending: 10 },
-    { month: "May", completed: 42, pending: 8 },
-    { month: "Jun", completed: 28, pending: 5 },
-    { month: "Jul", completed: 18, pending: 4 },
-  ];
+  const returnsData: { month: string; completed: number; pending: number }[] = [];
 
-  const recentClients = [
-    { name: "Sarah Johnson", email: "sarah@email.com", status: "Active", type: "Individual" },
-    { name: "ABC Corporation", email: "contact@abc.com", status: "Pending", type: "Business" },
-    { name: "Michael Chen", email: "michael@email.com", status: "Active", type: "Individual" },
-    { name: "Tech Startup Inc", email: "info@techstartup.com", status: "Active", type: "Business" },
-    { name: "Emily Davis", email: "emily@email.com", status: "Review", type: "Individual" },
-  ];
+  const recentClients: { name: string; email: string; status: string; type: string }[] = [];
 
-  const upcomingDeadlines = [
-    { title: "Q4 Estimated Taxes", date: "Jan 15, 2024", clients: 23 },
-    { title: "1099 Forms Due", date: "Jan 31, 2024", clients: 45 },
-    { title: "W-2 Forms Due", date: "Jan 31, 2024", clients: 12 },
-    { title: "Individual Returns", date: "Apr 15, 2024", clients: 156 },
-  ];
+  const upcomingDeadlines: { title: string; date: string; clients: number }[] = [];
 
   return (
     <>
@@ -145,35 +118,39 @@ const Overview = () => {
               </Button>
             </CardHeader>
             <CardContent>
-              <div className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={revenueData}>
-                    <defs>
-                      <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                    <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" />
-                    <YAxis stroke="hsl(var(--muted-foreground))" />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: "hsl(var(--card))", 
-                        border: "1px solid hsl(var(--border))",
-                        borderRadius: "8px"
-                      }} 
-                    />
-                    <Area 
-                      type="monotone" 
-                      dataKey="value" 
-                      stroke="hsl(var(--primary))" 
-                      fillOpacity={1} 
-                      fill="url(#colorRevenue)" 
-                      strokeWidth={2}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
+              <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                {revenueData.length === 0 ? (
+                  <p>No data available. Connect to backend to view analytics.</p>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={revenueData}>
+                      <defs>
+                        <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" />
+                      <YAxis stroke="hsl(var(--muted-foreground))" />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: "hsl(var(--card))", 
+                          border: "1px solid hsl(var(--border))",
+                          borderRadius: "8px"
+                        }} 
+                      />
+                      <Area 
+                        type="monotone" 
+                        dataKey="value" 
+                        stroke="hsl(var(--primary))" 
+                        fillOpacity={1} 
+                        fill="url(#colorRevenue)" 
+                        strokeWidth={2}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -189,23 +166,27 @@ const Overview = () => {
               </Button>
             </CardHeader>
             <CardContent>
-              <div className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={returnsData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                    <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" />
-                    <YAxis stroke="hsl(var(--muted-foreground))" />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: "hsl(var(--card))", 
-                        border: "1px solid hsl(var(--border))",
-                        borderRadius: "8px"
-                      }} 
-                    />
-                    <Bar dataKey="completed" fill="hsl(var(--success))" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="pending" fill="hsl(var(--warning))" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
+              <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                {returnsData.length === 0 ? (
+                  <p>No data available. Connect to backend to view analytics.</p>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={returnsData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" />
+                      <YAxis stroke="hsl(var(--muted-foreground))" />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: "hsl(var(--card))", 
+                          border: "1px solid hsl(var(--border))",
+                          borderRadius: "8px"
+                        }} 
+                      />
+                      <Bar dataKey="completed" fill="hsl(var(--success))" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="pending" fill="hsl(var(--warning))" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -227,32 +208,38 @@ const Overview = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {recentClients.map((client, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 bg-muted/50 rounded-xl hover:bg-muted transition-colors">
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full gradient-primary flex items-center justify-center text-primary-foreground font-semibold">
-                        {client.name.split(" ").map(n => n[0]).join("")}
-                      </div>
-                      <div>
-                        <p className="font-medium">{client.name}</p>
-                        <p className="text-sm text-muted-foreground">{client.email}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <span className="text-sm text-muted-foreground">{client.type}</span>
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        client.status === "Active" ? "bg-success/10 text-success" :
-                        client.status === "Pending" ? "bg-warning/10 text-warning" :
-                        "bg-info/10 text-info"
-                      }`}>
-                        {client.status}
-                      </span>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="w-4 h-4" />
-                      </Button>
-                    </div>
+                {recentClients.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    No clients available. Connect to backend to view data.
                   </div>
-                ))}
+                ) : (
+                  recentClients.map((client, index) => (
+                    <div key={index} className="flex items-center justify-between p-4 bg-muted/50 rounded-xl hover:bg-muted transition-colors">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full gradient-primary flex items-center justify-center text-primary-foreground font-semibold">
+                          {client.name.split(" ").map(n => n[0]).join("")}
+                        </div>
+                        <div>
+                          <p className="font-medium">{client.name}</p>
+                          <p className="text-sm text-muted-foreground">{client.email}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <span className="text-sm text-muted-foreground">{client.type}</span>
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          client.status === "Active" ? "bg-success/10 text-success" :
+                          client.status === "Pending" ? "bg-warning/10 text-warning" :
+                          "bg-info/10 text-info"
+                        }`}>
+                          {client.status}
+                        </span>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>
@@ -265,20 +252,26 @@ const Overview = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {upcomingDeadlines.map((deadline, index) => (
-                  <div key={index} className="flex items-start gap-4 p-4 bg-muted/50 rounded-xl">
-                    <div className="p-2 bg-destructive/10 rounded-lg">
-                      <Calendar className="w-5 h-5 text-destructive" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium">{deadline.title}</p>
-                      <p className="text-sm text-muted-foreground">{deadline.date}</p>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {deadline.clients} clients affected
-                      </p>
-                    </div>
+                {upcomingDeadlines.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    No deadlines available. Connect to backend to view data.
                   </div>
-                ))}
+                ) : (
+                  upcomingDeadlines.map((deadline, index) => (
+                    <div key={index} className="flex items-start gap-4 p-4 bg-muted/50 rounded-xl">
+                      <div className="p-2 bg-destructive/10 rounded-lg">
+                        <Calendar className="w-5 h-5 text-destructive" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium">{deadline.title}</p>
+                        <p className="text-sm text-muted-foreground">{deadline.date}</p>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {deadline.clients} clients affected
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>

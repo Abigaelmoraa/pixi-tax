@@ -66,7 +66,7 @@ const Register = () => {
       </div>
 
       {/* Right Panel - Form */}
-      <div className="flex-1 flex flex-col justify-center px-8 md:px-16 lg:px-24">
+      <div className="flex-1 flex flex-col justify-center px-8 md:px-16 lg:px-24 bg-gradient-to-br from-accent/10 via-background to-primary/5">
         <div className="w-full max-w-md mx-auto">
           <Link to="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 transition-colors">
             <ArrowLeft className="w-4 h-4" />
@@ -80,85 +80,87 @@ const Register = () => {
             <span className="font-display text-xl font-bold">Pixi</span>
           </div>
 
-          <h1 className="font-display text-3xl font-bold mb-2">Create your account</h1>
-          <p className="text-muted-foreground mb-8">
-            Start your 14-day free trial. No credit card required.
-          </p>
+          <div className="bg-card/80 backdrop-blur-sm border border-primary/20 rounded-2xl p-8 shadow-lg">
+            <h1 className="font-display text-3xl font-bold mb-2 text-gradient">Create your account</h1>
+            <p className="text-muted-foreground mb-8">
+              Start your 14-day free trial. No credit card required.
+            </p>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="name">Full name</Label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder="Name"
-                  className="pl-10 h-12"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
-                />
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-foreground">Full name</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-primary" />
+                  <Input
+                    id="name"
+                    type="text"
+                    placeholder="Name"
+                    className="pl-10 h-12 border-primary/30 focus:border-primary bg-background/50"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    required
+                  />
+                </div>
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Email"
-                  className="pl-10 h-12"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  required
-                />
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-foreground">Email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-primary" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="Email"
+                    className="pl-10 h-12 border-primary/30 focus:border-primary bg-background/50"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    required
+                  />
+                </div>
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Create a strong password"
-                  className="pl-10 pr-10 h-12"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-foreground">Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-primary" />
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Create a strong password"
+                    className="pl-10 pr-10 h-12 border-primary/30 focus:border-primary bg-background/50"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary"
+                  >
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Must be at least 8 characters
+                </p>
               </div>
-              <p className="text-sm text-muted-foreground">
-                Must be at least 8 characters
-              </p>
-            </div>
 
-            <Button
-              type="submit" 
-              className="w-full h-12 gradient-primary text-primary-foreground hover:opacity-90"
-              disabled={isLoading}
-            >
-              {isLoading ? "Creating account..." : "Create account"}
-            </Button>
-          </form>
+              <Button
+                type="submit" 
+                className="w-full h-12 gradient-primary text-primary-foreground hover:opacity-90 shadow-md"
+                disabled={isLoading}
+              >
+                {isLoading ? "Creating account..." : "Create account"}
+              </Button>
+            </form>
 
-          <p className="text-center text-muted-foreground mt-8">
-            Already have an account?{" "}
-            <Link to="/login" className="text-primary hover:underline font-medium">
-              Sign in
-            </Link>
-          </p>
+            <p className="text-center text-muted-foreground mt-8">
+              Already have an account?{" "}
+              <Link to="/login" className="text-primary hover:underline font-medium">
+                Sign in
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>
