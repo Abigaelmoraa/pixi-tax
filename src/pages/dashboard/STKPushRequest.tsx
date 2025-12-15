@@ -5,14 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 const STKPushRequest = () => {
-  const stkRequests = [
-    { id: "STK-001234", phone: "0712345678", amount: "KES 5,000", reference: "TAX-001", date: "2024-01-15 14:30", status: "completed" },
-    { id: "STK-001235", phone: "0723456789", amount: "KES 12,500", reference: "TAX-002", date: "2024-01-15 14:25", status: "pending" },
-    { id: "STK-001236", phone: "0734567890", amount: "KES 8,200", reference: "TAX-003", date: "2024-01-15 14:20", status: "completed" },
-    { id: "STK-001237", phone: "0745678901", amount: "KES 3,500", reference: "TAX-004", date: "2024-01-15 14:15", status: "failed" },
-    { id: "STK-001238", phone: "0756789012", amount: "KES 25,000", reference: "TAX-005", date: "2024-01-15 14:10", status: "completed" },
-    { id: "STK-001239", phone: "0767890123", amount: "KES 7,800", reference: "TAX-006", date: "2024-01-15 14:05", status: "expired" },
-  ];
+  const stkRequests: { id: string; phone: string; amount: string; reference: string; date: string; status: string }[] = [];
 
   const getStatusBadge = (status: string) => {
     switch (status) {

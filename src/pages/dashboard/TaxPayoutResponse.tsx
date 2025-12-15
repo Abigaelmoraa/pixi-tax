@@ -5,13 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 const TaxPayoutResponse = () => {
-  const payouts = [
-    { id: "TPR-001234", reference: "REF-A1B2C3", amount: "KES 125,000", taxpayer: "ABC Limited", date: "2024-01-15", responseCode: "00", status: "success" },
-    { id: "TPR-001235", reference: "REF-D4E5F6", amount: "KES 85,500", taxpayer: "XYZ Corp", date: "2024-01-14", responseCode: "01", status: "pending" },
-    { id: "TPR-001236", reference: "REF-G7H8I9", amount: "KES 250,000", taxpayer: "Tech Solutions", date: "2024-01-14", responseCode: "00", status: "success" },
-    { id: "TPR-001237", reference: "REF-J0K1L2", amount: "KES 45,200", taxpayer: "Retail Hub", date: "2024-01-13", responseCode: "99", status: "error" },
-    { id: "TPR-001238", reference: "REF-M3N4O5", amount: "KES 178,900", taxpayer: "Smart Services", date: "2024-01-12", responseCode: "01", status: "pending" },
-  ];
+  const payouts: { id: string; reference: string; amount: string; taxpayer: string; date: string; responseCode: string; status: string }[] = [];
 
   const getStatusBadge = (status: string) => {
     switch (status) {

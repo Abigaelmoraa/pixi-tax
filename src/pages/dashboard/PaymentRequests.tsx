@@ -5,14 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 const PaymentRequests = () => {
-  const payments = [
-    { id: "PAY-001234", payer: "ABC Limited", amount: "KES 125,000", method: "M-Pesa", date: "2024-01-15", status: "completed" },
-    { id: "PAY-001235", payer: "XYZ Corp", amount: "KES 85,500", method: "Bank Transfer", date: "2024-01-14", status: "pending" },
-    { id: "PAY-001236", payer: "Tech Solutions", amount: "KES 250,000", method: "M-Pesa", date: "2024-01-14", status: "completed" },
-    { id: "PAY-001237", payer: "Retail Hub", amount: "KES 45,200", method: "Card", date: "2024-01-13", status: "failed" },
-    { id: "PAY-001238", payer: "Smart Services", amount: "KES 178,900", method: "Bank Transfer", date: "2024-01-12", status: "pending" },
-    { id: "PAY-001239", payer: "Global Trade", amount: "KES 320,000", method: "M-Pesa", date: "2024-01-11", status: "completed" },
-  ];
+  const payments: { id: string; payer: string; amount: string; method: string; date: string; status: string }[] = [];
 
   const getStatusBadge = (status: string) => {
     switch (status) {
