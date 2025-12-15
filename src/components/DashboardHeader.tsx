@@ -82,10 +82,10 @@ const DashboardHeader = ({ title, subtitle }: DashboardHeaderProps) => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="gap-2 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 via-cyan-500 to-blue-500 flex items-center justify-center text-white text-sm font-semibold shadow-lg shadow-cyan-500/20">
-                JD
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 via-cyan-500 to-blue-500 flex items-center justify-center text-white shadow-lg shadow-cyan-500/20">
+                <User className="w-4 h-4" />
               </div>
-              <span className="hidden md:inline font-medium bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">John Doe</span>
+              <span className="hidden md:inline font-medium bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">User</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56 bg-card border shadow-xl">

@@ -48,54 +48,6 @@ const StakeData = () => {
 
   return (
     <div className="p-6 space-y-6 animate-fade-in">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-br from-cyan-500 to-blue-500 text-white border-0 shadow-lg shadow-cyan-500/20">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-cyan-100 text-sm">Total Stakes</p>
-                <p className="text-3xl font-bold">45,678</p>
-              </div>
-              <Database className="w-10 h-10 text-cyan-200" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-gradient-to-br from-green-500 to-emerald-500 text-white border-0 shadow-lg shadow-green-500/20">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-green-100 text-sm">Total Volume</p>
-                <p className="text-3xl font-bold">KES 89M</p>
-              </div>
-              <DollarSign className="w-10 h-10 text-green-200" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-gradient-to-br from-purple-500 to-indigo-500 text-white border-0 shadow-lg shadow-purple-500/20">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-purple-100 text-sm">Active Users</p>
-                <p className="text-3xl font-bold">12,345</p>
-              </div>
-              <Users className="w-10 h-10 text-purple-200" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-gradient-to-br from-orange-500 to-amber-500 text-white border-0 shadow-lg shadow-orange-500/20">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-orange-100 text-sm">Win Rate</p>
-                <p className="text-3xl font-bold">42.5%</p>
-              </div>
-              <TrendingUp className="w-10 h-10 text-orange-200" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Main Content */}
       <Card className="shadow-lg border-0">
         <CardHeader className="border-b bg-gradient-to-r from-cyan-50 to-blue-50">

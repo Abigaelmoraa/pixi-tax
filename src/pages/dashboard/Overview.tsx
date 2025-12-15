@@ -27,35 +27,35 @@ import {
 const Overview = () => {
   const stats = [
     {
-      title: "Total Clients",
-      value: "248",
+      title: "PRN Requests",
+      value: "1,234",
       change: "+12%",
       trend: "up",
-      icon: Users,
+      icon: FileText,
       color: "bg-primary/10 text-primary"
     },
     {
-      title: "Active Returns",
-      value: "47",
+      title: "Payments Processed",
+      value: "856",
       change: "+8%",
       trend: "up",
-      icon: FileText,
+      icon: DollarSign,
       color: "bg-success/10 text-success"
     },
     {
-      title: "Revenue (MTD)",
-      value: "$48,250",
+      title: "Total Stakes",
+      value: "45,678",
       change: "+23%",
       trend: "up",
-      icon: DollarSign,
+      icon: TrendingUp,
       color: "bg-warning/10 text-warning"
     },
     {
-      title: "Completion Rate",
-      value: "94.2%",
-      change: "-2%",
-      trend: "down",
-      icon: TrendingUp,
+      title: "Tax Collected",
+      value: "KES 156M",
+      change: "+15%",
+      trend: "up",
+      icon: Users,
       color: "bg-info/10 text-info"
     }
   ];
@@ -99,7 +99,7 @@ const Overview = () => {
     <>
       <DashboardHeader 
         title="Dashboard" 
-        subtitle="Welcome back, John! Here's what's happening today."
+        subtitle="Welcome back!"
       />
       
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
