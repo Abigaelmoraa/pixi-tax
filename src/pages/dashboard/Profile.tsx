@@ -12,8 +12,8 @@ const Profile = () => {
         <CardHeader className="-mt-16 pb-0">
           <div className="flex flex-col md:flex-row md:items-end gap-4">
             <div className="relative">
-              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-green-400 via-cyan-500 to-blue-500 flex items-center justify-center text-white text-4xl font-bold border-4 border-card shadow-xl">
-                JD
+              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-green-400 via-cyan-500 to-blue-500 flex items-center justify-center text-white border-4 border-card shadow-xl">
+                <User className="w-12 h-12" />
               </div>
               <Button size="icon" className="absolute bottom-0 right-0 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-lg">
                 <Camera className="w-4 h-4" />

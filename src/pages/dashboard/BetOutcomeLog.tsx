@@ -29,54 +29,6 @@ const BetOutcomeLog = () => {
 
   return (
     <div className="p-6 space-y-6 animate-fade-in">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-br from-yellow-500 to-amber-500 text-white border-0 shadow-lg shadow-yellow-500/20">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-yellow-100 text-sm">Total Bets</p>
-                <p className="text-3xl font-bold">23,456</p>
-              </div>
-              <ClipboardList className="w-10 h-10 text-yellow-200" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-gradient-to-br from-green-500 to-emerald-500 text-white border-0 shadow-lg shadow-green-500/20">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-green-100 text-sm">Total Wins</p>
-                <p className="text-3xl font-bold">9,876</p>
-              </div>
-              <Trophy className="w-10 h-10 text-green-200" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-gradient-to-br from-red-500 to-rose-500 text-white border-0 shadow-lg shadow-red-500/20">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-red-100 text-sm">Total Losses</p>
-                <p className="text-3xl font-bold">12,345</p>
-              </div>
-              <TrendingDown className="w-10 h-10 text-red-200" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-gradient-to-br from-purple-500 to-indigo-500 text-white border-0 shadow-lg shadow-purple-500/20">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-purple-100 text-sm">Total Payouts</p>
-                <p className="text-3xl font-bold">KES 45M</p>
-              </div>
-              <TrendingUp className="w-10 h-10 text-purple-200" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Main Content */}
       <Card className="shadow-lg border-0">
         <CardHeader className="border-b bg-gradient-to-r from-yellow-50 to-amber-50">

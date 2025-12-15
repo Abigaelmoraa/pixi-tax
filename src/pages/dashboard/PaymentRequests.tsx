@@ -42,54 +42,6 @@ const PaymentRequests = () => {
 
   return (
     <div className="p-6 space-y-6 animate-fade-in">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-br from-green-500 to-emerald-600 text-white border-0 shadow-lg shadow-green-500/20">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-green-100 text-sm">Total Payments</p>
-                <p className="text-3xl font-bold">KES 12.5M</p>
-              </div>
-              <DollarSign className="w-10 h-10 text-green-200" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white border-0 shadow-lg shadow-blue-500/20">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-blue-100 text-sm">Completed</p>
-                <p className="text-3xl font-bold">856</p>
-              </div>
-              <CheckCircle className="w-10 h-10 text-blue-200" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-gradient-to-br from-orange-500 to-amber-500 text-white border-0 shadow-lg shadow-orange-500/20">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-orange-100 text-sm">Pending</p>
-                <p className="text-3xl font-bold">124</p>
-              </div>
-              <Clock className="w-10 h-10 text-orange-200" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-gradient-to-br from-pink-500 to-rose-600 text-white border-0 shadow-lg shadow-pink-500/20">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-pink-100 text-sm">Failed</p>
-                <p className="text-3xl font-bold">23</p>
-              </div>
-              <XCircle className="w-10 h-10 text-pink-200" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Main Content */}
       <Card className="shadow-lg border-0">
         <CardHeader className="border-b bg-gradient-to-r from-green-50 to-emerald-50">

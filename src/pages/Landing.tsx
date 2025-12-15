@@ -100,65 +100,40 @@ const Landing = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6">
+      <section className="pt-28 pb-16 px-6">
         <div className="container mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-8 animate-fade-in">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-xs font-medium mb-6 animate-fade-in">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
             </span>
             Trusted by 10,000+ tax professionals
           </div>
-          <h1 className="font-display text-5xl md:text-7xl font-bold mb-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
+          <h1 className="font-display text-4xl md:text-5xl font-bold mb-4 animate-fade-in" style={{ animationDelay: "0.1s" }}>
             Tax Management
             <br />
             <span className="text-gradient">Made Simple</span>
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-fade-in" style={{ animationDelay: "0.2s" }}>
+          <p className="text-base text-muted-foreground max-w-2xl mx-auto mb-8 animate-fade-in" style={{ animationDelay: "0.2s" }}>
             Streamline your tax workflow with intelligent automation, real-time calculations, and seamless client management.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in" style={{ animationDelay: "0.3s" }}>
             <Link to="/register">
-              <Button size="lg" className="gradient-primary text-primary-foreground hover:opacity-90 h-14 px-8 text-lg">
+              <Button size="lg" className="gradient-primary text-primary-foreground hover:opacity-90 h-12 px-6 text-base">
                 Start Free Trial
-                <ArrowRight className="ml-2 w-5 h-5" />
+                <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
             </Link>
-          </div>
-          
-          {/* Dashboard Preview */}
-          <div className="mt-20 relative animate-fade-in" style={{ animationDelay: "0.4s" }}>
-            <div className="absolute inset-0 gradient-primary opacity-20 blur-3xl rounded-3xl"></div>
-            <div className="relative bg-card border border-border rounded-2xl shadow-soft overflow-hidden">
-              <div className="h-8 bg-muted flex items-center px-4 gap-2">
-                <div className="w-3 h-3 rounded-full bg-destructive/50"></div>
-                <div className="w-3 h-3 rounded-full bg-warning/50"></div>
-                <div className="w-3 h-3 rounded-full bg-success/50"></div>
-              </div>
-              <div className="p-8 bg-gradient-to-br from-muted/50 to-background">
-                <div className="grid grid-cols-4 gap-4">
-                  <div className="col-span-1 bg-sidebar rounded-xl p-4 h-48"></div>
-                  <div className="col-span-3 space-y-4">
-                    <div className="grid grid-cols-3 gap-4">
-                      <div className="bg-card border border-border rounded-xl p-4 h-24"></div>
-                      <div className="bg-card border border-border rounded-xl p-4 h-24"></div>
-                      <div className="bg-card border border-border rounded-xl p-4 h-24"></div>
-                    </div>
-                    <div className="bg-card border border-border rounded-xl p-4 h-48"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 px-6 bg-muted/30">
+      <section id="features" className="py-16 px-6 bg-muted/30">
         <div className="container mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="font-display text-4xl font-bold mb-4">Powerful Features</h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="font-display text-3xl font-bold mb-3">Powerful Features</h2>
+            <p className="text-base text-muted-foreground max-w-2xl mx-auto">
               Everything you need to manage taxes efficiently and grow your practice.
             </p>
           </div>
@@ -166,14 +141,14 @@ const Landing = () => {
             {features.map((feature, index) => (
               <div 
                 key={feature.title} 
-                className="bg-card border border-border rounded-2xl p-8 hover:shadow-soft hover:border-primary/20 transition-all duration-300 animate-fade-in"
+                className="bg-card border border-border rounded-2xl p-6 hover:shadow-soft hover:border-primary/20 transition-all duration-300 animate-fade-in"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className="w-14 h-14 gradient-primary rounded-xl flex items-center justify-center mb-6">
-                  <feature.icon className="w-7 h-7 text-primary-foreground" />
+                <div className="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center mb-4">
+                  <feature.icon className="w-6 h-6 text-primary-foreground" />
                 </div>
-                <h3 className="font-display text-xl font-semibold mb-3">{feature.title}</h3>
-                <p className="text-muted-foreground">{feature.description}</p>
+                <h3 className="font-display text-lg font-semibold mb-2">{feature.title}</h3>
+                <p className="text-sm text-muted-foreground">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -181,24 +156,24 @@ const Landing = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-6">
+      <section className="py-16 px-6">
         <div className="container mx-auto">
-          <div className="gradient-dark rounded-3xl p-12 md:p-20 text-center text-primary-foreground relative overflow-hidden">
+          <div className="gradient-dark rounded-3xl p-10 md:p-16 text-center text-primary-foreground relative overflow-hidden">
             <div className="absolute inset-0 opacity-30">
               <div className="absolute top-0 right-0 w-96 h-96 gradient-primary rounded-full blur-3xl"></div>
               <div className="absolute bottom-0 left-0 w-96 h-96 gradient-accent rounded-full blur-3xl"></div>
             </div>
             <div className="relative z-10">
-              <h2 className="font-display text-4xl md:text-5xl font-bold mb-6">
+              <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
                 Ready to Transform Your Tax Practice?
               </h2>
-              <p className="text-xl opacity-80 max-w-2xl mx-auto mb-10">
+              <p className="text-base opacity-80 max-w-2xl mx-auto mb-8">
                 Join thousands of tax professionals who trust Pixi to manage their workflow efficiently.
               </p>
               <Link to="/register">
-                <Button size="lg" className="bg-primary-foreground text-foreground hover:bg-primary-foreground/90 h-14 px-10 text-lg">
+                <Button size="lg" className="bg-primary-foreground text-foreground hover:bg-primary-foreground/90 h-12 px-8 text-base">
                   Start Your Free Trial
-                  <ArrowRight className="ml-2 w-5 h-5" />
+                  <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
               </Link>
             </div>
