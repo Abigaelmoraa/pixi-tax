@@ -29,7 +29,37 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left Panel - Form */}
+      {/* Left Panel - Decorative */}
+      <div className="hidden lg:flex flex-1 gradient-dark items-center justify-center p-12 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-20 right-20 w-72 h-72 gradient-primary rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 left-20 w-72 h-72 gradient-accent rounded-full blur-3xl"></div>
+        </div>
+        <div className="relative z-10 text-center text-primary-foreground max-w-lg">
+          <h2 className="font-display text-4xl font-bold mb-6">
+            Manage Taxes with Confidence
+          </h2>
+          <p className="text-lg opacity-80">
+            Join over 10,000 tax professionals who trust Pixi to streamline their workflow and grow their practice.
+          </p>
+          <div className="mt-12 grid grid-cols-3 gap-8">
+            <div>
+              <div className="text-4xl font-bold">10K+</div>
+              <div className="text-sm opacity-60">Active Users</div>
+            </div>
+            <div>
+              <div className="text-4xl font-bold">$2B+</div>
+              <div className="text-sm opacity-60">Taxes Processed</div>
+            </div>
+            <div>
+              <div className="text-4xl font-bold">99.9%</div>
+              <div className="text-sm opacity-60">Uptime</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Panel - Form */}
       <div className="flex-1 flex flex-col justify-center px-8 md:px-16 lg:px-24">
         <div className="w-full max-w-md mx-auto">
           <Link to="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 transition-colors">
@@ -109,36 +139,6 @@ const Login = () => {
               Sign up
             </Link>
           </p>
-        </div>
-      </div>
-
-      {/* Right Panel - Decorative */}
-      <div className="hidden lg:flex flex-1 gradient-dark items-center justify-center p-12 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-30">
-          <div className="absolute top-20 right-20 w-72 h-72 gradient-primary rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 left-20 w-72 h-72 gradient-accent rounded-full blur-3xl"></div>
-        </div>
-        <div className="relative z-10 text-center text-primary-foreground max-w-lg">
-          <h2 className="font-display text-4xl font-bold mb-6">
-            Manage Taxes with Confidence
-          </h2>
-          <p className="text-lg opacity-80">
-            Join over 10,000 tax professionals who trust Pixi to streamline their workflow and grow their practice.
-          </p>
-          <div className="mt-12 grid grid-cols-3 gap-8">
-            <div>
-              <div className="text-4xl font-bold">10K+</div>
-              <div className="text-sm opacity-60">Active Users</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold">$2B+</div>
-              <div className="text-sm opacity-60">Taxes Processed</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold">99.9%</div>
-              <div className="text-sm opacity-60">Uptime</div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

@@ -5,14 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 const PRNRequests = () => {
-  const requests = [
-    { id: "PRN-001234", taxpayer: "ABC Limited", amount: "KES 125,000", date: "2024-01-15", status: "approved", type: "Income Tax" },
-    { id: "PRN-001235", taxpayer: "XYZ Corp", amount: "KES 85,500", date: "2024-01-14", status: "pending", type: "VAT" },
-    { id: "PRN-001236", taxpayer: "Tech Solutions", amount: "KES 250,000", date: "2024-01-14", status: "approved", type: "Corporate Tax" },
-    { id: "PRN-001237", taxpayer: "Retail Hub", amount: "KES 45,200", date: "2024-01-13", status: "rejected", type: "Excise Duty" },
-    { id: "PRN-001238", taxpayer: "Smart Services", amount: "KES 178,900", date: "2024-01-12", status: "pending", type: "Income Tax" },
-    { id: "PRN-001239", taxpayer: "Global Trade", amount: "KES 320,000", date: "2024-01-11", status: "approved", type: "Import Duty" },
-  ];
+  const requests: { id: string; taxpayer: string; amount: string; date: string; status: string; type: string }[] = [];
 
   const getStatusBadge = (status: string) => {
     switch (status) {

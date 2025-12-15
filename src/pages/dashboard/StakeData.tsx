@@ -5,14 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 const StakeData = () => {
-  const stakeData = [
-    { id: "STAKE-001", user: "User_A1B2C3", game: "Sports Betting", amount: "KES 5,000", odds: "2.50", potentialWin: "KES 12,500", date: "2024-01-15 14:30", status: "active" },
-    { id: "STAKE-002", user: "User_D4E5F6", game: "Casino", amount: "KES 2,500", odds: "3.00", potentialWin: "KES 7,500", date: "2024-01-15 14:25", status: "won" },
-    { id: "STAKE-003", user: "User_G7H8I9", game: "Virtual Sports", amount: "KES 1,000", odds: "4.50", potentialWin: "KES 4,500", date: "2024-01-15 14:20", status: "lost" },
-    { id: "STAKE-004", user: "User_J0K1L2", game: "Sports Betting", amount: "KES 10,000", odds: "1.85", potentialWin: "KES 18,500", date: "2024-01-15 14:15", status: "active" },
-    { id: "STAKE-005", user: "User_M3N4O5", game: "Jackpot", amount: "KES 500", odds: "100.00", potentialWin: "KES 50,000", date: "2024-01-15 14:10", status: "pending" },
-    { id: "STAKE-006", user: "User_P6Q7R8", game: "Live Betting", amount: "KES 3,200", odds: "2.20", potentialWin: "KES 7,040", date: "2024-01-15 14:05", status: "won" },
-  ];
+  const stakeData: { id: string; user: string; game: string; amount: string; odds: string; potentialWin: string; date: string; status: string }[] = [];
 
   const getStatusBadge = (status: string) => {
     switch (status) {

@@ -5,14 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 const DailyTaxObligation = () => {
-  const obligations = [
-    { date: "2024-01-15", totalStakes: "KES 12,500,000", taxableAmount: "KES 11,250,000", taxRate: "7.5%", taxDue: "KES 843,750", status: "paid" },
-    { date: "2024-01-14", totalStakes: "KES 15,800,000", taxableAmount: "KES 14,220,000", taxRate: "7.5%", taxDue: "KES 1,066,500", status: "paid" },
-    { date: "2024-01-13", totalStakes: "KES 9,200,000", taxableAmount: "KES 8,280,000", taxRate: "7.5%", taxDue: "KES 621,000", status: "pending" },
-    { date: "2024-01-12", totalStakes: "KES 18,600,000", taxableAmount: "KES 16,740,000", taxRate: "7.5%", taxDue: "KES 1,255,500", status: "paid" },
-    { date: "2024-01-11", totalStakes: "KES 14,300,000", taxableAmount: "KES 12,870,000", taxRate: "7.5%", taxDue: "KES 965,250", status: "paid" },
-    { date: "2024-01-10", totalStakes: "KES 11,900,000", taxableAmount: "KES 10,710,000", taxRate: "7.5%", taxDue: "KES 803,250", status: "overdue" },
-  ];
+  const obligations: { date: string; totalStakes: string; taxableAmount: string; taxRate: string; taxDue: string; status: string }[] = [];
 
   const getStatusBadge = (status: string) => {
     switch (status) {

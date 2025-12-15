@@ -5,14 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 const BetOutcomeLog = () => {
-  const outcomes = [
-    { id: "BET-001234", user: "User_A1B2C3", event: "Man Utd vs Liverpool", selection: "Man Utd Win", odds: "2.50", stake: "KES 5,000", payout: "KES 12,500", date: "2024-01-15", outcome: "won" },
-    { id: "BET-001235", user: "User_D4E5F6", event: "Arsenal vs Chelsea", selection: "Draw", odds: "3.20", stake: "KES 2,000", payout: "KES 0", date: "2024-01-15", outcome: "lost" },
-    { id: "BET-001236", user: "User_G7H8I9", event: "Barcelona vs Real Madrid", selection: "Over 2.5", odds: "1.85", stake: "KES 10,000", payout: "-", date: "2024-01-15", outcome: "pending" },
-    { id: "BET-001237", user: "User_J0K1L2", event: "Bayern vs Dortmund", selection: "Bayern Win", odds: "1.45", stake: "KES 8,000", payout: "KES 11,600", date: "2024-01-14", outcome: "won" },
-    { id: "BET-001238", user: "User_M3N4O5", event: "PSG vs Lyon", selection: "BTTS", odds: "1.90", stake: "KES 3,500", payout: "KES 0", date: "2024-01-14", outcome: "lost" },
-    { id: "BET-001239", user: "User_P6Q7R8", event: "Juventus vs Inter", selection: "Under 3.5", odds: "1.35", stake: "KES 15,000", payout: "KES 20,250", date: "2024-01-14", outcome: "won" },
-  ];
+  const outcomes: { id: string; user: string; event: string; selection: string; odds: string; stake: string; payout: string; date: string; outcome: string }[] = [];
 
   const getOutcomeBadge = (outcome: string) => {
     switch (outcome) {
