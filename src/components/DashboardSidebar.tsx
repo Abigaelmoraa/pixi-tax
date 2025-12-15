@@ -1,18 +1,20 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { 
   LayoutDashboard, 
-  Users, 
   FileText, 
-  Calculator, 
-  BarChart3, 
+  CreditCard, 
   Settings, 
-  HelpCircle,
   LogOut,
   ChevronLeft,
   ChevronRight,
-  FolderOpen,
-  CreditCard,
-  Bell
+  Calculator,
+  Send,
+  Wallet,
+  Receipt,
+  Smartphone,
+  Database,
+  ClipboardList,
+  CalendarCheck
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -21,45 +23,49 @@ import { useState } from "react";
 const DashboardSidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const mainNavItems = [
-    { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
-    { icon: Users, label: "Clients", path: "/dashboard/clients" },
-    { icon: FileText, label: "Tax Returns", path: "/dashboard/returns" },
-    { icon: FolderOpen, label: "Documents", path: "/dashboard/documents" },
-    { icon: Calculator, label: "Calculator", path: "/dashboard/calculator" },
-    { icon: BarChart3, label: "Reports", path: "/dashboard/reports" },
-    { icon: CreditCard, label: "Billing", path: "/dashboard/billing" },
+    { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard", color: "text-blue-400" },
+    { icon: FileText, label: "PRN Requests", path: "/dashboard/prn-requests", color: "text-purple-400" },
+    { icon: CreditCard, label: "Payment Requests", path: "/dashboard/payment-requests", color: "text-green-400" },
+    { icon: Receipt, label: "Tax Payout Response", path: "/dashboard/tax-payout", color: "text-orange-400" },
+    { icon: Smartphone, label: "STK Push Request", path: "/dashboard/stk-push", color: "text-pink-400" },
+    { icon: Database, label: "Stake Data", path: "/dashboard/stake-data", color: "text-cyan-400" },
+    { icon: ClipboardList, label: "Bet Outcome Log", path: "/dashboard/bet-outcome", color: "text-yellow-400" },
+    { icon: CalendarCheck, label: "Daily Tax Obligation", path: "/dashboard/daily-tax", color: "text-emerald-400" },
   ];
 
   const secondaryNavItems = [
-    { icon: Bell, label: "Notifications", path: "/dashboard/notifications" },
-    { icon: Settings, label: "Settings", path: "/dashboard/settings" },
-    { icon: HelpCircle, label: "Help & Support", path: "/dashboard/support" },
+    { icon: Settings, label: "Settings", path: "/dashboard/settings", color: "text-slate-400" },
   ];
 
   const isActive = (path: string) => location.pathname === path;
 
+  const handleLogout = () => {
+    navigate("/login");
+  };
+
   return (
     <aside 
       className={cn(
-        "h-screen bg-sidebar text-sidebar-foreground flex flex-col transition-all duration-300 border-r border-sidebar-border",
+        "h-screen bg-gradient-to-b from-sidebar via-sidebar to-slate-900 text-sidebar-foreground flex flex-col transition-all duration-300 border-r border-sidebar-border shadow-xl",
         collapsed ? "w-20" : "w-64"
       )}
     >
       {/* Logo */}
-      <div className="h-16 flex items-center justify-between px-4 border-b border-sidebar-border">
+      <div className="h-16 flex items-center justify-between px-4 border-b border-sidebar-border/50">
         {!collapsed && (
           <div className="flex items-center gap-2">
-            <div className="w-9 h-9 gradient-primary rounded-xl flex items-center justify-center">
-              <Calculator className="w-5 h-5 text-primary-foreground" />
+            <div className="w-9 h-9 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20">
+              <Calculator className="w-5 h-5 text-white" />
             </div>
-            <span className="font-display text-lg font-bold text-sidebar-foreground">Pixi Tax</span>
+            <span className="font-display text-lg font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Pixi Tax</span>
           </div>
         )}
         {collapsed && (
-          <div className="w-9 h-9 gradient-primary rounded-xl flex items-center justify-center mx-auto">
-            <Calculator className="w-5 h-5 text-primary-foreground" />
+          <div className="w-9 h-9 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-xl flex items-center justify-center mx-auto shadow-lg shadow-purple-500/20">
+            <Calculator className="w-5 h-5 text-white" />
           </div>
         )}
         <Button
@@ -67,7 +73,7 @@ const DashboardSidebar = () => {
           size="icon"
           onClick={() => setCollapsed(!collapsed)}
           className={cn(
-            "text-sidebar-foreground hover:bg-sidebar-accent",
+            "text-sidebar-foreground hover:bg-sidebar-accent/50",
             collapsed && "absolute right-0 translate-x-1/2 z-10 bg-sidebar border border-sidebar-border rounded-full w-6 h-6"
           )}
         >
@@ -93,14 +99,18 @@ const DashboardSidebar = () => {
             key={item.path}
             to={item.path}
             className={cn(
-              "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200",
+              "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group",
               isActive(item.path)
-                ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
-                : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground",
+                ? "bg-gradient-to-r from-blue-600/80 to-purple-600/80 text-white shadow-lg shadow-purple-500/20"
+                : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
               collapsed && "justify-center px-2"
             )}
           >
-            <item.icon className={cn("w-5 h-5 flex-shrink-0", collapsed && "w-6 h-6")} />
+            <item.icon className={cn(
+              "w-5 h-5 flex-shrink-0 transition-colors",
+              collapsed && "w-6 h-6",
+              isActive(item.path) ? "text-white" : item.color
+            )} />
             {!collapsed && <span className="font-medium">{item.label}</span>}
           </NavLink>
         ))}
@@ -119,35 +129,49 @@ const DashboardSidebar = () => {
             className={cn(
               "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200",
               isActive(item.path)
-                ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
-                : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground",
+                ? "bg-gradient-to-r from-blue-600/80 to-purple-600/80 text-white shadow-lg"
+                : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
               collapsed && "justify-center px-2"
             )}
           >
-            <item.icon className={cn("w-5 h-5 flex-shrink-0", collapsed && "w-6 h-6")} />
+            <item.icon className={cn(
+              "w-5 h-5 flex-shrink-0",
+              collapsed && "w-6 h-6",
+              isActive(item.path) ? "text-white" : item.color
+            )} />
             {!collapsed && <span className="font-medium">{item.label}</span>}
           </NavLink>
         ))}
       </nav>
 
       {/* User Section */}
-      <div className="border-t border-sidebar-border p-4">
+      <div className="border-t border-sidebar-border/50 p-4">
         {!collapsed ? (
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full gradient-accent flex items-center justify-center text-accent-foreground font-semibold">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 via-cyan-500 to-blue-500 flex items-center justify-center text-white font-semibold shadow-lg shadow-cyan-500/20">
               JD
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-medium text-sidebar-foreground truncate">John Doe</p>
               <p className="text-sm text-sidebar-foreground/60 truncate">john@company.com</p>
             </div>
-            <Button variant="ghost" size="icon" className="text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={handleLogout}
+              className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+            >
               <LogOut className="w-5 h-5" />
             </Button>
           </div>
         ) : (
           <div className="flex justify-center">
-            <Button variant="ghost" size="icon" className="text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={handleLogout}
+              className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+            >
               <LogOut className="w-5 h-5" />
             </Button>
           </div>

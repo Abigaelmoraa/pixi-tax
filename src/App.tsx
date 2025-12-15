@@ -8,15 +8,16 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import DashboardLayout from "./layouts/DashboardLayout";
 import Overview from "./pages/dashboard/Overview";
-import Clients from "./pages/dashboard/Clients";
-import TaxReturns from "./pages/dashboard/TaxReturns";
-import Documents from "./pages/dashboard/Documents";
-import Calculator from "./pages/dashboard/Calculator";
-import Reports from "./pages/dashboard/Reports";
-import Billing from "./pages/dashboard/Billing";
+import PRNRequests from "./pages/dashboard/PRNRequests";
+import PaymentRequests from "./pages/dashboard/PaymentRequests";
+import TaxPayoutResponse from "./pages/dashboard/TaxPayoutResponse";
+import STKPushRequest from "./pages/dashboard/STKPushRequest";
+import StakeData from "./pages/dashboard/StakeData";
+import BetOutcomeLog from "./pages/dashboard/BetOutcomeLog";
+import DailyTaxObligation from "./pages/dashboard/DailyTaxObligation";
 import Settings from "./pages/dashboard/Settings";
-import Notifications from "./pages/dashboard/Notifications";
-import Support from "./pages/dashboard/Support";
+import Profile from "./pages/dashboard/Profile";
+import ChangePassword from "./pages/dashboard/ChangePassword";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,15 +34,16 @@ const App = () => (
           <Route path="/register" element={<Register />} />
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<Overview />} />
-            <Route path="clients" element={<Clients />} />
-            <Route path="returns" element={<TaxReturns />} />
-            <Route path="documents" element={<Documents />} />
-            <Route path="calculator" element={<Calculator />} />
-            <Route path="reports" element={<Reports />} />
-            <Route path="billing" element={<Billing />} />
+            <Route path="prn-requests" element={<PRNRequests />} />
+            <Route path="payment-requests" element={<PaymentRequests />} />
+            <Route path="tax-payout" element={<TaxPayoutResponse />} />
+            <Route path="stk-push" element={<STKPushRequest />} />
+            <Route path="stake-data" element={<StakeData />} />
+            <Route path="bet-outcome" element={<BetOutcomeLog />} />
+            <Route path="daily-tax" element={<DailyTaxObligation />} />
             <Route path="settings" element={<Settings />} />
-            <Route path="notifications" element={<Notifications />} />
-            <Route path="support" element={<Support />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="change-password" element={<ChangePassword />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
