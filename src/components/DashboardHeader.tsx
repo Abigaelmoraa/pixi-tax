@@ -24,18 +24,29 @@ const DashboardHeader = ({ title, subtitle }: DashboardHeaderProps) => {
   };
 
   return (
-    <header className="h-20 border-b border-border bg-gradient-to-r from-card via-card to-blue-50/50 px-8 flex items-center justify-between shadow-md">
+    <header
+      className="
+        h-20 px-8 flex items-center justify-between
+        bg-gradient-to-r from-indigo-700 via-purple-600 to-blue-500
+        text-white shadow-xl
+      "
+    >
       {/* Left */}
       <div className="flex items-center gap-5">
-        <Button variant="ghost" size="icon" className="lg:hidden">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="lg:hidden text-white hover:bg-white/20"
+        >
           <Menu className="w-6 h-6" />
         </Button>
+
         <div>
-          <h1 className="font-display text-2xl font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-2xl font-semibold tracking-wide">
             {title}
           </h1>
           {subtitle && (
-            <p className="text-base text-muted-foreground leading-tight">
+            <p className="text-sm text-white/80 leading-tight">
               {subtitle}
             </p>
           )}
@@ -46,10 +57,15 @@ const DashboardHeader = ({ title, subtitle }: DashboardHeaderProps) => {
       <div className="flex items-center gap-5">
         {/* Search */}
         <div className="hidden md:flex relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/70" />
           <Input
             placeholder="Search"
-            className="pl-11 w-72 h-11 bg-muted/50 border-0 text-base focus:ring-2 focus:ring-purple-500/20"
+            className="
+              pl-11 w-72 h-11
+              bg-white/15 border border-white/20
+              text-white placeholder:text-white/70
+              focus:ring-2 focus:ring-white/40
+            "
           />
         </div>
 
@@ -59,16 +75,16 @@ const DashboardHeader = ({ title, subtitle }: DashboardHeaderProps) => {
             <Button
               variant="ghost"
               size="icon"
-              className="relative h-11 w-11 hover:bg-purple-100"
+              className="relative h-11 w-11 text-white hover:bg-white/20"
             >
-              <Bell className="w-6 h-6 text-purple-600" />
+              <Bell className="w-6 h-6" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="w-72 bg-card border shadow-xl"
+            className="w-72 shadow-xl"
           >
-            <DropdownMenuLabel className="text-purple-600 text-base">
+            <DropdownMenuLabel className="text-purple-600">
               Notifications
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
@@ -83,27 +99,28 @@ const DashboardHeader = ({ title, subtitle }: DashboardHeaderProps) => {
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className="gap-3 h-11 px-3 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50"
+              className="gap-3 h-11 px-3 text-white hover:bg-white/20"
             >
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-green-400 via-cyan-500 to-blue-500 flex items-center justify-center text-white shadow-lg">
+              <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center shadow-lg">
                 <User className="w-5 h-5" />
               </div>
-              <span className="hidden md:inline text-base font-medium bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="hidden md:inline text-base font-medium">
                 User
               </span>
             </Button>
           </DropdownMenuTrigger>
+
           <DropdownMenuContent
             align="end"
-            className="w-56 bg-card border shadow-xl"
+            className="w-56 shadow-xl"
           >
-            <DropdownMenuLabel className="text-purple-600 text-base">
+            <DropdownMenuLabel className="text-purple-600">
               My Account
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
 
             <DropdownMenuItem
-              className="flex items-center gap-3 cursor-pointer hover:bg-blue-50 text-base"
+              className="flex items-center gap-3 cursor-pointer hover:bg-blue-50"
               onClick={() => navigate("/dashboard/profile")}
             >
               <User className="w-5 h-5 text-blue-500" />
@@ -111,7 +128,7 @@ const DashboardHeader = ({ title, subtitle }: DashboardHeaderProps) => {
             </DropdownMenuItem>
 
             <DropdownMenuItem
-              className="flex items-center gap-3 cursor-pointer hover:bg-purple-50 text-base"
+              className="flex items-center gap-3 cursor-pointer hover:bg-purple-50"
               onClick={() => navigate("/dashboard/change-password")}
             >
               <KeyRound className="w-5 h-5 text-purple-500" />
@@ -121,7 +138,7 @@ const DashboardHeader = ({ title, subtitle }: DashboardHeaderProps) => {
             <DropdownMenuSeparator />
 
             <DropdownMenuItem
-              className="flex items-center gap-3 cursor-pointer text-red-500 hover:bg-red-50 hover:text-red-600 text-base"
+              className="flex items-center gap-3 cursor-pointer text-red-500 hover:bg-red-50"
               onClick={handleLogout}
             >
               <LogOut className="w-5 h-5" />
