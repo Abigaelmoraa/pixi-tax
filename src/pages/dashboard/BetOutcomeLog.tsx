@@ -66,8 +66,8 @@ const BetOutcomeLog = () => {
     <div className="p-6 space-y-6 animate-fade-in">
       <Card className="shadow-lg border-0">
         {/* Header */}
-        <CardHeader className="border-b bg-gradient-to-r from-yellow-50 to-amber-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <CardTitle className="text-yellow-600 flex items-center gap-2">
+        <CardHeader className="border-b bg-gradient-to-r from-yellow-200 to-amber-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <CardTitle className="text-yellow-900 flex items-center gap-2">
             <ClipboardList className="w-5 h-5" /> Bet Outcome Log
           </CardTitle>
           <div className="flex items-center gap-2">
@@ -84,7 +84,7 @@ const BetOutcomeLog = () => {
                   className="bg-gradient-to-r from-yellow-500 to-amber-500 text-white flex items-center"
                   onClick={() => setShowForm(true)}
                 >
-                  <Plus className="w-4 h-4 mr-2" /> New Bet Outcome
+                  <Plus className="w-4 h-4 mr-2" /> New 
                 </Button>
               </>
             )}

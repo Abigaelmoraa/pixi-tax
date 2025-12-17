@@ -19,79 +19,63 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate login
     setTimeout(() => {
       setIsLoading(false);
-      toast.success("Welcome back!", {
-        className:
-          "text-xl font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200",
-      });
-
+      toast.success("Welcome back!");
       navigate("/dashboard");
-    }, 1500);
+    }, 1200);
   };
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen">
-      {/* Left Panel - Image */}
-      <div className="hidden lg:flex flex-[1.5] relative items-center justify-center min-h-screen bg-gray-50">
-        <img
-          src="/login-image1.png"
-          alt="Pixi Tax Management"
-          className="w-full h-full object-contain"
-        />
-        <div className="absolute inset-0 bg-black/10"></div>
-      </div>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      {/* Card */}
+      <div className="flex flex-col md:flex-row bg-white rounded-2xl shadow-lg overflow-hidden max-w-4xl w-full">
+        {/* Left Image */}
+        <div className="md:w-1/2 flex items-center justify-center bg-gray-50 p-4">
+          <img
+            src="/login-image.png"
+            alt="Pixi Tax Management"
+            className="w-full h-auto object-contain rounded-xl"
+          />
+        </div>
 
-      {/* Right Panel - Form */}
-      <div className="flex-[1] flex flex-col justify-center px-8 md:px-16 lg:px-24 min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/10">
-        <div className="w-full max-w-md mx-auto">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 transition-colors"
-          >
-            <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-sm font-medium shadow-md hover:shadow-lg hover:scale-105 transition-all">
+        {/* Right Form */}
+        <div className="md:w-1/2 p-6 md:p-10 flex flex-col justify-center">
+          {/* Back Button */}
+          <Link to="/" className="inline-block mb-4">
+            <button className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-sm shadow hover:opacity-90">
               <ArrowLeft className="w-4 h-4" />
               Back to home
             </button>
           </Link>
 
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center
-              bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-lg">
-              <Calculator className="w-7 h-7 text-white" />
+          {/* Logo */}
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
+              <Calculator className="w-6 h-6 text-white" />
             </div>
-
-            <span
-              className="font-display text-3xl font-extrabold
-              bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500
-              bg-clip-text text-transparent tracking-wide"
-            >
+            <span className="text-2xl font-extrabold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
               Pixi
             </span>
           </div>
 
-          <div className="bg-card/80 backdrop-blur-sm border border-primary/20 rounded-2xl p-8 shadow-lg">
-            <h1 className="font-display text-3xl font-bold mb-2 text-gradient">
-              Welcome back!
-            </h1>
-            <p className="text-muted-foreground mb-8">
+          {/* Form */}
+          <div className="space-y-4">
+            <h1 className="text-2xl font-bold">Welcome back</h1>
+            <p className="text-sm text-muted-foreground mb-4">
               Enter your credentials to access your account
             </p>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Email Field */}
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-slate-700 font-medium">
-                  Email
-                </Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+            <form onSubmit={handleSubmit} className="space-y-3">
+              {/* Email */}
+              <div>
+                <Label>Email</Label>
+                <div className="relative mt-1">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
-                    id="email"
                     type="email"
-                    placeholder="Email"
-                    className="pl-10 h-12 border-2 border-transparent bg-gradient-to-r from-indigo-100 via-purple-80 to-pink-50 focus:bg-white focus:border-indigo-500/70 focus:ring-2 focus:ring-indigo-400/30 transition-all"
+                    className="pl-9 h-10"
+                    placeholder="you@example.com"
                     value={formData.email}
                     onChange={(e) =>
                       setFormData({ ...formData, email: e.target.value })
@@ -101,29 +85,23 @@ const Login = () => {
                 </div>
               </div>
 
-              {/* Password Field */}
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <Label
-                    htmlFor="password"
-                    className="text-slate-700 font-medium"
-                  >
-                    Password
-                  </Label>
+              {/* Password */}
+              <div>
+                <div className="flex justify-between mb-1">
+                  <Label>Password</Label>
                   <Link
                     to="/forgot-password"
-                    className="text-sm text-purple-600 hover:text-purple-500 hover:underline"
+                    className="text-xs text-purple-600 hover:underline"
                   >
-                    Forgot password?
+                    Forgot?
                   </Link>
                 </div>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
-                    id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
-                    className="pl-10 pr-10 h-12 border-2 border-transparent bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 focus:bg-white focus:border-purple-500/70 focus:ring-2 focus:ring-purple-400/30 transition-all"
+                    className="pl-9 pr-9 h-10"
+                    placeholder="••••••••"
                     value={formData.password}
                     onChange={(e) =>
                       setFormData({ ...formData, password: e.target.value })
@@ -133,34 +111,30 @@ const Login = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-purple-400 hover:text-purple-600 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
                   >
                     {showPassword ? (
-                      <EyeOff className="w-5 h-5" />
+                      <EyeOff className="w-4 h-4" />
                     ) : (
-                      <Eye className="w-5 h-5" />
+                      <Eye className="w-4 h-4" />
                     )}
                   </button>
                 </div>
               </div>
 
-              {/* Submit Button */}
+              {/* Submit */}
               <Button
                 type="submit"
-                className="w-full h-12 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500
-                  text-white font-bold shadow-lg hover:opacity-90 transition-all"
+                className="w-full h-10 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white"
                 disabled={isLoading}
               >
                 {isLoading ? "Signing in..." : "Sign in"}
               </Button>
             </form>
 
-            <p className="text-center text-muted-foreground mt-8">
-              Don't have an account?{" "}
-              <Link
-                to="/register"
-                className="text-primary hover:underline font-medium"
-              >
+            <p className="text-center text-sm mt-3">
+              Don’t have an account?{" "}
+              <Link to="/register" className="text-primary font-medium">
                 Sign up
               </Link>
             </p>

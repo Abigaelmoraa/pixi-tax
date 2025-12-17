@@ -42,7 +42,7 @@ const StakeData = () => {
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form Data Saved:", formData); // Replace with backend save logic
+    console.log("Form Data Saved:", formData); 
     setFormData({
       betId: "",
       customerId: "",
@@ -74,12 +74,12 @@ const StakeData = () => {
     <div className="p-6 space-y-6 animate-fade-in">
       <Card className="shadow-lg border-0">
         {/* Header */}
-        <CardHeader className="border-b bg-gradient-to-r from-cyan-50 to-blue-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <CardHeader className="border-b bg-gradient-to-r from-cyan-100 to-blue-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <CardTitle className="text-cyan-600 flex items-center gap-2">
             <Database className="w-5 h-5" /> Stake Data Records
           </CardTitle>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="icon" className="border-cyan-200 hover:bg-cyan-50">
+            <Button variant="outline" size="icon" className="border-cyan-400 hover:bg-cyan-100">
               <Filter className="w-4 h-4 text-cyan-500" />
             </Button>
             {!showForm && (

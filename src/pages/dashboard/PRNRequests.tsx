@@ -87,9 +87,9 @@ const PRNRequests = () => {
   return (
     <div className="p-6 space-y-6 animate-fade-in">
       <Card className="shadow-lg border-0">
-        <CardHeader className="border-b bg-gradient-to-r from-purple-50 to-blue-50">
+        <CardHeader className="border-b bg-gradient-to-r from-purple-400 to-blue-300">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <CardTitle className="text-purple-600">PRN Requests</CardTitle>
+            <CardTitle className="text-purple-800">PRN Requests</CardTitle>
             {!showForm && (
               <div className="flex items-center gap-2">
                 <div className="relative">

@@ -147,9 +147,9 @@ const STKPushRequest = () => {
   return (
     <div className="p-6 space-y-6 animate-fade-in">
       <Card className="shadow-lg border-0">
-        <CardHeader className="border-b bg-gradient-to-r from-pink-50 to-rose-50">
+        <CardHeader className="border-b bg-gradient-to-r from-pink-300 to-rose-300">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <CardTitle className="text-pink-600 flex items-center gap-2">
+            <CardTitle className="text-pink-900 flex items-center gap-2">
               <Smartphone className="w-5 h-5" /> STK Push Requests
             </CardTitle>
             <div className="flex items-center gap-2">

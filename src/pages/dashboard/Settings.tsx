@@ -1,11 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DashboardHeader from "@/components/DashboardHeader";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
 import { Save } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -18,21 +17,42 @@ import {
 import { toast } from "sonner";
 
 const Settings = () => {
-  const [notifications, setNotifications] = useState({
-    email: false,
-    push: false,
-    deadlines: false,
-    marketing: false
+  // Notifications state
+  const [notifications, setNotifications] = useState(() => {
+    const saved = localStorage.getItem("notifications");
+    return saved
+      ? JSON.parse(saved)
+      : { email: false, push: false, deadlines: false, marketing: false };
   });
 
+  // Profile state
+  const [profile, setProfile] = useState(() => {
+    const saved = localStorage.getItem("profile");
+    return saved
+      ? JSON.parse(saved)
+      : { firstName: "", lastName: "", email: "", phone: "", company: "" };
+  });
+
+  // Appearance state
+  const [appearance, setAppearance] = useState(() => {
+    const saved = localStorage.getItem("appearance");
+    return saved
+      ? JSON.parse(saved)
+      : { theme: "system", language: "en" };
+  });
+
+  // Save all settings to localStorage
   const handleSave = () => {
+    localStorage.setItem("notifications", JSON.stringify(notifications));
+    localStorage.setItem("profile", JSON.stringify(profile));
+    localStorage.setItem("appearance", JSON.stringify(appearance));
     toast.success("Settings saved successfully!");
   };
 
   return (
     <>
-      <DashboardHeader 
-        title="Settings" 
+      <DashboardHeader
+        title="Settings"
         subtitle="Manage your account preferences"
       />
 
@@ -76,23 +96,49 @@ const Settings = () => {
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="firstName">First Name</Label>
-                    <Input id="firstName" placeholder="Enter first name" />
+                    <Input
+                      id="firstName"
+                      placeholder="Enter first name"
+                      value={profile.firstName}
+                      onChange={(e) => setProfile({ ...profile, firstName: e.target.value })}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="lastName">Last Name</Label>
-                    <Input id="lastName" placeholder="Enter last name" />
+                    <Input
+                      id="lastName"
+                      placeholder="Enter last name"
+                      value={profile.lastName}
+                      onChange={(e) => setProfile({ ...profile, lastName: e.target.value })}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" placeholder="Enter email" />
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="Enter email"
+                      value={profile.email}
+                      onChange={(e) => setProfile({ ...profile, email: e.target.value })}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="phone">Phone</Label>
-                    <Input id="phone" placeholder="Enter phone number" />
+                    <Input
+                      id="phone"
+                      placeholder="Enter phone number"
+                      value={profile.phone}
+                      onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
+                    />
                   </div>
                   <div className="space-y-2 md:col-span-2">
                     <Label htmlFor="company">Company</Label>
-                    <Input id="company" placeholder="Enter company name" />
+                    <Input
+                      id="company"
+                      placeholder="Enter company name"
+                      value={profile.company}
+                      onChange={(e) => setProfile({ ...profile, company: e.target.value })}
+                    />
                   </div>
                 </div>
 
@@ -183,7 +229,10 @@ const Settings = () => {
               <CardContent className="space-y-6">
                 <div className="space-y-4">
                   <Label>Theme</Label>
-                  <Select defaultValue="system">
+                  <Select
+                    value={appearance.theme}
+                    onValueChange={(value) => setAppearance({ ...appearance, theme: value })}
+                  >
                     <SelectTrigger className="w-full md:w-[200px]">
                       <SelectValue placeholder="Select theme" />
                     </SelectTrigger>
@@ -197,7 +246,10 @@ const Settings = () => {
 
                 <div className="space-y-4">
                   <Label>Language</Label>
-                  <Select defaultValue="en">
+                  <Select
+                    value={appearance.language}
+                    onValueChange={(value) => setAppearance({ ...appearance, language: value })}
+                  >
                     <SelectTrigger className="w-full md:w-[200px]">
                       <SelectValue placeholder="Select language" />
                     </SelectTrigger>

@@ -52,7 +52,7 @@ const DailyTaxObligation = () => {
     <div className="p-6 space-y-6 animate-fade-in">
       <Card className="shadow-lg border-0">
         {/* Header */}
-        <CardHeader className="border-b bg-gradient-to-r from-emerald-50 to-teal-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <CardHeader className="border-b bg-gradient-to-r from-emerald-300 to-teal-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <CardTitle className="text-emerald-600 flex items-center gap-2">
             <CalendarCheck className="w-5 h-5" /> Daily Tax Obligations
           </CardTitle>
@@ -63,14 +63,14 @@ const DailyTaxObligation = () => {
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input placeholder="Search " className="pl-9 w-64" />
                 </div>
-                <Button variant="outline" size="icon" className="border-emerald-200 hover:bg-emerald-50">
+                <Button variant="outline" size="icon" className="border-emerald-200 hover:bg-emerald-400">
                   <Filter className="w-4 h-4 text-emerald-500" />
                 </Button>
                 <Button
                   className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white flex items-center"
                   onClick={() => setShowForm(true)}
                 >
-                  <Plus className="w-4 h-4 mr-2" /> New Tax Entry
+                  <Plus className="w-4 h-4 mr-2" /> New
                 </Button>
               </>
             )}

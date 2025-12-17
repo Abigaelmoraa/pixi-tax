@@ -25,7 +25,7 @@ const PaymentRequests = () => {
   return (
     <div className="p-6 space-y-6 animate-fade-in">
       <Card className="shadow-lg border-0">
-        <CardHeader className="border-b bg-gradient-to-r from-green-50 to-emerald-50">
+        <CardHeader className="border-b bg-gradient-to-r from-green-300 to-emerald-200">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <CardTitle className="text-green-600 flex items-center gap-2">
               <CreditCard className="w-5 h-5" /> Payment Requests
@@ -35,7 +35,7 @@ const PaymentRequests = () => {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input placeholder="Search " className="pl-9 w-64" />
               </div>
-              <Button variant="outline" size="icon" className="border-green-200 hover:bg-green-50">
+              <Button variant="outline" size="icon" className="border-green-200 hover:bg-green-150">
                 <Filter className="w-4 h-4 text-green-500" />
               </Button>
             </div>

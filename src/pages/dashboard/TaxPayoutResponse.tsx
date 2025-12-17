@@ -34,7 +34,7 @@ const TaxPayoutResponse = () => {
   return (
     <div className="p-6 space-y-6 animate-fade-in">
       <Card className="shadow-lg border-0">
-        <CardHeader className="border-b bg-gradient-to-r from-orange-50 to-amber-50">
+        <CardHeader className="border-b bg-gradient-to-r from-orange-100 to-amber-100">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <CardTitle className="text-orange-600 flex items-center gap-2">
               <Receipt className="w-5 h-5" /> Tax Payout Responses
