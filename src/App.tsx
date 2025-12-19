@@ -16,8 +16,8 @@ import StakeData from "./pages/dashboard/StakeData";
 import BetOutcomeLog from "./pages/dashboard/BetOutcomeLog";
 import DailyTaxObligation from "./pages/dashboard/DailyTaxObligation";
 import Settings from "./pages/dashboard/Settings";
-import Profile from "./pages/dashboard/Profile";
-import ChangePassword from "./pages/dashboard/ChangePassword";
+import Profile from "./components/Profile";
+import ChangePassword from "./components/ChangePassword";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
