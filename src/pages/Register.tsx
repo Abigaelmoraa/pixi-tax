@@ -96,7 +96,7 @@ const Register = () => {
                     id="name"
                     type="text"
                     autoComplete="off"
-                    placeholder="John Doe"
+                    placeholder="Full Name"
                     className="w-full pl-9 h-10"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
