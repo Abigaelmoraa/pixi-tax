@@ -1,4 +1,4 @@
-import api from "@/lib/api";
+import api from "@/services/api";
 
 export const getDashboardStats = async () => {
   const res = await api.get("/dashboard/stats");
