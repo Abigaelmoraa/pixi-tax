@@ -48,7 +48,7 @@ const Overview = () => {
       subtitle: "Total tax amount",
       icon: Wallet,
       gradient: "from-yellow-300 via-yellow-400 to-yellow-500",
-      iconColor: "text-yellow-600",
+      iconColor: "text-yellow-700",
     },
   ];
 
@@ -59,106 +59,108 @@ const Overview = () => {
         subtitle="Overview of tax operations and payment activity"
       />
 
-      <div className="relative flex-1 overflow-y-auto p-6 bg-gray-150 space-y-10">
-        {/*  STATS CARDS */}
+      {/* PAGE BACKGROUND */}
+      <div className="flex-1 overflow-y-auto p-6 space-y-10 bg-gradient-to-br from-slate-100 via-white to-purple-50">
+        
+        {/* STATS */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
           {stats.map((stat) => (
             <Card
               key={stat.title}
-              className={`relative overflow-hidden border-0 shadow-md hover:shadow-lg transition-all bg-gradient-to-br ${stat.gradient}`}
+              className={`border-0 shadow-lg bg-gradient-to-br ${stat.gradient}`}
             >
-              <CardContent className="relative p-5 bg-white/70 backdrop-blur-md rounded-xl">
+              <CardContent className="p-6 bg-white/80 backdrop-blur rounded-xl">
                 <div className="flex items-center justify-between">
-                  <div
-                    className={`p-3 rounded-xl bg-white shadow ${stat.iconColor} flex items-center justify-center`}
-                  >
+                  <div className={`p-3 rounded-xl bg-white shadow ${stat.iconColor}`}>
                     <stat.icon className="w-6 h-6" />
                   </div>
-                  <ArrowUpRight className="w-5 h-5 text-gray-500" />
+                  <ArrowUpRight className="w-5 h-5 text-gray-400" />
                 </div>
 
                 <div className="mt-5">
                   <p className="text-3xl font-extrabold text-gray-900">
                     {stat.value}
                   </p>
-                  <p className="text-base font-semibold text-gray-800 mt-2">
+                  <p className="mt-1 font-semibold text-gray-800">
                     {stat.title}
                   </p>
-                  <p className="text-sm text-gray-600 mt-1">{stat.subtitle}</p>
+                  <p className="text-sm text-gray-600">
+                    {stat.subtitle}
+                  </p>
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        {/* MIDDLE CARDS  */}
+        {/* MIDDLE */}
         <div className="grid lg:grid-cols-2 gap-6">
-          <Card className="border-0 shadow-md bg-white">
+          <Card className="border-0 shadow-lg bg-white">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg text-gray-900">
-                <Sparkles className="w-5 h-5 text-gray-600" />
+              <CardTitle className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-purple-600" />
                 System Activity
               </CardTitle>
-              <CardDescription className="text-sm text-gray-700">
+              <CardDescription>
                 High-level overview of requests and transactions
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-[220px] rounded-xl bg-gray-100 flex items-center justify-center text-gray-500 text-sm">
-                Analytics will appear here once backend data is connected.
+              <div className="h-[220px] rounded-xl bg-slate-100 flex items-center justify-center text-gray-500">
+                Analytics will appear here
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-md bg-white">
+          <Card className="border-0 shadow-lg bg-white">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg text-gray-900">
-                <Wallet className="w-5 h-5 text-gray-600" />
+              <CardTitle className="flex items-center gap-2">
+                <Wallet className="w-5 h-5 text-green-600" />
                 Tax Performance
               </CardTitle>
-              <CardDescription className="text-sm text-gray-700">
+              <CardDescription>
                 Daily tax obligations and collections
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-[220px] rounded-xl bg-gray-100 flex items-center justify-center text-gray-500 text-sm">
-                Tax charts will appear here.
+              <div className="h-[220px] rounded-xl bg-slate-100 flex items-center justify-center text-gray-500">
+                Tax charts will appear here
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* bottom cards */}
+        {/* BOTTOM */}
         <div className="grid lg:grid-cols-3 gap-6">
-          <Card className="lg:col-span-2 border-0 shadow-md bg-white">
+          <Card className="lg:col-span-2 border-0 shadow-lg bg-white">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg text-gray-900">
-                <FileText className="w-5 h-5 text-gray-600" />
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="w-5 h-5 text-purple-600" />
                 Recent Activity
               </CardTitle>
-              <CardDescription className="text-sm text-gray-700">
+              <CardDescription>
                 Latest PRN, STK, and payment actions
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="mt-5 rounded-xl bg-gray-100 p-8 text-center text-gray-600 text-sm font-medium">
+              <div className="rounded-xl bg-slate-100 p-8 text-center text-gray-500">
                 No recent activity
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-md bg-white">
+          <Card className="border-0 shadow-lg bg-white">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg text-gray-900">
-                <Calendar className="w-5 h-5 text-gray-600" />
+              <CardTitle className="flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-orange-500" />
                 Upcoming Deadlines
               </CardTitle>
-              <CardDescription className="text-sm text-gray-700">
+              <CardDescription>
                 Important tax dates
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="mt-5 rounded-xl bg-gray-100 p-8 text-center text-gray-600 text-sm font-medium">
+              <div className="rounded-xl bg-slate-100 p-8 text-center text-gray-500">
                 No upcoming deadlines
               </div>
             </CardContent>

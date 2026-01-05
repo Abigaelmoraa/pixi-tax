@@ -19,148 +19,88 @@ interface DashboardHeaderProps {
 
 const DashboardHeader = ({ title, subtitle }: DashboardHeaderProps) => {
   const navigate = useNavigate();
-
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+    document.documentElement.classList.toggle("dark", isDark);
   }, [isDark]);
 
-  const handleLogout = () => navigate("/login");
-  const toggleTheme = () => setIsDark(!isDark);
-
   return (
-    <header
-      className="
-        h-28 px-12 flex items-center justify-between
-        bg-white dark:bg-gray-900
-        text-gray-900 dark:text-gray-100
-        shadow
-      "
-    >
+    <header className="h-28 px-12 flex items-center justify-between bg-white dark:bg-gray-900 shadow">
       {/* Left */}
       <div className="flex items-center gap-6">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="lg:hidden text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
-        >
-          <Menu className="w-10 h-10" />
+        <Button variant="ghost" size="icon" className="lg:hidden">
+          <Menu className="w-6 h-6" />
         </Button>
 
         <div>
-          <h1 className="text-3xl font-semibold">
-            {title.includes("Dashboard") ? (
-              <>
-                <span className="text-blue-600 dark:text-blue-400">Dashboard</span>
-                {title.replace("Dashboard", "")}
-              </>
-            ) : title}
+          <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">
+            <span className="bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
+              {title}
+            </span>
           </h1>
           {subtitle && (
-            <p className="text-base text-gray-600 dark:text-gray-400 leading-tight">{subtitle}</p>
+            <p className="text-gray-500 dark:text-gray-400">{subtitle}</p>
           )}
         </div>
       </div>
 
       {/* Right */}
-      <div className="flex items-center gap-5 md:gap-8">
+      <div className="flex items-center gap-6">
         {/* Search */}
         <div className="hidden md:flex relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-7 h-7 text-gray-400 dark:text-gray-300" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <Input
             placeholder="Search"
-            className="
-              pl-16 w-80 h-14
-              bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700
-              text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-300
-              focus:ring-2 focus:ring-indigo-300
-            "
+            className="pl-12 w-72 h-12 bg-gray-100 dark:bg-gray-800"
           />
         </div>
 
-        {/* Theme Toggle */}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleTheme}
-          className="h-30 w-30 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
-        >
-          {isDark ? <Sun className="w-50 h-50" /> : <Moon className="w-50 h-50" />}
+        {/* Theme */}
+        <Button variant="ghost" size="icon" onClick={() => setIsDark(!isDark)}>
+          {isDark ? <Sun className="w-6 h-6" /> : <Moon className="w-6 h-6" />}
         </Button>
 
         {/* Notifications */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="relative h-16 w-16 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              <Bell className="w-50 h-50" />
+            <Button variant="ghost" size="icon">
+              <Bell className="w-6 h-6" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-80 shadow">
-            <DropdownMenuLabel className="text-gray-700 dark:text-gray-700 text-lg">
-              Notifications
-            </DropdownMenuLabel>
+          <DropdownMenuContent align="end" className="w-72">
+            <DropdownMenuLabel>Notifications</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <div className="px-4 py-6 text-center text-base text-gray-500 dark:text-gray-400">
-              No notifications yet
+            <div className="p-4 text-center text-sm text-gray-500">
+              No notifications
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {/* User Menu */}
+        {/* User */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              className="gap-3 h-16 px-5 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              <div className="w-14 h-14 rounded-full bg-gradient-to-r from-indigo-200 via-purple-500 to-blue-200 flex items-center justify-center shadow">
-                <User className="w-10 h-10 text-white" />
+            <Button variant="ghost" className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 flex items-center justify-center">
+                <User className="w-5 h-5 text-white" />
               </div>
-              <span className="hidden md:inline text-lg font-medium text-gray-900 dark:text-gray-100">
-                User
-              </span>
+              <span className="hidden md:block">User</span>
             </Button>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="end" className="w-60 shadow">
-            <DropdownMenuLabel className="text-gray-700 dark:text-gray-200 text-lg">
-              My Account
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-
-            <DropdownMenuItem
-              className="flex items-center gap-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 text-base"
-              onClick={() => navigate("/dashboard/profile")}
-            >
-              <User className="w-6 h-6 text-gray-700 dark:text-gray-200" />
-              Profile
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => navigate("/dashboard/profile")}>
+              <User className="w-4 h-4 mr-2" /> Profile
             </DropdownMenuItem>
-
-            <DropdownMenuItem
-              className="flex items-center gap-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 text-base"
-              onClick={() => navigate("/dashboard/change-password")}
-            >
-              <KeyRound className="w-6 h-6 text-gray-700 dark:text-gray-200" />
-              Change Password
+            <DropdownMenuItem onClick={() => navigate("/dashboard/change-password")}>
+              <KeyRound className="w-4 h-4 mr-2" /> Change Password
             </DropdownMenuItem>
-
             <DropdownMenuSeparator />
-
             <DropdownMenuItem
-              className="flex items-center gap-3 cursor-pointer text-red-600 hover:bg-red-50 dark:hover:bg-red-800 text-base"
-              onClick={handleLogout}
+              className="text-red-600"
+              onClick={() => navigate("/login")}
             >
-              <LogOut className="w-6 h-6" />
-              Log out
+              <LogOut className="w-4 h-4 mr-2" /> Log out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
