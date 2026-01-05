@@ -26,9 +26,11 @@ const Login = () => {
         password: formData.password,
       });
 
+      // Save token to localStorage
       localStorage.setItem("token", response.data.token);
+
       toast.success("Welcome back!");
-      navigate("/dashboard");
+      navigate("/dashboard"); // redirect to dashboard
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Login failed");
     } finally {
@@ -37,28 +39,26 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 px-4">
-      <div className="flex flex-col lg:flex-row w-full max-w-4xl rounded-3xl shadow-xl bg-white/80 backdrop-blur-md overflow-hidden">
-        
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
+      {/* Card */}
+      <div className="flex flex-col md:flex-row bg-white rounded-2xl shadow-lg overflow-hidden max-w-4xl w-full">
         {/* Left Image */}
-        <div className="hidden lg:flex w-1/2 relative max-h-[500px]">
+        <div className="md:w-1/2 flex items-center justify-center bg-gray-50 p-4">
           <img
             src="/login-image.png"
             alt="Pixi Tax Management"
-            className="w-full h-full object-cover"
+            className="w-full h-auto object-contain rounded-xl"
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/20 via-purple-600/20 to-pink-500/20" />
         </div>
 
         {/* Right Form */}
-        <div className="w-full lg:w-1/2 px-6 md:px-10 py-8 flex flex-col justify-center max-h-[500px]">
-          
+        <div className="md:w-1/2 p-6 md:p-10 flex flex-col justify-center">
           {/* Logo */}
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-md">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
               <Calculator className="w-6 h-6 text-white" />
             </div>
-            <span className="text-2xl font-extrabold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+            <span className="text-3xl font-extrabold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
               Pixi
             </span>
           </div>
@@ -68,19 +68,20 @@ const Login = () => {
             Enter your credentials to access your account
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-3">
+          <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email */}
             <div>
-              <Label htmlFor="email">Email</Label>
+              <Label>Email</Label>
               <div className="relative mt-1">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input
-                  id="email"
                   type="email"
                   placeholder="you@example.com"
-                  className="w-full pl-9 h-10"
+                  className="pl-9 h-10 border border-gray-300 focus:border-indigo-500"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                   required
                 />
               </div>
@@ -89,7 +90,7 @@ const Login = () => {
             {/* Password */}
             <div>
               <div className="flex justify-between mb-1">
-                <Label htmlFor="password">Password</Label>
+                <Label>Password</Label>
                 <Link
                   to="/forgot-password"
                   className="text-xs text-purple-600 hover:underline"
@@ -98,22 +99,27 @@ const Login = () => {
                 </Link>
               </div>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input
-                  id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
-                  className="w-full pl-9 pr-9 h-10"
+                  className="pl-9 pr-9 h-10 border border-gray-300 focus:border-indigo-500"
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
             </div>
@@ -121,7 +127,7 @@ const Login = () => {
             {/* Submit */}
             <Button
               type="submit"
-              className="w-full h-10 bg-gradient-to-r from-purple-700 via-purple-600 to-pink-500 text-white font-semibold shadow-md"
+              className="w-full h-10 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold"
               disabled={isLoading}
             >
               {isLoading ? "Signing in..." : "Sign in"}
@@ -130,7 +136,7 @@ const Login = () => {
 
           <p className="text-center text-sm mt-4">
             Don’t have an account?{" "}
-            <Link to="/register" className="text-primary font-medium hover:underline">
+            <Link to="/register" className="text-purple-600 font-medium hover:underline">
               Sign up
             </Link>
           </p>
