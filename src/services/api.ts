@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://x1.pitch90agent.com",
+  baseURL: "https://db.x1.pitch90agent.com",
   headers: {
     "Content-Type": "application/json",
   },

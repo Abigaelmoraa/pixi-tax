@@ -51,15 +51,16 @@ const Register = () => {
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 px-4 sm:px-6 py-8 sm:py-12">
       <div className="flex flex-col lg:flex-row w-full max-w-5xl rounded-3xl shadow-xl bg-white/80 backdrop-blur-md overflow-hidden">
         
-        {/* Left Image */}
-        <div className="hidden lg:flex w-1/2 relative">
-          <img
-            src="/register.png"
-            alt="Pixi Tax Management"
-            className="w-full h-full object-cover max-h-[500px]"
-          />
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/30 via-purple-600/30 to-pink-500/30" />
-        </div>
+       {/* Left Image */}
+<div className="hidden lg:flex w-1/2 relative">
+  <img
+    src="/register.png"
+    alt="Pixi Tax Management"
+    className="absolute inset-0 w-full h-full object-cover"
+  />
+  <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/30 via-purple-600/30 to-pink-500/30" />
+</div>
+
 
         {/* Right Form */}
         <div className="w-full lg:w-1/2 flex flex-col justify-center px-6 md:px-10 py-8 md:py-10">

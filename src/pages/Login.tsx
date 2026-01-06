@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calculator, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Calculator, Mail, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import api from "@/services/api";
 
@@ -30,7 +30,7 @@ const Login = () => {
       localStorage.setItem("token", response.data.token);
 
       toast.success("Welcome back!");
-      navigate("/dashboard"); // redirect to dashboard
+      navigate("/dashboard");
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Login failed");
     } finally {
@@ -39,9 +39,10 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 px-4 sm:px-6 py-8 sm:py-12">
       {/* Card */}
       <div className="flex flex-col md:flex-row bg-white rounded-2xl shadow-lg overflow-hidden max-w-4xl w-full">
+        
         {/* Left Image */}
         <div className="md:w-1/2 flex items-center justify-center bg-gray-50 p-4">
           <img
@@ -53,6 +54,14 @@ const Login = () => {
 
         {/* Right Form */}
         <div className="md:w-1/2 p-6 md:p-10 flex flex-col justify-center">
+          {/* Back Button */}
+          <Link to="/" className="inline-block mb-6">
+            <button className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-purple-600 text-white text-sm font-medium shadow-sm hover:opacity-90 transition">
+              <ArrowLeft className="w-4 h-4" />
+              Back
+            </button>
+          </Link>
+
           {/* Logo */}
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
@@ -63,7 +72,7 @@ const Login = () => {
             </span>
           </div>
 
-          <h1 className="text-2xl font-bold mb-2">Welcome back</h1>
+          <h1 className="text-2xl font-bold mb-2 text-gray-800">Welcome back</h1>
           <p className="text-sm text-gray-600 mb-6">
             Enter your credentials to access your account
           </p>
@@ -113,7 +122,7 @@ const Login = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 >
                   {showPassword ? (
                     <EyeOff className="w-4 h-4" />
