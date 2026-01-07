@@ -1,173 +1,92 @@
+
+import { useEffect, useState } from "react";
 import DashboardHeader from "@/components/DashboardHeader";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import {
-  FileText,
-  Smartphone,
-  CreditCard,
-  Wallet,
-  ArrowUpRight,
-  Calendar,
-  Sparkles,
-} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { FileText, Smartphone, CreditCard, Wallet, ArrowUpRight, Sparkles } from "lucide-react";
+import { fetchStats, fetchRecentActivity, fetchUpcomingDeadlines } from "@/services/api";
 
 const Overview = () => {
-  const stats = [
-    {
-      title: "PRN Requests",
-      value: "0",
-      subtitle: "Total submitted",
-      icon: FileText,
-      gradient: "from-purple-300 via-purple-400 to-purple-500",
-      iconColor: "text-purple-600",
-    },
-    {
-      title: "STK Push Requests",
-      value: "0",
-      subtitle: "Payment prompts",
-      icon: Smartphone,
-      gradient: "from-pink-300 via-pink-400 to-pink-500",
-      iconColor: "text-pink-600",
-    },
-    {
-      title: "Payments Processed",
-      value: "0",
-      subtitle: "Successful payments",
-      icon: CreditCard,
-      gradient: "from-green-300 via-green-400 to-green-500",
-      iconColor: "text-green-600",
-    },
-    {
-      title: "Tax Collected",
-      value: "KES 0",
-      subtitle: "Total tax amount",
-      icon: Wallet,
-      gradient: "from-yellow-300 via-yellow-400 to-yellow-500",
-      iconColor: "text-yellow-700",
-    },
-  ];
+  const [stats, setStats] = useState<any[]>([]);
+  const [recentActivity, setRecentActivity] = useState<any[]>([]);
+  const [deadlines, setDeadlines] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const statsData = await fetchStats();
+        setStats([
+          { title: "PRN Requests", value: statsData.prnRequests || 0, subtitle: "Total submitted", icon: FileText, gradient: "from-purple-300 via-purple-400 to-purple-500", iconColor: "text-purple-600" },
+          { title: "STK Push Requests", value: statsData.stkPushRequests || 0, subtitle: "Payment prompts", icon: Smartphone, gradient: "from-pink-300 via-pink-400 to-pink-500", iconColor: "text-pink-600" },
+          { title: "Payments Processed", value: statsData.paymentsProcessed || 0, subtitle: "Successful payments", icon: CreditCard, gradient: "from-green-300 via-green-400 to-green-500", iconColor: "text-green-600" },
+          { title: "Tax Collected", value: `KES ${statsData.taxCollected || 0}`, subtitle: "Total tax amount", icon: Wallet, gradient: "from-yellow-300 via-yellow-400 to-yellow-500", iconColor: "text-yellow-700" },
+        ]);
+
+        setRecentActivity(await fetchRecentActivity() || []);
+        setDeadlines(await fetchUpcomingDeadlines() || []);
+      } catch (err) {
+        console.error(err);
+      } finally { setLoading(false); }
+    };
+    loadData();
+  }, []);
+
+  if (loading) return <p className="p-4 text-gray-600">Loading dashboard...</p>;
 
   return (
-    <>
-      <DashboardHeader
-        title="Dashboard"
-        subtitle="Overview of tax operations and payment activity"
-      />
+    <div className="p-4 sm:p-6 bg-gradient-to-br from-slate-100 via-white to-purple-50 space-y-6">
+      <DashboardHeader title="Dashboard" subtitle="Overview of tax operations and payment activity" />
 
-      {/* PAGE BACKGROUND */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-10 bg-gradient-to-br from-slate-100 via-white to-purple-50">
-        
-        {/* STATS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-          {stats.map((stat) => (
-            <Card
-              key={stat.title}
-              className={`border-0 shadow-lg bg-gradient-to-br ${stat.gradient}`}
-            >
-              <CardContent className="p-6 bg-white/80 backdrop-blur rounded-xl">
-                <div className="flex items-center justify-between">
-                  <div className={`p-3 rounded-xl bg-white shadow ${stat.iconColor}`}>
-                    <stat.icon className="w-6 h-6" />
-                  </div>
-                  <ArrowUpRight className="w-5 h-5 text-gray-400" />
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        {stats.map((stat) => (
+          <Card key={stat.title} className="border-0 shadow-lg bg-white">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className={`p-2 rounded-xl ${stat.iconColor} bg-white`}>
+                  <stat.icon className="w-5 h-5" />
                 </div>
-
-                <div className="mt-5">
-                  <p className="text-3xl font-extrabold text-gray-900">
-                    {stat.value}
-                  </p>
-                  <p className="mt-1 font-semibold text-gray-800">
-                    {stat.title}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    {stat.subtitle}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* MIDDLE */}
-        <div className="grid lg:grid-cols-2 gap-6">
-          <Card className="border-0 shadow-lg bg-white">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-purple-600" />
-                System Activity
-              </CardTitle>
-              <CardDescription>
-                High-level overview of requests and transactions
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[220px] rounded-xl bg-slate-100 flex items-center justify-center text-gray-500">
-                Analytics will appear here
+                <ArrowUpRight className="w-4 h-4 text-gray-400" />
+              </div>
+              <div className="mt-3">
+                <p className="text-xl font-bold text-gray-900">{stat.value}</p>
+                <p className="text-sm font-medium text-gray-800">{stat.title}</p>
+                <p className="text-xs text-gray-600">{stat.subtitle}</p>
               </div>
             </CardContent>
           </Card>
-
-          <Card className="border-0 shadow-lg bg-white">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Wallet className="w-5 h-5 text-green-600" />
-                Tax Performance
-              </CardTitle>
-              <CardDescription>
-                Daily tax obligations and collections
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[220px] rounded-xl bg-slate-100 flex items-center justify-center text-gray-500">
-                Tax charts will appear here
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* BOTTOM */}
-        <div className="grid lg:grid-cols-3 gap-6">
-          <Card className="lg:col-span-2 border-0 shadow-lg bg-white">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="w-5 h-5 text-purple-600" />
-                Recent Activity
-              </CardTitle>
-              <CardDescription>
-                Latest PRN, STK, and payment actions
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-xl bg-slate-100 p-8 text-center text-gray-500">
-                No recent activity
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-lg bg-white">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-orange-500" />
-                Upcoming Deadlines
-              </CardTitle>
-              <CardDescription>
-                Important tax dates
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-xl bg-slate-100 p-8 text-center text-gray-500">
-                No upcoming deadlines
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        ))}
       </div>
-    </>
+
+      {/* Middle Cards */}
+      <div className="grid lg:grid-cols-2 gap-4">
+        <Card className="border-0 shadow-lg bg-white">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-1"><Sparkles className="w-4 h-4 text-purple-600" /> System Activity</CardTitle>
+            <CardDescription className="text-xs">High-level overview of requests and transactions</CardDescription>
+          </CardHeader>
+          <CardContent className="p-2">
+            <div className="h-36 rounded-xl bg-slate-100 flex items-center justify-center text-gray-500 text-xs">
+              {recentActivity.length === 0 ? "No recent activity" :
+                <ul className="space-y-1">{recentActivity.map((item, idx) => <li key={idx}>{item.description}</li>)}</ul>}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-0 shadow-lg bg-white">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-1"><Wallet className="w-4 h-4 text-green-600" /> Tax Performance</CardTitle>
+            <CardDescription className="text-xs">Daily tax obligations and collections</CardDescription>
+          </CardHeader>
+          <CardContent className="p-2">
+            <div className="h-36 rounded-xl bg-slate-100 flex items-center justify-center text-gray-500 text-xs">
+              {deadlines.length === 0 ? "No upcoming deadlines" :
+                <ul className="space-y-1">{deadlines.map((d, idx) => <li key={idx}>{d.date} - {d.title}</li>)}</ul>}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 };
 
