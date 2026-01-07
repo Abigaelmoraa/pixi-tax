@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import DashboardHeader from "@/components/DashboardHeader";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { FileText, Smartphone, CreditCard, Wallet, ArrowUpRight, Calendar, Sparkles } from "lucide-react";
+import { FileText, Smartphone, CreditCard, Wallet, ArrowUpRight, Sparkles } from "lucide-react";
 import { fetchStats, fetchRecentActivity, fetchUpcomingDeadlines } from "@/services/api";
 
 const Overview = () => {
-  const [stats, setStats] = useState([]);
-  const [recentActivity, setRecentActivity] = useState([]);
-  const [deadlines, setDeadlines] = useState([]);
+  const [stats, setStats] = useState<any[]>([]);
+  const [recentActivity, setRecentActivity] = useState<any[]>([]);
+  const [deadlines, setDeadlines] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -54,7 +54,7 @@ const Overview = () => {
         const activityData = await fetchRecentActivity();
         setRecentActivity(activityData || []);
 
-        // Fetch upcoming deadlines
+        // Fetch upcoming deadlines / daily tax obligations
         const deadlinesData = await fetchUpcomingDeadlines();
         setDeadlines(deadlinesData || []);
       } catch (err) {
@@ -77,7 +77,8 @@ const Overview = () => {
       />
 
       <div className="flex-1 overflow-y-auto p-6 space-y-10 bg-gradient-to-br from-slate-100 via-white to-purple-50">
-        {/* STATS */}
+
+        {/* ================= STATS CARDS ================= */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
           {stats.map((stat) => (
             <Card key={stat.title} className={`border-0 shadow-lg bg-gradient-to-br ${stat.gradient}`}>
@@ -98,16 +99,16 @@ const Overview = () => {
           ))}
         </div>
 
-        {/* MIDDLE CARDS */}
+        {/* ================= MIDDLE SECTION CARDS ================= */}
         <div className="grid lg:grid-cols-2 gap-6">
+
+          {/* System Activity */}
           <Card className="border-0 shadow-lg bg-white">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-purple-600" /> System Activity
               </CardTitle>
-              <CardDescription>
-                High-level overview of requests and transactions
-              </CardDescription>
+              <CardDescription>High-level overview of requests and transactions</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-[220px] rounded-xl bg-slate-100 flex items-center justify-center text-gray-500">
@@ -124,14 +125,13 @@ const Overview = () => {
             </CardContent>
           </Card>
 
+          {/* Tax Performance / Deadlines */}
           <Card className="border-0 shadow-lg bg-white">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Wallet className="w-5 h-5 text-green-600" /> Tax Performance
               </CardTitle>
-              <CardDescription>
-                Daily tax obligations and collections
-              </CardDescription>
+              <CardDescription>Daily tax obligations and collections</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-[220px] rounded-xl bg-slate-100 flex items-center justify-center text-gray-500">
@@ -141,7 +141,7 @@ const Overview = () => {
                   <ul className="space-y-1">
                     {deadlines.map((d, idx) => (
                       <li key={idx}>
-                        {d.date} - {d.title}
+                        {d.date} - {d.title} ({d.amount ? `KES ${d.amount}` : ""})
                       </li>
                     ))}
                   </ul>
@@ -149,6 +149,7 @@ const Overview = () => {
               </div>
             </CardContent>
           </Card>
+
         </div>
       </div>
     </>

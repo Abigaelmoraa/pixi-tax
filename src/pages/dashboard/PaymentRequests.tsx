@@ -11,7 +11,6 @@ export default function PaymentRequests() {
 
   const API_BASE = "https://db.x1.pitch90agent.com";
 
-  // Fetch payment requests on page load
   useEffect(() => {
     const fetchRequests = async () => {
       try {
