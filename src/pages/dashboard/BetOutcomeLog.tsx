@@ -1,9 +1,10 @@
+import { useState, useEffect } from "react";
 import { ClipboardList, Search, Filter, Plus, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
+import api from "@/services/api";
 
 interface BetOutcomeFormData {
   betId: string;
@@ -28,34 +29,59 @@ const BetOutcomeLog = () => {
     walletbalanceoutcome: "",
     sentToKra: "",
   });
+  const [outcomes, setOutcomes] = useState<BetOutcomeFormData[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const outcomes: BetOutcomeFormData[] = [
-  ];
+  /* ================= FETCH FROM BACKEND ================= */
+  useEffect(() => {
+    const fetchOutcomes = async () => {
+      try {
+        setLoading(true);
+        const res = await api.get("/bet-outcomes");
+        setOutcomes(res.data);
+      } catch (err: any) {
+        console.error(err);
+        setError(err.response?.data?.message || "Failed to fetch bet outcomes");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleSave = (e: React.FormEvent) => {
+    fetchOutcomes();
+  }, []);
+
+  /* ================= SAVE TO BACKEND ================= */
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form saved:", formData);
-    setFormData({
-      betId: "",
-      outcome: "",
-      payout: "",
-      outcomedate: "",
-      winnings: "",
-      withholdingtax: "",
-      walletbalanceoutcome: "",
-      sentToKra: "",
-    });
-    setShowForm(false);
+    try {
+      const res = await api.post("/bet-outcomes", formData);
+      setOutcomes([res.data, ...outcomes]);
+      setShowForm(false);
+      setFormData({
+        betId: "",
+        outcome: "",
+        payout: "",
+        outcomedate: "",
+        winnings: "",
+        withholdingtax: "",
+        walletbalanceoutcome: "",
+        sentToKra: "",
+      });
+    } catch (err: any) {
+      console.error(err);
+      setError(err.response?.data?.message || "Failed to save bet outcome");
+    }
   };
 
   const getOutcomeBadge = (outcome: string) => {
     switch (outcome.toLowerCase()) {
       case "won":
-        return <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white border-0">Won</Badge>;
+        return <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white">Won</Badge>;
       case "lost":
-        return <Badge className="bg-gradient-to-r from-red-500 to-pink-500 text-white border-0">Lost</Badge>;
+        return <Badge className="bg-gradient-to-r from-red-500 to-pink-500 text-white">Lost</Badge>;
       case "pending":
-        return <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0">Pending</Badge>;
+        return <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white">Pending</Badge>;
       default:
         return <Badge>{outcome}</Badge>;
     }
@@ -64,116 +90,76 @@ const BetOutcomeLog = () => {
   return (
     <div className="p-6 space-y-6 animate-fade-in">
       <Card className="shadow-lg border-0">
-        {/* Header */}
-        <CardHeader className="border-b bg-gradient-to-r from-yellow-200 to-amber-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <CardHeader className="border-b bg-gradient-to-r from-yellow-200 to-amber-200 flex justify-between">
           <CardTitle className="text-yellow-900 flex items-center gap-2">
             <ClipboardList className="w-5 h-5" /> Bet Outcome Log
           </CardTitle>
-          <div className="flex items-center gap-2">
-            {!showForm && (
-              <>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input placeholder="Search " className="pl-9 w-64" />
-                </div>
-                <Button variant="outline" size="icon" className="border-yellow-200 hover:bg-yellow-50">
-                  <Filter className="w-4 h-4 text-yellow-500" />
-                </Button>
-                <Button
-                  className="bg-gradient-to-r from-yellow-500 to-amber-500 text-white flex items-center"
-                  onClick={() => setShowForm(true)}
-                >
-                  <Plus className="w-4 h-4 mr-2" /> New 
-                </Button>
-              </>
-            )}
-          </div>
+          {!showForm && (
+            <Button
+              className="bg-gradient-to-r from-yellow-500 to-amber-500 text-white"
+              onClick={() => setShowForm(true)}
+            >
+              <Plus className="w-4 h-4 mr-2" /> New
+            </Button>
+          )}
         </CardHeader>
 
-        {/* Form */}
-        {showForm && (
+        {showForm ? (
           <CardContent>
-            <form onSubmit={handleSave} className="flex flex-col gap-5">
-              {[
-                { label: "Bet ID", key: "betId", placeholder: "Enter Bet ID" },
-                { label: "Outcome", key: "outcome", placeholder: "Won/Lost/Pending" },
-                { label: "Payout", key: "payout", placeholder: "Enter Payout" },
-                { label: "Outcome Date", key: "outcomedate", placeholder: "YYYY-MM-DD HH:MM" },
-                { label: "Winnings", key: "winnings", placeholder: "Enter Winnings" },
-                { label: "Withholding Tax", key: "withholdingtax", placeholder: "Enter Withholding Tax" },
-                { label: "Wallet Balance Outcome", key: "walletbalanceoutcome", placeholder: "Enter Wallet Balance" },
-                { label: "Sent To Kra", key: "sentToKra", placeholder: "Yes/No" },
-              ].map((field) => (
-                <div key={field.key} className="flex flex-col gap-1">
-                  <label className="text-sm font-semibold text-muted-foreground">{field.label}</label>
-                  <Input
-                    placeholder={field.placeholder}
-                    value={formData[field.key as keyof BetOutcomeFormData]}
-                    onChange={(e) => setFormData({ ...formData, [field.key]: e.target.value })}
-                    required
-                  />
-                </div>
+            <form onSubmit={handleSave} className="grid grid-cols-2 gap-4">
+              {Object.keys(formData).map((key) => (
+                <Input
+                  key={key}
+                  placeholder={key}
+                  value={formData[key as keyof BetOutcomeFormData]}
+                  onChange={(e) =>
+                    setFormData({ ...formData, [key]: e.target.value })
+                  }
+                  required
+                />
               ))}
-
-              <div className="flex justify-end gap-3 pt-4">
-                <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
-                  Cancel
-                </Button>
-                <Button type="submit" className="bg-gradient-to-r from-yellow-500 to-amber-500 text-white">
-                  Save
-                </Button>
+              <div className="col-span-2 flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setShowForm(false)}>Cancel</Button>
+                <Button type="submit">Save</Button>
               </div>
             </form>
           </CardContent>
-        )}
-
-        {/* Table */}
-        {!showForm && (
+        ) : (
           <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-muted/50">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Bet ID</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Outcome</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Payout</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Outcome Date</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Winnings</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Withholding Tax</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Wallet Balance Outcome</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Sent To Kra</th>
-                    <th className="px-4 py-3 text-right text-sm font-medium text-muted-foreground">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {outcomes.length === 0 ? (
-                    <tr>
-                      <td colSpan={9} className="text-center py-6 text-muted-foreground">
-                        No data available
+            <table className="w-full">
+              <thead className="bg-muted/50">
+                <tr>
+                  {Object.keys(formData).map((key) => (
+                    <th key={key} className="px-4 py-3 text-left">{key}</th>
+                  ))}
+                  <th className="px-4 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr><td colSpan={9} className="text-center py-6">Loading...</td></tr>
+                ) : outcomes.length === 0 ? (
+                  <tr><td colSpan={9} className="text-center py-6">No data available</td></tr>
+                ) : (
+                  outcomes.map((bet) => (
+                    <tr key={bet.betId}>
+                      {Object.keys(bet).map((key) => (
+                        <td key={key} className="px-4 py-3">
+                          {key === "outcome"
+                            ? getOutcomeBadge(bet[key as keyof BetOutcomeFormData])
+                            : bet[key as keyof BetOutcomeFormData]}
+                        </td>
+                      ))}
+                      <td className="px-4 py-3 text-right">
+                        <Button variant="ghost" size="icon">
+                          <Eye className="w-4 h-4" />
+                        </Button>
                       </td>
                     </tr>
-                  ) : (
-                    outcomes.map((bet) => (
-                      <tr key={bet.betId} className="hover:bg-gradient-to-r hover:from-yellow-50/50 hover:to-amber-50/50 transition-colors">
-                        <td className="px-4 py-3 font-mono text-yellow-600 font-medium">{bet.betId}</td>
-                        <td className="px-4 py-3">{getOutcomeBadge(bet.outcome)}</td>
-                        <td className="px-4 py-3 font-semibold">{bet.payout}</td>
-                        <td className="px-4 py-3">{bet.outcomedate}</td>
-                        <td className="px-4 py-3">{bet.winnings}</td>
-                        <td className="px-4 py-3">{bet.withholdingtax}</td>
-                        <td className="px-4 py-3">{bet.walletbalanceoutcome}</td>
-                        <td className="px-4 py-3">{bet.sentToKra}</td>
-                        <td className="px-4 py-3 text-right">
-                          <Button variant="ghost" size="icon" className="hover:bg-yellow-100 hover:text-yellow-600">
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
+                  ))
+                )}
+              </tbody>
+            </table>
           </CardContent>
         )}
       </Card>
