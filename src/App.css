@@ -1,23 +1,28 @@
+/* Root container for centering and max width */
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1.5rem; /* slightly smaller for hosted view */
   text-align: center;
 }
 
+/* Logo styling and hover effects */
 .logo {
-  height: 6em;
-  padding: 1.5em;
+  height: 4.5em; /* slightly smaller */
+  padding: 1em;
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+  filter: drop-shadow(0 0 1.5em #646cffaa); /* softer shadow */
 }
 
+.logo.react:hover {
+  filter: drop-shadow(0 0 1.5em #61dafbaa);
+}
+
+/* Logo spin animation */
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);
@@ -33,10 +38,45 @@
   }
 }
 
+/* Cards spacing */
 .card {
-  padding: 2em;
+  padding: 1.5em; /* slightly reduced padding */
+  margin: 1rem auto;
+  max-width: 100%;
+  border-radius: 0.75rem; /* smooth rounded corners */
 }
 
+/* Documentation links */
 .read-the-docs {
-  color: #888;
+  color: #666; /* darker for better readability */
+  font-size: 0.95rem;
+}
+
+/* Global font and text scaling */
+html {
+  font-size: 16px; /* base font size */
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  line-height: 1.5;
+  margin: 0;
+  padding: 0;
+  color: #1f2937; /* dark gray text for better contrast */
+  background-color: #f9fafb; /* soft light background for all pages */
+}
+
+/* Responsive text */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0.5em 0;
+  font-weight: 600;
+}
+
+p, span, li, a {
+  font-size: 1rem;
+}
+
+/* Make input and button text normal-sized on all screens */
+input, button, select, textarea {
+  font-size: 1rem;
 }
