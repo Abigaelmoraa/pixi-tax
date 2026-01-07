@@ -22,6 +22,7 @@ import DailyTaxObligation from "./pages/dashboard/DailyTaxObligation";
 import Settings from "./pages/dashboard/Settings";
 import Profile from "./pages/dashboard/Profile";
 import ChangePassword from "./pages/dashboard/ChangePassword";
+import WithdrawalRequest from "./pages/dashboard/WithdrawalRequest";
 
 // Fallback
 import NotFound from "./pages/NotFound";
@@ -53,6 +54,9 @@ function App() {
           <Route path="settings" element={<Settings />} />
           <Route path="profile" element={<Profile />} />
           <Route path="change-password" element={<ChangePassword />} />
+
+          {/* Withdrawal Requests */}
+          <Route path="withdrawal-request" element={<WithdrawalRequest />} />
         </Route>
 
         {/* Fallback */}

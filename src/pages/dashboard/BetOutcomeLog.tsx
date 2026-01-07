@@ -30,7 +30,6 @@ const BetOutcomeLog = () => {
   });
 
   const outcomes: BetOutcomeFormData[] = [
-    // Sample data from backend
   ];
 
   const handleSave = (e: React.FormEvent) => {

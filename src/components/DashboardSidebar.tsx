@@ -11,7 +11,8 @@ import {
   Smartphone,
   Database,
   ClipboardList,
-  CalendarCheck
+  CalendarCheck,
+  Wallet
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ const DashboardSidebar = () => {
     { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard", color: "text-blue-400" },
     { icon: FileText, label: "PRN Requests", path: "/dashboard/prn-requests", color: "text-purple-400" },
     { icon: CreditCard, label: "Payment Requests", path: "/dashboard/payment-requests", color: "text-green-400" },
+    { icon: Wallet, label: "Withdrawal Requests", path: "/dashboard/withdrawal-requests", color: "text-red-400" },
     { icon: Receipt, label: "Tax Payout Response", path: "/dashboard/tax-payout", color: "text-orange-400" },
     { icon: Smartphone, label: "STK Push Request", path: "/dashboard/stk-push", color: "text-pink-400" },
     { icon: Database, label: "Stake Data", path: "/dashboard/stake-data", color: "text-cyan-400" },
@@ -42,11 +44,11 @@ const DashboardSidebar = () => {
     <aside
       className={cn(
         "min-h-screen bg-gradient-to-b from-sidebar via-sidebar to-slate-900 text-sidebar-foreground flex flex-col transition-all duration-300 border-r border-sidebar-border shadow-xl",
-        collapsed ? "w-24" : "w-80" // Increased width
+        collapsed ? "w-24" : "w-80"
       )}
     >
       {/* Logo */}
-      <div className="h-16 flex items-center justify-between px-5 border-b border-sidebar-border/50">
+      <div className="h-16 flex items-center justify-between px-5 border-b border-sidebar-border/50 relative">
         {!collapsed ? (
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
@@ -72,13 +74,16 @@ const DashboardSidebar = () => {
               "absolute right-0 translate-x-1/2 bg-sidebar border border-sidebar-border rounded-full w-6 h-6"
           )}
         >
-          {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+          {collapsed ? (
+            <ChevronRight className="w-4 h-4" />
+          ) : (
+            <ChevronLeft className="w-4 h-4" />
+          )}
         </Button>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 px-4 py-6 overflow-y-auto">
-        {/* Main Menu */}
         {!collapsed && (
           <p className="text-[11px] font-medium uppercase tracking-wider text-sidebar-foreground/50 px-3 mb-4">
             Main Menu

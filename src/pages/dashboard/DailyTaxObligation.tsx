@@ -2,7 +2,8 @@ import { CalendarCheck, Search, Filter, Plus, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 interface TaxFormData {
   taxDate: string;
@@ -14,6 +15,8 @@ interface TaxFormData {
   trxCode: string;
   prnCode: string;
 }
+
+const BASE_URL = "https://db.x1.pitch90agent.com/api";
 
 const DailyTaxObligation = () => {
   const [showForm, setShowForm] = useState(false);
@@ -27,25 +30,46 @@ const DailyTaxObligation = () => {
     trxCode: "",
     prnCode: "",
   });
+  const [obligations, setObligations] = useState<TaxFormData[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const obligations: TaxFormData[] = [
-    // Sample data from backend
-  ];
+  // Fetch daily tax obligations from backend
+  useEffect(() => {
+    const fetchObligations = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get(`${BASE_URL}/dailyTaxObligations`);
+        setObligations(res.data);
+      } catch (err: any) {
+        console.error(err);
+        setError(err.message || "Failed to fetch daily tax obligations");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchObligations();
+  }, []);
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form saved:", formData);
-    setFormData({
-      taxDate: "",
-      depositTotal: "",
-      withdrawalTotal: "",
-      taxOnDeposit: "",
-      taxOnWithdrawal: "",
-      totalTaxAmount: "",
-      trxCode: "",
-      prnCode: "",
-    });
-    setShowForm(false);
+    try {
+      const res = await axios.post(`${BASE_URL}/dailyTaxObligations`, formData);
+      setObligations([res.data, ...obligations]);
+      setFormData({
+        taxDate: "",
+        depositTotal: "",
+        withdrawalTotal: "",
+        taxOnDeposit: "",
+        taxOnWithdrawal: "",
+        totalTaxAmount: "",
+        trxCode: "",
+        prnCode: "",
+      });
+      setShowForm(false);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -61,7 +85,7 @@ const DailyTaxObligation = () => {
               <>
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input placeholder="Search " className="pl-9 w-64" />
+                  <Input placeholder="Search" className="pl-9 w-64" />
                 </div>
                 <Button variant="outline" size="icon" className="border-emerald-200 hover:bg-emerald-400">
                   <Filter className="w-4 h-4 text-emerald-500" />
@@ -81,27 +105,17 @@ const DailyTaxObligation = () => {
         {showForm && (
           <CardContent>
             <form onSubmit={handleSave} className="flex flex-col gap-5">
-              {[
-                { label: "Tax Date", key: "taxDate", placeholder: "YYYY-MM-DD" },
-                { label: "Deposit Total", key: "depositTotal", placeholder: "Enter Deposit Total" },
-                { label: "Withdrawal Total", key: "withdrawalTotal", placeholder: "Enter Withdrawal Total" },
-                { label: "Tax On Deposit", key: "taxOnDeposit", placeholder: "Enter Tax On Deposit" },
-                { label: "Tax On Withdrawal", key: "taxOnWithdrawal", placeholder: "Enter Tax On Withdrawal" },
-                { label: "Total Tax Amount", key: "totalTaxAmount", placeholder: "Enter Total Tax Amount" },
-                { label: "Trx Code", key: "trxCode", placeholder: "Enter Transaction Code" },
-                { label: "Prn Code", key: "prnCode", placeholder: "Enter PRN Code" },
-              ].map((field) => (
-                <div key={field.key} className="flex flex-col gap-1">
-                  <label className="text-sm font-semibold text-muted-foreground">{field.label}</label>
+              {Object.keys(formData).map((key) => (
+                <div key={key} className="flex flex-col gap-1">
+                  <label className="text-sm font-semibold text-muted-foreground">{key}</label>
                   <Input
-                    placeholder={field.placeholder}
-                    value={formData[field.key as keyof TaxFormData]}
-                    onChange={(e) => setFormData({ ...formData, [field.key]: e.target.value })}
+                    placeholder={`Enter ${key}`}
+                    value={formData[key as keyof TaxFormData]}
+                    onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
                     required
                   />
                 </div>
               ))}
-
               <div className="flex justify-end gap-3 pt-4">
                 <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
                   Cancel
@@ -134,18 +148,21 @@ const DailyTaxObligation = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y">
-                  {obligations.length === 0 ? (
+                  {loading ? (
                     <tr>
-                      <td colSpan={10} className="text-center py-6 text-muted-foreground">
-                        No data available
-                      </td>
+                      <td colSpan={10} className="text-center py-6 text-muted-foreground">Loading...</td>
+                    </tr>
+                  ) : error ? (
+                    <tr>
+                      <td colSpan={10} className="text-center py-6 text-red-500">{error}</td>
+                    </tr>
+                  ) : obligations.length === 0 ? (
+                    <tr>
+                      <td colSpan={10} className="text-center py-6 text-muted-foreground">No data available</td>
                     </tr>
                   ) : (
                     obligations.map((item, index) => (
-                      <tr
-                        key={index}
-                        className="hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-teal-50/50 transition-colors"
-                      >
+                      <tr key={index} className="hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-teal-50/50 transition-colors">
                         <td className="px-4 py-3 font-mono text-emerald-600 font-medium">{index + 1}</td>
                         <td className="px-4 py-3">{item.taxDate}</td>
                         <td className="px-4 py-3">{item.depositTotal}</td>
