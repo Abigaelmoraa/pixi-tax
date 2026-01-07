@@ -1,21 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import {Card,CardContent,CardHeader,CardTitle,} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import {Table,TableBody,TableCell,TableHead,TableHeader, TableRow,} from "@/components/ui/table";
 
 const API_BASE = "https://db.x1.pitch90agent.com/api";
 const ENDPOINT = `${API_BASE}/withdrawalRequest`;

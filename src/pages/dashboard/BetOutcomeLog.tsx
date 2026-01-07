@@ -1,87 +1,102 @@
 import { useState, useEffect } from "react";
-import { ClipboardList, Plus, Eye } from "lucide-react";
+import { Wallet, Plus, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import api from "@/services/api";
 
-interface BetOutcomeFormData {
-  betId: string;
-  outcome: string;
-  payout: string;
-  outcomedate: string;
-  winnings: string;
-  withholdingtax: string;
-  walletbalanceoutcome: string;
-  sentToKra: string;
+/* ================= TYPES ================= */
+interface WithdrawalRequestFormData {
+  msisdn: string;
+  amount: string;
+  charges: string;
+  netPayout: string;
+  sourceIp: string;
+  transactionId: string;
+  approved: string;
+  sentTo: string;
+  apiResponse: string;
+  status: string;
 }
 
-const BetOutcomeLog = () => {
+const WithdrawalRequestLog = () => {
   const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState<BetOutcomeFormData>({
-    betId: "",
-    outcome: "",
-    payout: "",
-    outcomedate: "",
-    winnings: "",
-    withholdingtax: "",
-    walletbalanceoutcome: "",
-    sentToKra: "",
+
+  const [formData, setFormData] = useState<WithdrawalRequestFormData>({
+    msisdn: "",
+    amount: "",
+    charges: "",
+    netPayout: "",
+    sourceIp: "",
+    transactionId: "",
+    approved: "",
+    sentTo: "",
+    apiResponse: "",
+    status: "PENDING",
   });
 
-  const [outcomes, setOutcomes] = useState<BetOutcomeFormData[]>([]);
+  const [withdrawals, setWithdrawals] = useState<WithdrawalRequestFormData[]>(
+    []
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   /* ================= FETCH DATA ================= */
   useEffect(() => {
-    const fetchOutcomes = async () => {
+    const fetchWithdrawals = async () => {
       try {
         setLoading(true);
-        const res = await api.get("/bet-outcomes");
-        setOutcomes(res.data);
+        const res = await api.get("/withdrawalRequest");
+        setWithdrawals(res.data);
       } catch (err: any) {
-        setError(err.response?.data?.message || "Failed to fetch bet outcomes");
+        setError(
+          err.response?.data?.message || "Failed to fetch withdrawals"
+        );
       } finally {
         setLoading(false);
       }
     };
-    fetchOutcomes();
+
+    fetchWithdrawals();
   }, []);
 
   /* ================= SAVE DATA ================= */
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await api.post("/bet-outcomes", formData);
-      setOutcomes([res.data, ...outcomes]);
+      const res = await api.post("/withdrawalRequest", formData);
+      setWithdrawals([res.data, ...withdrawals]);
       setShowForm(false);
       setFormData({
-        betId: "",
-        outcome: "",
-        payout: "",
-        outcomedate: "",
-        winnings: "",
-        withholdingtax: "",
-        walletbalanceoutcome: "",
-        sentToKra: "",
+        msisdn: "",
+        amount: "",
+        charges: "",
+        netPayout: "",
+        sourceIp: "",
+        transactionId: "",
+        approved: "",
+        sentTo: "",
+        apiResponse: "",
+        status: "PENDING",
       });
     } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to save bet outcome");
+      setError(
+        err.response?.data?.message || "Failed to save withdrawal request"
+      );
     }
   };
 
-  const getOutcomeBadge = (outcome: string) => {
-    switch (outcome.toLowerCase()) {
-      case "won":
-        return <Badge className="bg-green-500 text-white">Won</Badge>;
-      case "lost":
-        return <Badge className="bg-red-500 text-white">Lost</Badge>;
+  const getStatusBadge = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "approved":
+        return <Badge className="bg-green-500 text-white">Approved</Badge>;
+      case "sent":
+        return <Badge className="bg-blue-500 text-white">Sent</Badge>;
       case "pending":
         return <Badge className="bg-yellow-500 text-white">Pending</Badge>;
       default:
-        return <Badge>{outcome}</Badge>;
+        return <Badge>{status}</Badge>;
     }
   };
 
@@ -90,16 +105,16 @@ const BetOutcomeLog = () => {
       <Card className="border-0 shadow-lg">
 
         {/* ================= HEADER ================= */}
-        <CardHeader className="border-b bg-gradient-to-r from-yellow-200 to-amber-200">
+        <CardHeader className="border-b bg-gradient-to-r from-blue-200 to-cyan-200">
           <div className="flex items-center w-full">
-            <CardTitle className="flex items-center gap-2 text-yellow-900">
-              <ClipboardList className="w-5 h-5" />
-              Bet Outcome Log
+            <CardTitle className="flex items-center gap-2 text-blue-900">
+              <Wallet className="w-5 h-5" />
+              Withdrawal Requests
             </CardTitle>
 
             {!showForm && (
               <Button
-                className="ml-auto bg-gradient-to-r from-yellow-500 to-amber-500 text-white"
+                className="ml-auto bg-gradient-to-r from-blue-500 to-cyan-500 text-white"
                 onClick={() => setShowForm(true)}
               >
                 <Plus className="w-4 h-4 mr-2" />
@@ -117,16 +132,20 @@ const BetOutcomeLog = () => {
                 <Input
                   key={key}
                   placeholder={key}
-                  value={formData[key as keyof BetOutcomeFormData]}
+                  value={formData[key as keyof WithdrawalRequestFormData]}
                   onChange={(e) =>
                     setFormData({ ...formData, [key]: e.target.value })
                   }
-                  required
+                  required={key !== "apiResponse"}
                 />
               ))}
 
               <div className="col-span-2 flex justify-end gap-2 pt-4">
-                <Button variant="outline" onClick={() => setShowForm(false)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowForm(false)}
+                >
                   Cancel
                 </Button>
                 <Button type="submit">Save</Button>
@@ -147,29 +166,30 @@ const BetOutcomeLog = () => {
                   <th className="px-4 py-3 text-right">Actions</th>
                 </tr>
               </thead>
+
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={9} className="text-center py-6">
+                    <td colSpan={11} className="text-center py-6">
                       Loading...
                     </td>
                   </tr>
-                ) : outcomes.length === 0 ? (
+                ) : withdrawals.length === 0 ? (
                   <tr>
-                    <td colSpan={9} className="text-center py-6">
-                      No data available
+                    <td colSpan={11} className="text-center py-6">
+                      No withdrawal requests
                     </td>
                   </tr>
                 ) : (
-                  outcomes.map((bet) => (
-                    <tr key={bet.betId}>
-                      {Object.keys(bet).map((key) => (
+                  withdrawals.map((w, index) => (
+                    <tr key={index}>
+                      {Object.keys(w).map((key) => (
                         <td key={key} className="px-4 py-3">
-                          {key === "outcome"
-                            ? getOutcomeBadge(
-                                bet[key as keyof BetOutcomeFormData]
+                          {key === "status"
+                            ? getStatusBadge(
+                                w[key as keyof WithdrawalRequestFormData]
                               )
-                            : bet[key as keyof BetOutcomeFormData]}
+                            : w[key as keyof WithdrawalRequestFormData]}
                         </td>
                       ))}
                       <td className="px-4 py-3 text-right">
@@ -189,4 +209,4 @@ const BetOutcomeLog = () => {
   );
 };
 
-export default BetOutcomeLog;
+export default WithdrawalRequestLog;
