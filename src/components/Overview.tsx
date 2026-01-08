@@ -1,27 +1,8 @@
 import { useEffect, useState } from "react";
 import DashboardHeader from "@/components/DashboardHeader";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import {
-  FileText,
-  Smartphone,
-  CreditCard,
-  Wallet,
-  ArrowUpRight,
-  Sparkles,
-} from "lucide-react";
-import {
-  fetchStats,
-  fetchRecentActivity,
-  fetchUpcomingDeadlines,
-} from "@/services/api";
-
-/* ✅ DEFAULT STATS (ALWAYS RENDER) */
+import {Card,CardContent,CardHeader,CardTitle,CardDescription,} from "@/components/ui/card";
+import {FileText,Smartphone,CreditCard,Wallet,ArrowUpRight,Sparkles,} from "lucide-react";
+import { fetchStats, fetchRecentActivity, fetchUpcomingDeadlines,} from "@/services/api";
 const DEFAULT_STATS = [
   {
     title: "PRN Requests",
@@ -89,7 +70,6 @@ const Overview = () => {
         setDeadlines((await fetchUpcomingDeadlines()) ?? []);
       } catch (err) {
         console.error("Dashboard load error:", err);
-        // ✅ UI still renders
       } finally {
         setLoading(false);
       }

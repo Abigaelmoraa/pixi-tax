@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { CheckCircle, Clock, XCircle } from "lucide-react";
+import { CheckCircle, Clock, XCircle, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 
 interface PRNRequest {
   ref: string;
@@ -19,16 +20,32 @@ interface PRNRequest {
 const PRNRequests = () => {
   const [requests, setRequests] = useState<PRNRequest[]>([]);
   const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({ transactionDate: "", amount: "", taxType: "" });
+  const [formData, setFormData] = useState({
+    transactionDate: "",
+    amount: "",
+    taxType: "",
+  });
 
   const getStatusBadge = (status: string) => {
     switch (status?.toLowerCase()) {
       case "approved":
-        return <Badge className="bg-green-500 text-white"><CheckCircle className="w-3 h-3 mr-1" /> Approved</Badge>;
+        return (
+          <Badge className="bg-green-500 text-white flex items-center gap-1">
+            <CheckCircle className="w-3 h-3" /> Approved
+          </Badge>
+        );
       case "pending":
-        return <Badge className="bg-yellow-500 text-white"><Clock className="w-3 h-3 mr-1" /> Pending</Badge>;
+        return (
+          <Badge className="bg-yellow-500 text-white flex items-center gap-1">
+            <Clock className="w-3 h-3" /> Pending
+          </Badge>
+        );
       case "rejected":
-        return <Badge className="bg-red-500 text-white"><XCircle className="w-3 h-3 mr-1" /> Rejected</Badge>;
+        return (
+          <Badge className="bg-red-500 text-white flex items-center gap-1">
+            <XCircle className="w-3 h-3" /> Rejected
+          </Badge>
+        );
       default:
         return <Badge>{status}</Badge>;
     }
@@ -36,6 +53,7 @@ const PRNRequests = () => {
 
   const handleSubmitPRN = () => {
     if (!formData.taxType) return;
+
     const newRequest: PRNRequest = {
       ref: `PRN-${Date.now()}`,
       transactionDate: formData.transactionDate,
@@ -47,59 +65,94 @@ const PRNRequests = () => {
       trxCode: "N/A",
       status: "Pending",
     };
+
     setRequests([newRequest, ...requests]);
     setFormData({ transactionDate: "", amount: "", taxType: "" });
     setShowForm(false);
   };
 
-  return (
-    <div className="p-6 space-y-6 animate-fade-in">
-      <Card className="shadow-lg border-0">
-        {/* HEADER */}
-        <CardHeader className="border-b bg-blue-100 flex items-center">
-          <CardTitle className="text-blue-900 flex items-center gap-2">PRN Requests</CardTitle>
-          {!showForm && (
-            <Button
-              className="ml-auto bg-blue-500 text-white"
-              onClick={() => setShowForm(true)}
-            >
-              New PRN
+  /* ================= FULL SCREEN FORM ================= */
+  if (showForm) {
+    return (
+      <div className="fixed inset-0 bg-slate-100 z-50 p-6 overflow-y-auto">
+        <Card className="max-w-3xl mx-auto shadow-xl border-0">
+          <CardHeader className="border-b bg-blue-100 flex items-center justify-between">
+            <CardTitle className="text-blue-900">
+              New PRN Request
+            </CardTitle>
+            <Button variant="outline" onClick={() => setShowForm(false)}>
+              Cancel
             </Button>
-          )}
-        </CardHeader>
+          </CardHeader>
 
-        {/* FORM */}
-        {showForm && (
-          <CardContent className="grid grid-cols-1 gap-4 p-6 bg-blue-50 rounded-lg">
-            <input
-              className="input border-blue-300"
-              type="date"
-              value={formData.transactionDate}
-              onChange={(e) => setFormData({ ...formData, transactionDate: e.target.value })}
-              placeholder="Transaction Date"
-            />
-            <input
-              className="input border-blue-300"
-              type="number"
-              value={formData.amount}
-              onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-              placeholder="Amount"
-            />
-            <input
-              className="input border-blue-300"
-              type="text"
-              value={formData.taxType}
-              onChange={(e) => setFormData({ ...formData, taxType: e.target.value })}
-              placeholder="Tax Type"
-            />
-            <div className="flex gap-2 justify-end">
-              <Button variant="outline" onClick={() => setShowForm(false)}>Cancel</Button>
-              <Button onClick={handleSubmitPRN}>Save</Button>
+          <CardContent className="space-y-6 p-6">
+            <div className="space-y-2">
+              <Label>Transaction Date</Label>
+              <input
+                type="date"
+                className="input border-blue-300"
+                value={formData.transactionDate}
+                onChange={(e) =>
+                  setFormData({ ...formData, transactionDate: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Amount</Label>
+              <input
+                type="number"
+                className="input border-blue-300"
+                value={formData.amount}
+                onChange={(e) =>
+                  setFormData({ ...formData, amount: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Tax Type</Label>
+              <input
+                type="text"
+                className="input border-blue-300"
+                value={formData.taxType}
+                onChange={(e) =>
+                  setFormData({ ...formData, taxType: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 pt-4">
+              <Button variant="outline" onClick={() => setShowForm(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleSubmitPRN}>Submit PRN</Button>
             </div>
           </CardContent>
-        )}
+        </Card>
+      </div>
+    );
+  }
 
-        {/* TABLE */}
+  /* ================= MAIN VIEW ================= */
+  return (
+    <div className="p-4 space-y-4 animate-fade-in">
+      <Card className="shadow-lg border-0">
+        <CardHeader className="border-b bg-blue-100 flex items-center justify-between">
+          <CardTitle className="text-blue-900">
+            PRN Requests
+          </CardTitle>
+
+          <Button
+            className="bg-blue-500 text-white flex items-center gap-2"
+            onClick={() => setShowForm(true)}
+          >
+            <Plus className="w-4 h-4" />
+            New PRN
+          </Button>
+        </CardHeader>
+
+        {/* TABLE (only visible when form is NOT open) */}
         <CardContent className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-blue-50">
@@ -118,22 +171,38 @@ const PRNRequests = () => {
             <tbody className="divide-y">
               {requests.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="text-center py-6 text-muted-foreground">
+                  <td
+                    colSpan={9}
+                    className="text-center py-6 text-muted-foreground"
+                  >
                     No data available
                   </td>
                 </tr>
               ) : (
                 requests.map((req, index) => (
-                  <tr key={index} className="hover:bg-blue-50 transition-colors">
-                    <td className="px-4 py-2 font-mono text-blue-600">{req.ref}</td>
-                    <td className="px-4 py-2">{req.transactionDate}</td>
-                    <td className="px-4 py-2 font-semibold text-green-600">{req.amount}</td>
-                    <td className="px-4 py-2">{req.taxType}</td>
+                  <tr
+                    key={index}
+                    className="hover:bg-blue-50 transition-colors"
+                  >
+                    <td className="px-4 py-2 font-mono text-blue-600">
+                      {req.ref}
+                    </td>
+                    <td className="px-4 py-2">
+                      {req.transactionDate}
+                    </td>
+                    <td className="px-4 py-2 font-semibold text-green-600">
+                      {req.amount}
+                    </td>
+                    <td className="px-4 py-2">
+                      {req.taxType}
+                    </td>
                     <td className="px-4 py-2">{req.prn}</td>
                     <td className="px-4 py-2">{req.kra}</td>
                     <td className="px-4 py-2">{req.safaricom}</td>
                     <td className="px-4 py-2">{req.trxCode}</td>
-                    <td className="px-4 py-2 flex justify-end">{getStatusBadge(req.status)}</td>
+                    <td className="px-4 py-2 flex justify-end">
+                      {getStatusBadge(req.status)}
+                    </td>
                   </tr>
                 ))
               )}
