@@ -138,7 +138,7 @@ const PRNRequests = () => {
   return (
     <div className="p-4 space-y-4 animate-fade-in">
       <Card className="shadow-lg border-0">
-        <CardHeader className="border-b bg-blue-100 flex items-center justify-between">
+        <CardHeader className="border-b bg-blue-100 flex items-center justify-start">
           <CardTitle className="text-blue-900">
             PRN Requests
           </CardTitle>
