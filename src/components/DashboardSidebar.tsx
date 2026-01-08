@@ -26,7 +26,7 @@ const DashboardSidebar = () => {
     { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard", color: "text-blue-400" },
     { icon: FileText, label: "PRN Requests", path: "/dashboard/prn-requests", color: "text-purple-400" },
     { icon: CreditCard, label: "Payment Requests", path: "/dashboard/payment-requests", color: "text-green-400" },
-    { icon: Wallet, label: "Withdrawal Requests", path: "/dashboard/withdrawal-request", color: "text-red-400" },
+    { icon: Wallet, label: "Withdrawal Request", path: "/dashboard/withdrawal-request", color: "text-red-400" },
     { icon: Receipt, label: "Tax Payout Response", path: "/dashboard/tax-payout", color: "text-orange-400" },
     { icon: Smartphone, label: "STK Push Request", path: "/dashboard/stk-push", color: "text-pink-400" },
     { icon: Database, label: "Stake Data", path: "/dashboard/stake-data", color: "text-cyan-400" },
