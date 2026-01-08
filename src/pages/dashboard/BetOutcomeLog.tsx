@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import api from "@/services/api";
+import api from "@/services/api"; // <-- your axios instance
 import { Label } from "@/components/ui/label";
 
 interface BetOutcomeFormData {
@@ -34,25 +34,27 @@ const BetOutcomeLog = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Fetch Bet Outcomes from backend
+  const fetchOutcomes = async () => {
+    try {
+      setLoading(true);
+      const res = await api.get("/outcomeInfoLog"); // backend endpoint
+      setOutcomes(res.data);
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Failed to fetch bet outcomes");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchOutcomes = async () => {
-      try {
-        setLoading(true);
-        const res = await api.get("/bet-outcomes");
-        setOutcomes(res.data);
-      } catch (err: any) {
-        setError(err.response?.data?.message || "Failed to fetch bet outcomes");
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchOutcomes();
   }, []);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await api.post("/bet-outcomes", formData);
+      const res = await api.post("/outcomeInfoLog", formData); // backend endpoint
       setOutcomes([res.data, ...outcomes]);
       setShowForm(false);
       setFormData({
@@ -87,7 +89,6 @@ const BetOutcomeLog = () => {
     <div className="p-4">
       <Card className="border-0 shadow-lg">
 
-        {/* ================= HEADER ================= */}
         <CardHeader className="border-b bg-gradient-to-r from-yellow-200 to-amber-200 px-4 py-2">
           <div className="flex items-center w-full">
             <CardTitle className="flex items-center gap-2 text-yellow-900 text-lg font-semibold">
@@ -107,7 +108,7 @@ const BetOutcomeLog = () => {
           </div>
         </CardHeader>
 
-        {/* ================= FORM ================= */}
+        {/* FORM */}
         {showForm && (
           <CardContent className="space-y-6 p-6 bg-blue-50">
             <h2 className="text-lg font-semibold text-blue-900">New Outcome Info Log</h2>
@@ -137,7 +138,7 @@ const BetOutcomeLog = () => {
           </CardContent>
         )}
 
-        {/* ================= TABLE ================= */}
+        {/* TABLE */}
         {!showForm && (
           <CardContent className="overflow-x-auto p-0">
             <table className="w-max min-w-full table-auto">
@@ -186,7 +187,6 @@ const BetOutcomeLog = () => {
             </table>
           </CardContent>
         )}
-
       </Card>
     </div>
   );

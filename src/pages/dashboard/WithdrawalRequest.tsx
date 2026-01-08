@@ -6,15 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import axios from "axios";
 
-// ===================== Backend Connection =====================
 const api = axios.create({
-  baseURL: "https://your-api-domain.com/api", // <-- replace with your base URL
+  baseURL: "https://db.x1.pitch90agent.com", 
   headers: {
     "Content-Type": "application/json",
   },
 });
-
-// ===================== Types =====================
 interface WithdrawalRequestFormData {
   msisdn: string;
   amount: string;
@@ -28,7 +25,6 @@ interface WithdrawalRequestFormData {
   status: string;
 }
 
-// ===================== Component =====================
 const WithdrawalRequest = () => {
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState<WithdrawalRequestFormData>({
@@ -47,12 +43,11 @@ const WithdrawalRequest = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // ===================== Fetch withdrawals =====================
   useEffect(() => {
     const fetchWithdrawals = async () => {
       try {
         setLoading(true);
-        const res = await api.get("/withdrawalRequest"); // GET all withdrawals
+        const res = await api.get("/withdrawalRequest"); 
         setWithdrawals(res.data);
       } catch (err: any) {
         setError(err.response?.data?.message || "Failed to fetch withdrawals");
@@ -63,12 +58,11 @@ const WithdrawalRequest = () => {
 
     fetchWithdrawals();
   }, []);
-
-  // ===================== Save withdrawal =====================
+//save
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await api.post("/withdrawalRequest", formData); // POST new withdrawal
+      const res = await api.post("/withdrawalRequest", formData); 
       setWithdrawals([res.data, ...withdrawals]);
       setShowForm(false);
       setFormData({
@@ -101,7 +95,6 @@ const WithdrawalRequest = () => {
     }
   };
 
-  // ===================== Render =====================
   return (
     <div className="p-6">
       <Card className="border-0 shadow-lg">
