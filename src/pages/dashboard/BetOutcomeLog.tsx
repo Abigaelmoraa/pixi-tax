@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import api from "@/services/api";
 import { Label } from "@/components/ui/label";
 
-
 interface BetOutcomeFormData {
   betId: string;
   outcome: string;
@@ -31,12 +30,10 @@ const BetOutcomeLog = () => {
     walletbalanceoutcome: "",
     sentToKra: "",
   });
-
   const [outcomes, setOutcomes] = useState<BetOutcomeFormData[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  /* ================= FETCH DATA ================= */
   useEffect(() => {
     const fetchOutcomes = async () => {
       try {
@@ -52,7 +49,6 @@ const BetOutcomeLog = () => {
     fetchOutcomes();
   }, []);
 
-  /* ================= SAVE DATA ================= */
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -88,13 +84,13 @@ const BetOutcomeLog = () => {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-4">
       <Card className="border-0 shadow-lg">
 
         {/* ================= HEADER ================= */}
-        <CardHeader className="border-b bg-gradient-to-r from-yellow-200 to-amber-200">
+        <CardHeader className="border-b bg-gradient-to-r from-yellow-200 to-amber-200 px-4 py-2">
           <div className="flex items-center w-full">
-            <CardTitle className="flex items-center gap-2 text-yellow-900">
+            <CardTitle className="flex items-center gap-2 text-yellow-900 text-lg font-semibold">
               <ClipboardList className="w-5 h-5" />
               Bet Outcome Log
             </CardTitle>
@@ -112,48 +108,47 @@ const BetOutcomeLog = () => {
         </CardHeader>
 
         {/* ================= FORM ================= */}
-       {showForm && (
-  <CardContent className="space-y-6 p-6 bg-blue-50">
-    {/* Form Title */}
-    <h2 className="text-lg font-semibold text-blue-900">New Outcome Info Log</h2>
+        {showForm && (
+          <CardContent className="space-y-6 p-6 bg-blue-50">
+            <h2 className="text-lg font-semibold text-blue-900">New Outcome Info Log</h2>
 
-    <form onSubmit={handleSave} className="space-y-4">
-      {Object.keys(formData).map((key) => (
-        <div key={key} className="space-y-1">
-          <Label className="capitalize">{key.replace(/([A-Z])/g, ' $1')}</Label>
-          <Input
-            placeholder={`Enter ${key.replace(/([A-Z])/g, ' $1').toLowerCase()}`}
-            value={formData[key as keyof typeof formData]}
-            onChange={(e) =>
-              setFormData({ ...formData, [key]: e.target.value })
-            }
-            required
-          />
-        </div>
-      ))}
+            <form onSubmit={handleSave} className="space-y-4">
+              {Object.keys(formData).map((key) => (
+                <div key={key} className="space-y-1">
+                  <Label className="capitalize">{key.replace(/([A-Z])/g, ' $1')}</Label>
+                  <Input
+                    placeholder={`Enter ${key.replace(/([A-Z])/g, ' $1').toLowerCase()}`}
+                    value={formData[key as keyof typeof formData]}
+                    onChange={(e) =>
+                      setFormData({ ...formData, [key]: e.target.value })
+                    }
+                    required
+                  />
+                </div>
+              ))}
 
-      {/* Form Buttons */}
-      <div className="flex justify-end gap-2 pt-4">
-        <Button variant="outline" onClick={() => setShowForm(false)}>
-          Cancel
-        </Button>
-        <Button type="submit">Save</Button>
-      </div>
-    </form>
-  </CardContent>
-)}
-      
-          /* ================= TABLE ================= */
-          <CardContent className="p-0">
-            <table className="w-full">
+              <div className="flex justify-end gap-2 pt-4">
+                <Button variant="outline" onClick={() => setShowForm(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit">Save</Button>
+              </div>
+            </form>
+          </CardContent>
+        )}
+
+        {/* ================= TABLE ================= */}
+        {!showForm && (
+          <CardContent className="overflow-x-auto p-0">
+            <table className="w-max min-w-full table-auto">
               <thead className="bg-muted/50">
                 <tr>
                   {Object.keys(formData).map((key) => (
-                    <th key={key} className="px-4 py-3 text-left">
+                    <th key={key} className="px-4 py-3 text-left font-medium">
                       {key}
                     </th>
                   ))}
-                  <th className="px-4 py-3 text-right">Actions</th>
+                  <th className="px-4 py-3 text-right font-medium">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -175,9 +170,7 @@ const BetOutcomeLog = () => {
                       {Object.keys(bet).map((key) => (
                         <td key={key} className="px-4 py-3">
                           {key === "outcome"
-                            ? getOutcomeBadge(
-                                bet[key as keyof BetOutcomeFormData]
-                              )
+                            ? getOutcomeBadge(bet[key as keyof BetOutcomeFormData])
                             : bet[key as keyof BetOutcomeFormData]}
                         </td>
                       ))}
@@ -192,7 +185,8 @@ const BetOutcomeLog = () => {
               </tbody>
             </table>
           </CardContent>
-        
+        )}
+
       </Card>
     </div>
   );
