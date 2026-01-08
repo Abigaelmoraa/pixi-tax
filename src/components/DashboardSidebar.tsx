@@ -42,120 +42,121 @@ const DashboardSidebar = () => {
 
   return (
     <aside
+  className={cn(
+    "min-h-screen flex flex-col transition-all duration-300 border-r border-gray-200 shadow-xl",
+    collapsed ? "w-24 bg-gray-800" : "w-80 bg-gray-900"
+  )}
+>
+  {/* Logo */}
+  <div className="h-16 flex items-center justify-between px-5 border-b border-gray-700/50 relative">
+    {!collapsed ? (
+      <div className="flex items-center gap-3">
+        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
+          <Calculator className="w-6 h-6 text-white" />
+        </div>
+        <span className="text-2xl font-semibold text-white">
+          Pixi
+        </span>
+      </div>
+    ) : (
+      <div className="w-12 h-12 mx-auto bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
+        <Calculator className="w-6 h-6 text-white" />
+      </div>
+    )}
+
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={() => setCollapsed(!collapsed)}
       className={cn(
-        "min-h-screen bg-gradient-to-b from-sidebar via-sidebar to-slate-900 text-sidebar-foreground flex flex-col transition-all duration-300 border-r border-sidebar-border shadow-xl",
-        collapsed ? "w-24" : "w-80"
+        "hover:bg-gray-700/50",
+        collapsed &&
+          "absolute right-0 translate-x-1/2 bg-gray-800 border border-gray-700 rounded-full w-6 h-6"
       )}
     >
-      {/* Logo */}
-      <div className="h-16 flex items-center justify-between px-5 border-b border-sidebar-border/50 relative">
-        {!collapsed ? (
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
-              <Calculator className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-2xl font-semibold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              Pixi
-            </span>
-          </div>
-        ) : (
-          <div className="w-12 h-12 mx-auto bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
-            <Calculator className="w-6 h-6 text-white" />
-          </div>
-        )}
+      {collapsed ? (
+        <ChevronRight className="w-4 h-4 text-white" />
+      ) : (
+        <ChevronLeft className="w-4 h-4 text-white" />
+      )}
+    </Button>
+  </div>
 
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setCollapsed(!collapsed)}
+  {/* Navigation */}
+  <nav className="flex-1 px-4 py-6 overflow-y-auto">
+    {!collapsed && (
+      <p className="text-[11px] font-medium uppercase tracking-wider text-gray-400 px-3 mb-4">
+        Main Menu
+      </p>
+    )}
+
+    <div className="space-y-2">
+      {mainNavItems.map((item) => (
+        <NavLink
+          key={item.path}
+          to={item.path}
           className={cn(
-            "hover:bg-sidebar-accent/50",
-            collapsed &&
-              "absolute right-0 translate-x-1/2 bg-sidebar border border-sidebar-border rounded-full w-6 h-6"
+            "flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200",
+            isActive(item.path)
+              ? "bg-blue-600 text-white shadow-lg"
+              : "text-gray-300 hover:bg-gray-700 hover:text-white",
+            collapsed && "justify-center px-3 gap-0"
           )}
         >
-          {collapsed ? (
-            <ChevronRight className="w-4 h-4" />
-          ) : (
-            <ChevronLeft className="w-4 h-4" />
-          )}
-        </Button>
-      </div>
-
-      {/* Navigation */}
-      <nav className="flex-1 px-4 py-6 overflow-y-auto">
-        {!collapsed && (
-          <p className="text-[11px] font-medium uppercase tracking-wider text-sidebar-foreground/50 px-3 mb-4">
-            Main Menu
-          </p>
-        )}
-
-        <div className="space-y-2">
-          {mainNavItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={cn(
-                "flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200",
-                isActive(item.path)
-                  ? "bg-gradient-to-r from-blue-600/80 to-purple-600/80 text-white shadow-lg"
-                  : "text-sidebar-foreground/75 hover:bg-sidebar-accent/40 hover:text-sidebar-foreground",
-                collapsed && "justify-center px-3 gap-0"
-              )}
-            >
-              <item.icon
-                className={cn(
-                  "w-6 h-6",
-                  isActive(item.path) ? "text-white" : item.color
-                )}
-              />
-              {!collapsed && (
-                <span className="text-[16px] font-medium leading-none">
-                  {item.label}
-                </span>
-              )}
-            </NavLink>
-          ))}
-        </div>
-
-        {/* Settings */}
-        <div className="mt-10">
+          <item.icon
+            className={cn(
+              "w-6 h-6",
+              isActive(item.path) ? "text-white" : item.color
+            )}
+          />
           {!collapsed && (
-            <p className="text-[11px] font-medium uppercase tracking-wider text-sidebar-foreground/50 px-3 mb-4">
-              Settings
-            </p>
+            <span className="text-[16px] font-medium leading-none">
+              {item.label}
+            </span>
           )}
+        </NavLink>
+      ))}
+    </div>
 
-          <div className="space-y-2">
-            {secondaryNavItems.map((item) => (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                className={cn(
-                  "flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200",
-                  isActive(item.path)
-                    ? "bg-gradient-to-r from-blue-600/80 to-purple-600/80 text-white shadow-lg"
-                    : "text-sidebar-foreground/75 hover:bg-sidebar-accent/40 hover:text-sidebar-foreground",
-                  collapsed && "justify-center px-3 gap-0"
-                )}
-              >
-                <item.icon
-                  className={cn(
-                    "w-6 h-6",
-                    isActive(item.path) ? "text-white" : item.color
-                  )}
-                />
-                {!collapsed && (
-                  <span className="text-[16px] font-medium leading-none">
-                    {item.label}
-                  </span>
-                )}
-              </NavLink>
-            ))}
-          </div>
-        </div>
-      </nav>
-    </aside>
+    {/* Settings */}
+    <div className="mt-10">
+      {!collapsed && (
+        <p className="text-[11px] font-medium uppercase tracking-wider text-gray-400 px-3 mb-4">
+          Settings
+        </p>
+      )}
+
+      <div className="space-y-2">
+        {secondaryNavItems.map((item) => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            className={cn(
+              "flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200",
+              isActive(item.path)
+                ? "bg-blue-600 text-white shadow-lg"
+                : "text-gray-300 hover:bg-gray-700 hover:text-white",
+              collapsed && "justify-center px-3 gap-0"
+            )}
+          >
+            <item.icon
+              className={cn(
+                "w-6 h-6",
+                isActive(item.path) ? "text-white" : item.color
+              )}
+            />
+            {!collapsed && (
+              <span className="text-[16px] font-medium leading-none">
+                {item.label}
+              </span>
+            )}
+          </NavLink>
+        ))}
+      </div>
+    </div>
+  </nav>
+</aside>
+
   );
 };
 
