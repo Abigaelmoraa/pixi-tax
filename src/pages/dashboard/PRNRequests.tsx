@@ -21,55 +21,48 @@ interface PRNRequest {
 const PRNRequests = () => {
   const [showForm, setShowForm] = useState(false);
   const [requests, setRequests] = useState<PRNRequest[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     transactionDate: "",
     amount: "",
     taxType: "",
   });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
   // Fetch PRN requests from backend
-  useEffect(() => {
-    const loadPRNs = async () => {
+  const loadPRNRequests = async () => {
+    try {
       setLoading(true);
-      try {
-        const data = await fetchPRNRequests();
-        setRequests(data);
-      } catch (err: any) {
-        setError(err.response?.data?.message || "Failed to fetch PRN requests");
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadPRNs();
+      const data = await fetchPRNRequests();
+      setRequests(data);
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Failed to load PRN requests");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadPRNRequests();
   }, []);
 
+  // Handle submitting new PRN request
   const handleSave = async () => {
     if (!formData.transactionDate || !formData.amount || !formData.taxType) return;
-
-    const newPRN = {
-      transactionDate: formData.transactionDate,
-      amount: formData.amount,
-      taxType: formData.taxType,
-    };
-
     try {
-      const saved = await submitPRNRequest(newPRN);
-      // Add new request to the table
-      setRequests([saved, ...requests]);
+      const newPRN = await submitPRNRequest(formData);
+      setRequests([newPRN, ...requests]);
       setFormData({ transactionDate: "", amount: "", taxType: "" });
       setShowForm(false);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to save PRN request");
+      setError(err.response?.data?.message || "Failed to create PRN request");
     }
   };
 
   return (
     <div className="p-6">
       <Card className="border-0 shadow-lg">
-
-        {/* ================= HEADER ================= */}
+        {/* HEADER */}
         <CardHeader className="border-b bg-gradient-to-r from-blue-200 to-cyan-200 px-4 py-2">
           <div className="flex items-center w-full">
             <CardTitle className="flex items-center gap-2 text-blue-900 text-lg font-bold">
@@ -90,14 +83,12 @@ const PRNRequests = () => {
           </div>
         </CardHeader>
 
-        {/* ================= FORM ================= */}
-        {showForm && (
+        {/* FORM */}
+        {showForm ? (
           <CardContent className="space-y-6 p-6 bg-blue-50">
             <h2 className="text-lg font-semibold text-blue-900">
               New PRN Request
             </h2>
-
-            {error && <p className="text-red-500">{error}</p>}
 
             <div className="space-y-2">
               <Label>Transaction Date</Label>
@@ -145,42 +136,36 @@ const PRNRequests = () => {
               </Button>
               <Button onClick={handleSave}>Save</Button>
             </div>
-          </CardContent>
-        )}
 
-        {/* ================= TABLE ================= */}
-        {!showForm && (
+            {error && <p className="text-red-500">{error}</p>}
+          </CardContent>
+        ) : (
+          /* TABLE */
           <CardContent className="p-0 overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-blue-50">
-                <tr>
-                  <th className="px-4 py-3 text-left">#Ref</th>
-                  <th className="px-4 py-3 text-left">Trans Date</th>
-                  <th className="px-4 py-3 text-left">Amount</th>
-                  <th className="px-4 py-3 text-left">Tax Type</th>
-                  <th className="px-4 py-3 text-left">PRN</th>
-                  <th className="px-4 py-3 text-left">KRA</th>
-                  <th className="px-4 py-3 text-left">Safaricom</th>
-                  <th className="px-4 py-3 text-left">TRX CODE</th>
-                  <th className="px-4 py-3 text-left">Status</th>
-                  <th className="px-4 py-3 text-left">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading ? (
+            {loading ? (
+              <p className="p-6 text-center">Loading...</p>
+            ) : error ? (
+              <p className="p-6 text-center text-red-500">{error}</p>
+            ) : requests.length === 0 ? (
+              <p className="p-6 text-center">No PRN requests</p>
+            ) : (
+              <table className="w-full text-sm">
+                <thead className="bg-blue-50">
                   <tr>
-                    <td colSpan={10} className="text-center py-6">
-                      Loading...
-                    </td>
+                    <th className="px-4 py-3 text-left">#Ref</th>
+                    <th className="px-4 py-3 text-left">Trans Date</th>
+                    <th className="px-4 py-3 text-left">Amount</th>
+                    <th className="px-4 py-3 text-left">Tax Type</th>
+                    <th className="px-4 py-3 text-left">PRN</th>
+                    <th className="px-4 py-3 text-left">KRA</th>
+                    <th className="px-4 py-3 text-left">Safaricom</th>
+                    <th className="px-4 py-3 text-left">TRX CODE</th>
+                    <th className="px-4 py-3 text-left">Status</th>
+                    <th className="px-4 py-3 text-left">Action</th>
                   </tr>
-                ) : requests.length === 0 ? (
-                  <tr>
-                    <td colSpan={10} className="text-center py-6">
-                      No PRN requests
-                    </td>
-                  </tr>
-                ) : (
-                  requests.map((r, i) => (
+                </thead>
+                <tbody>
+                  {requests.map((r, i) => (
                     <tr key={i} className="hover:bg-blue-50 transition-colors">
                       <td className="px-4 py-3 font-mono text-blue-600">{r.ref}</td>
                       <td className="px-4 py-3">{r.transactionDate}</td>
@@ -199,10 +184,10 @@ const PRNRequests = () => {
                         </Button>
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </CardContent>
         )}
       </Card>
