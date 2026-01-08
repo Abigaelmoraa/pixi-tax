@@ -1,36 +1,54 @@
 import { useEffect, useState } from "react";
 import DashboardHeader from "@/components/DashboardHeader";
-import {Card,CardContent,CardHeader,CardTitle,CardDescription,} from "@/components/ui/card";
-import {FileText,Smartphone,CreditCard,Wallet,ArrowUpRight,Sparkles,} from "lucide-react";
-import { fetchStats, fetchRecentActivity,} from "@/services/api";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import {
+  FileText,
+  Smartphone,
+  CreditCard,
+  Wallet,
+  ArrowUpRight,
+  Sparkles,
+} from "lucide-react";
+import { fetchStats, fetchRecentActivity } from "@/services/api";
+
 const DEFAULT_STATS = [
   {
     title: "PRN Requests",
     value: 0,
     subtitle: "Total submitted",
     icon: FileText,
-    iconColor: "text-purple-600",
+    iconColor: "#9F7AEA", // purple
+    bgGradient: "from-purple-100 to-purple-50",
   },
   {
     title: "STK Push Requests",
     value: 0,
     subtitle: "Payment prompts",
     icon: Smartphone,
-    iconColor: "text-pink-600",
+    iconColor: "#F687B3", // pink
+    bgGradient: "from-pink-100 to-pink-50",
   },
   {
     title: "Payments Processed",
     value: 0,
     subtitle: "Successful payments",
     icon: CreditCard,
-    iconColor: "text-green-600",
+    iconColor: "#48BB78", // green
+    bgGradient: "from-green-100 to-green-50",
   },
   {
     title: "Tax Collected",
     value: "KES 0",
     subtitle: "Total tax amount",
     icon: Wallet,
-    iconColor: "text-yellow-700",
+    iconColor: "#ECC94B", // yellow
+    bgGradient: "from-yellow-100 to-yellow-50",
   },
 ];
 
@@ -44,7 +62,6 @@ const Overview = () => {
     const loadData = async () => {
       try {
         const statsData = await fetchStats();
-
         if (statsData) {
           setStats([
             {
@@ -65,7 +82,6 @@ const Overview = () => {
             },
           ]);
         }
-
         setRecentActivity((await fetchRecentActivity()) ?? []);
       } catch (err) {
         console.error("Dashboard load error:", err);
@@ -89,26 +105,23 @@ const Overview = () => {
         {stats.map((stat) => (
           <Card
             key={stat.title}
-            className="border-0 shadow-lg bg-white"
+            className={`border-0 shadow-lg bg-gradient-to-br ${stat.bgGradient}`}
           >
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
-                <div className={`p-2 rounded-xl ${stat.iconColor} bg-white`}>
-                  <stat.icon className="w-5 h-5" />
+                <div
+                  className="p-2 rounded-xl"
+                  style={{ backgroundColor: `${stat.iconColor}33` }} // subtle translucent icon bg
+                >
+                  <stat.icon className="w-5 h-5 text-white" />
                 </div>
                 <ArrowUpRight className="w-4 h-4 text-gray-400" />
               </div>
 
               <div className="mt-3">
-                <p className="text-xl font-bold text-gray-900">
-                  {stat.value}
-                </p>
-                <p className="text-sm font-medium text-gray-800">
-                  {stat.title}
-                </p>
-                <p className="text-xs text-gray-600">
-                  {stat.subtitle}
-                </p>
+                <p className="text-xl font-bold text-gray-900">{stat.value}</p>
+                <p className="text-sm font-medium text-gray-800">{stat.title}</p>
+                <p className="text-xs text-gray-600">{stat.subtitle}</p>
               </div>
             </CardContent>
           </Card>
