@@ -76,52 +76,45 @@ const PRNRequests = () => {
               New PRN Request
             </h2>
 
-      <div className="space-y-2">
-  <Label>Transaction Date</Label>
-  <input
-    type="date"
-    className="input border-blue-300"
-    value={formData.transactionDate}
-    onChange={(e) =>
-      setFormData({ ...formData, transactionDate: e.target.value })
-    }
-  />
-</div>
+            <div className="space-y-2">
+              <Label>Transaction Date</Label>
+              <input
+                type="date"
+                className="input border-blue-300"
+                value={formData.transactionDate}
+                onChange={(e) =>
+                  setFormData({ ...formData, transactionDate: e.target.value })
+                }
+              />
+            </div>
 
-<div className="space-y-2">
-  <Label>Amount</Label>
-  <input
-    type="number"
-    placeholder="Enter amount"
-    className="input border-blue-300"
-    value={formData.amount}
-    onChange={(e) =>
-      setFormData({ ...formData, amount: e.target.value })
-    }
-  />
-</div>
+            <div className="space-y-2">
+              <Label>Amount</Label>
+              <input
+                type="number"
+                placeholder="Enter amount"
+                className="input border-blue-300"
+                value={formData.amount}
+                onChange={(e) =>
+                  setFormData({ ...formData, amount: e.target.value })
+                }
+              />
+            </div>
 
-<div className="space-y-2">
-  <Label>Tax Type</Label>
-  <select
-    className={`input border-blue-300 text-gray-500`}
-    value={formData.taxType}
-    onChange={(e) =>
-      setFormData({ ...formData, taxType: e.target.value })
-    }
-  >
-    <option value="" disabled hidden>
-      Select tax type
-    </option>
-    <option value="Exercise (Deposits)" className="text-black">
-      Exercise (Deposits)
-    </option>
-    <option value="Withholdings (Withdrawals)" className="text-black">
-      Withholdings (Withdrawals)
-    </option>
-  </select>
-</div>
-
+            <div className="space-y-2">
+              <Label>Tax Type</Label>
+              <select
+                className="input border-blue-300"
+                value={formData.taxType}
+                onChange={(e) =>
+                  setFormData({ ...formData, taxType: e.target.value })
+                }
+              >
+                <option value="">Select tax type</option>
+                <option value="Exercise (Deposits)">Exercise (Deposits)</option>
+                <option value="Withholdings (Withdrawals)">Withholdings (Withdrawals)</option>
+              </select>
+            </div>
 
             <div className="flex justify-end gap-2 pt-4">
               <Button variant="outline" onClick={() => setShowForm(false)}>
