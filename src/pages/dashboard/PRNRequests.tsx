@@ -74,82 +74,92 @@ const PRNRequests = () => {
   return (
     <div className="p-4 space-y-4 animate-fade-in">
       <Card className="shadow-lg border-0">
-        {/* HEADER */}
-        <CardHeader className="border-b bg-blue-100 flex items-center justify-between">
-          <CardTitle className="text-blue-900">
-            PRN Requests
-          </CardTitle>
+       {/* HEADER */}
+<CardHeader className="border-b bg-blue-100 px-4 py-2 flex flex-row items-center justify-between">
+  <CardTitle className="text-blue-900 text-sm font-semibold">
+    PRN Requests
+  </CardTitle>
 
-          {!showForm && (
-            <Button
-              className="bg-blue-500 text-white flex items-center gap-2"
-              onClick={() => setShowForm(true)}
-            >
-              <Plus className="w-4 h-4" />
-              New PRN
-            </Button>
-          )}
-        </CardHeader>
+  {!showForm && (
+    <Button
+      size="sm"
+      className="bg-blue-500 text-white flex items-center gap-1 px-3 py-1.5"
+      onClick={() => setShowForm(true)}
+    >
+      <Plus className="w-4 h-4" />
+      New PRN
+    </Button>
+  )}
+</CardHeader>
+
 
         {/* FORM */}
-        {showForm && (
-          <CardContent className="p-6 space-y-6 bg-blue-50">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label>Transaction Date</Label>
-                <input
-                  type="date"
-                  className="input border-blue-300"
-                  value={formData.transactionDate}
-                  onChange={(e) =>
-                    setFormData({ ...formData, transactionDate: e.target.value })
-                  }
-                />
-              </div>
+{showForm && (
+  <>
+    <CardHeader className="border-b bg-blue-50">
+      <CardTitle className="text-blue-900">
+        New PRN Request
+      </CardTitle>
+    </CardHeader>
 
-              <div className="space-y-2">
-                <Label>Amount</Label>
-                <input
-                  type="number"
-                  placeholder="Enter amount"
-                  className="input border-blue-300"
-                  value={formData.amount}
-                  onChange={(e) =>
-                    setFormData({ ...formData, amount: e.target.value })
-                  }
-                />
-              </div>
+    <CardContent className="p-6 space-y-6 bg-blue-50">
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label>Transaction Date</Label>
+          <input
+            type="date"
+            className="input border-blue-300"
+            value={formData.transactionDate}
+            onChange={(e) =>
+              setFormData({ ...formData, transactionDate: e.target.value })
+            }
+          />
+        </div>
 
-              <div className="space-y-2">
-                <Label>Tax Type</Label>
-                <select
-                  className="input border-blue-300"
-                  value={formData.taxType}
-                  onChange={(e) =>
-                    setFormData({ ...formData, taxType: e.target.value })
-                  }
-                >
-                  <option value="">Select tax type</option>
-                  <option value="Exercise (Deposits)">
-                    Exercise (Deposits)
-                  </option>
-                  <option value="Withholdings (Withdrawals)">
-                    Withholdings (Withdrawals)
-                  </option>
-                </select>
-              </div>
-            </div>
+        <div className="space-y-2">
+          <Label>Amount</Label>
+          <input
+            type="number"
+            placeholder="Enter amount"
+            className="input border-blue-300"
+            value={formData.amount}
+            onChange={(e) =>
+              setFormData({ ...formData, amount: e.target.value })
+            }
+          />
+        </div>
 
-            <div className="flex justify-end gap-3 pt-4">
-              <Button variant="outline" onClick={() => setShowForm(false)}>
-                Cancel
-              </Button>
-              <Button onClick={handleSubmitPRN}>
-                Save PRN
-              </Button>
-            </div>
-          </CardContent>
-        )}
+        <div className="space-y-2">
+          <Label>Tax Type</Label>
+          <select
+            className="input border-blue-300"
+            value={formData.taxType}
+            onChange={(e) =>
+              setFormData({ ...formData, taxType: e.target.value })
+            }
+          >
+            <option value="">Select tax type</option>
+            <option value="Exercise (Deposits)">
+              Exercise (Deposits)
+            </option>
+            <option value="Withholdings (Withdrawals)">
+              Withholdings (Withdrawals)
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div className="flex justify-end gap-3 pt-4">
+        <Button variant="outline" onClick={() => setShowForm(false)}>
+          Cancel
+        </Button>
+        <Button onClick={handleSubmitPRN}>
+          Save
+        </Button>
+      </div>
+    </CardContent>
+  </>
+)}
 
         {/* TABLE (hidden when form open) */}
         {!showForm && (
