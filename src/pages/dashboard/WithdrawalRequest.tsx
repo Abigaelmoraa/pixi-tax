@@ -4,8 +4,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import api from "@/services/api";
+import axios from "axios";
 
+// ===================== Backend Connection =====================
+const api = axios.create({
+  baseURL: "https://your-api-domain.com/api", // <-- replace with your base URL
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// ===================== Types =====================
 interface WithdrawalRequestFormData {
   msisdn: string;
   amount: string;
@@ -19,9 +28,9 @@ interface WithdrawalRequestFormData {
   status: string;
 }
 
+// ===================== Component =====================
 const WithdrawalRequest = () => {
   const [showForm, setShowForm] = useState(false);
-
   const [formData, setFormData] = useState<WithdrawalRequestFormData>({
     msisdn: "",
     amount: "",
@@ -34,23 +43,19 @@ const WithdrawalRequest = () => {
     apiResponse: "",
     status: "PENDING",
   });
-
-  const [withdrawals, setWithdrawals] = useState<WithdrawalRequestFormData[]>(
-    []
-  );
+  const [withdrawals, setWithdrawals] = useState<WithdrawalRequestFormData[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-//fetch
+
+  // ===================== Fetch withdrawals =====================
   useEffect(() => {
     const fetchWithdrawals = async () => {
       try {
         setLoading(true);
-        const res = await api.get("/withdrawalRequest");
+        const res = await api.get("/withdrawalRequest"); // GET all withdrawals
         setWithdrawals(res.data);
       } catch (err: any) {
-        setError(
-          err.response?.data?.message || "Failed to fetch withdrawals"
-        );
+        setError(err.response?.data?.message || "Failed to fetch withdrawals");
       } finally {
         setLoading(false);
       }
@@ -58,11 +63,12 @@ const WithdrawalRequest = () => {
 
     fetchWithdrawals();
   }, []);
-//save data
+
+  // ===================== Save withdrawal =====================
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await api.post("/withdrawalRequest", formData);
+      const res = await api.post("/withdrawalRequest", formData); // POST new withdrawal
       setWithdrawals([res.data, ...withdrawals]);
       setShowForm(false);
       setFormData({
@@ -78,9 +84,7 @@ const WithdrawalRequest = () => {
         status: "PENDING",
       });
     } catch (err: any) {
-      setError(
-        err.response?.data?.message || "Failed to save withdrawal request"
-      );
+      setError(err.response?.data?.message || "Failed to save withdrawal request");
     }
   };
 
@@ -97,10 +101,12 @@ const WithdrawalRequest = () => {
     }
   };
 
+  // ===================== Render =====================
   return (
     <div className="p-6">
       <Card className="border-0 shadow-lg">
 
+        {/* Header */}
         <CardHeader className="border-b bg-gradient-to-r from-blue-200 to-cyan-200">
           <div className="flex items-center w-full">
             <CardTitle className="flex items-center gap-2 text-blue-900">
@@ -120,92 +126,95 @@ const WithdrawalRequest = () => {
           </div>
         </CardHeader>
 
-      {/* ================= FORM ================= */}
-{showForm ? (
-  <CardContent>
-    <form onSubmit={handleSave} className="grid grid-cols-1 gap-4">
-      {Object.keys(formData).map((key) => (
-        <div key={key} className="space-y-1">
-          {/* Convert key to a readable title */}
-          <label className="block text-sm font-medium text-gray-700">
-            {key
-              .replace(/([A-Z])/g, " $1") // Add space before capital letters
-              .replace(/^./, (str) => str.toUpperCase()) // Capitalize first letter
-            }
-          </label>
-          <Input
-            placeholder={key}
-            value={formData[key as keyof WithdrawalRequestFormData]}
-            onChange={(e) =>
-              setFormData({ ...formData, [key]: e.target.value })
-            }
-            required={key !== "apiResponse"}
-          />
-        </div>
-      ))}
+        {/* Form */}
+        {showForm && (
+          <CardContent className="bg-blue-50 p-6 space-y-6">
+            <h2 className="text-lg font-semibold text-blue-900">New Withdrawal Request</h2>
+            <form onSubmit={handleSave} className="grid grid-cols-1 gap-4">
+              {Object.keys(formData).map((key) => (
+                <div key={key} className="space-y-1">
+                  <label className="block text-sm font-medium text-gray-700">
+                    {key
+                      .replace(/([A-Z])/g, " $1")
+                      .replace(/^./, (str) => str.toUpperCase())}
+                  </label>
+                  <Input
+                    placeholder={`Enter ${key.replace(/([A-Z])/g, " $1").toLowerCase()}`}
+                    value={formData[key as keyof WithdrawalRequestFormData]}
+                    onChange={(e) =>
+                      setFormData({ ...formData, [key]: e.target.value })
+                    }
+                    required={key !== "apiResponse"}
+                  />
+                </div>
+              ))}
 
-      <div className="flex justify-end gap-2 pt-4">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => setShowForm(false)}
-        >
-          Cancel
-        </Button>
-        <Button type="submit">Save</Button>
-      </div>
-    </form>
-
+              <div className="flex justify-end gap-2 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowForm(false)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit">Save</Button>
+              </div>
+            </form>
           </CardContent>
-        ) : (
-          <CardContent className="p-0">
-            <table className="w-full">
-              <thead className="bg-muted/50">
-                <tr>
-                  {Object.keys(formData).map((key) => (
-                    <th key={key} className="px-4 py-3 text-left">
-                      {key}
-                    </th>
-                  ))}
-                  <th className="px-4 py-3 text-right">Actions</th>
-                </tr>
-              </thead>
+        )}
 
-              <tbody>
-                {loading ? (
+        {/* Table */}
+        {!showForm && (
+          <CardContent className="p-0">
+            <div className="overflow-x-auto w-full">
+              <table className="w-full min-w-[1000px]">
+                <thead className="bg-muted/50">
                   <tr>
-                    <td colSpan={11} className="text-center py-6">
-                      Loading...
-                    </td>
+                    {Object.keys(formData).map((key) => (
+                      <th key={key} className="px-4 py-3 text-left">
+                        {key}
+                      </th>
+                    ))}
+                    <th className="px-4 py-3 text-right">Actions</th>
                   </tr>
-                ) : withdrawals.length === 0 ? (
-                  <tr>
-                    <td colSpan={11} className="text-center py-6">
-                      No withdrawal requests
-                    </td>
-                  </tr>
-                ) : (
-                  withdrawals.map((w, index) => (
-                    <tr key={index}>
-                      {Object.keys(w).map((key) => (
-                        <td key={key} className="px-4 py-3">
-                          {key === "status"
-                            ? getStatusBadge(
-                                w[key as keyof WithdrawalRequestFormData]
-                              )
-                            : w[key as keyof WithdrawalRequestFormData]}
-                        </td>
-                      ))}
-                      <td className="px-4 py-3 text-right">
-                        <Button variant="ghost" size="icon">
-                          <Eye className="w-4 h-4" />
-                        </Button>
+                </thead>
+
+                <tbody>
+                  {loading ? (
+                    <tr>
+                      <td colSpan={11} className="text-center py-6">
+                        Loading...
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ) : withdrawals.length === 0 ? (
+                    <tr>
+                      <td colSpan={11} className="text-center py-6">
+                        No withdrawal requests
+                      </td>
+                    </tr>
+                  ) : (
+                    withdrawals.map((w, index) => (
+                      <tr key={index}>
+                        {Object.keys(w).map((key) => (
+                          <td key={key} className="px-4 py-3">
+                            {key === "status"
+                              ? getStatusBadge(
+                                  w[key as keyof WithdrawalRequestFormData]
+                                )
+                              : w[key as keyof WithdrawalRequestFormData]}
+                          </td>
+                        ))}
+                        <td className="px-4 py-3 text-right">
+                          <Button variant="ghost" size="icon">
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </CardContent>
         )}
       </Card>
