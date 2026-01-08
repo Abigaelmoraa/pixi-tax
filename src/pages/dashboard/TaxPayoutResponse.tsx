@@ -89,7 +89,7 @@ const TaxPayoutResponse = () => {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search by ref, transaction, or bill"
+                  placeholder="Search "
                   className="pl-9 w-64"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}

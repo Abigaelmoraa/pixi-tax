@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import api from "@/services/api";
+import { Label } from "@/components/ui/label";
+
 
 interface BetOutcomeFormData {
   betId: string;
@@ -110,30 +112,37 @@ const BetOutcomeLog = () => {
         </CardHeader>
 
         {/* ================= FORM ================= */}
-        {showForm ? (
-          <CardContent>
-            <form onSubmit={handleSave} className="grid grid-cols-2 gap-4">
-              {Object.keys(formData).map((key) => (
-                <Input
-                  key={key}
-                  placeholder={key}
-                  value={formData[key as keyof BetOutcomeFormData]}
-                  onChange={(e) =>
-                    setFormData({ ...formData, [key]: e.target.value })
-                  }
-                  required
-                />
-              ))}
+       {showForm && (
+  <CardContent className="space-y-6 p-6 bg-blue-50">
+    {/* Form Title */}
+    <h2 className="text-lg font-semibold text-blue-900">New Outcome Info Log</h2>
 
-              <div className="col-span-2 flex justify-end gap-2 pt-4">
-                <Button variant="outline" onClick={() => setShowForm(false)}>
-                  Cancel
-                </Button>
-                <Button type="submit">Save</Button>
-              </div>
-            </form>
-          </CardContent>
-        ) : (
+    <form onSubmit={handleSave} className="space-y-4">
+      {Object.keys(formData).map((key) => (
+        <div key={key} className="space-y-1">
+          <Label className="capitalize">{key.replace(/([A-Z])/g, ' $1')}</Label>
+          <Input
+            placeholder={`Enter ${key.replace(/([A-Z])/g, ' $1').toLowerCase()}`}
+            value={formData[key as keyof typeof formData]}
+            onChange={(e) =>
+              setFormData({ ...formData, [key]: e.target.value })
+            }
+            required
+          />
+        </div>
+      ))}
+
+      {/* Form Buttons */}
+      <div className="flex justify-end gap-2 pt-4">
+        <Button variant="outline" onClick={() => setShowForm(false)}>
+          Cancel
+        </Button>
+        <Button type="submit">Save</Button>
+      </div>
+    </form>
+  </CardContent>
+)}
+      
           /* ================= TABLE ================= */
           <CardContent className="p-0">
             <table className="w-full">
@@ -183,7 +192,7 @@ const BetOutcomeLog = () => {
               </tbody>
             </table>
           </CardContent>
-        )}
+        
       </Card>
     </div>
   );

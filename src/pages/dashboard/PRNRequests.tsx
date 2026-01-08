@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FileText, Plus } from "lucide-react";
+import { FileText, Plus, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +10,10 @@ interface PRNRequest {
   transactionDate: string;
   amount: string;
   taxType: string;
+  prn: string;
+  kra: string;
+  safaricom: string;
+  trxCode: string;
   status: string;
 }
 
@@ -28,6 +32,10 @@ const PRNRequests = () => {
       transactionDate: formData.transactionDate,
       amount: formData.amount,
       taxType: formData.taxType,
+      prn: "N/A",
+      kra: "N/A",
+      safaricom: "N/A",
+      trxCode: "N/A",
       status: "Pending",
     };
 
@@ -43,18 +51,18 @@ const PRNRequests = () => {
         {/* ================= HEADER ================= */}
         <CardHeader className="border-b bg-gradient-to-r from-blue-200 to-cyan-200 px-4 py-2">
           <div className="flex items-center w-full">
-            <CardTitle className="flex items-center gap-2 text-blue-900 text-sm font-semibold">
-              <FileText className="w-4 h-4" />
+            <CardTitle className="flex items-center gap-2 text-blue-900 text-lg font-bold">
+              <FileText className="w-5 h-5" />
               PRN Requests
             </CardTitle>
 
             {!showForm && (
               <Button
                 size="sm"
-                className="ml-auto bg-gradient-to-r from-blue-500 to-cyan-500 text-white"
+                className="ml-auto bg-gradient-to-r from-blue-500 to-cyan-500 text-white flex items-center gap-1"
                 onClick={() => setShowForm(true)}
               >
-                <Plus className="w-4 h-4 mr-1" />
+                <Plus className="w-4 h-4" />
                 New
               </Button>
             )}
@@ -64,6 +72,10 @@ const PRNRequests = () => {
         {/* ================= FORM ================= */}
         {showForm ? (
           <CardContent className="space-y-6 p-6 bg-blue-50">
+            <h2 className="text-lg font-semibold text-blue-900">
+              New PRN Request
+            </h2>
+
             <div className="space-y-2">
               <Label>Transaction Date</Label>
               <input
@@ -89,7 +101,7 @@ const PRNRequests = () => {
               />
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-4">
               <Label>Tax Type</Label>
               <select
                 className="input border-blue-300"
@@ -99,12 +111,8 @@ const PRNRequests = () => {
                 }
               >
                 <option value="">Select tax type</option>
-                <option value="Exercise (Deposits)">
-                  Exercise (Deposits)
-                </option>
-                <option value="Withholdings (Withdrawals)">
-                  Withholdings (Withdrawals)
-                </option>
+                <option value="Exercise (Deposits)">Exercise (Deposits)</option>
+                <option value="Withholdings (Withdrawals)">Withholdings (Withdrawals)</option>
               </select>
             </div>
 
@@ -117,39 +125,47 @@ const PRNRequests = () => {
           </CardContent>
         ) : (
           /* ================= TABLE ================= */
-          <CardContent className="p-0">
-            <table className="w-full">
-              <thead className="bg-muted/50">
+          <CardContent className="p-0 overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-blue-50">
                 <tr>
-                  <th className="px-4 py-3 text-left">PRN</th>
-                  <th className="px-4 py-3 text-left">Date</th>
+                  <th className="px-4 py-3 text-left">#Ref</th>
+                  <th className="px-4 py-3 text-left">Trans Date</th>
                   <th className="px-4 py-3 text-left">Amount</th>
                   <th className="px-4 py-3 text-left">Tax Type</th>
+                  <th className="px-4 py-3 text-left">PRN</th>
+                  <th className="px-4 py-3 text-left">KRA</th>
+                  <th className="px-4 py-3 text-left">Safaricom</th>
+                  <th className="px-4 py-3 text-left">TRX CODE</th>
                   <th className="px-4 py-3 text-left">Status</th>
+                  <th className="px-4 py-3 text-left">Action</th>
                 </tr>
               </thead>
               <tbody>
                 {requests.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="text-center py-6">
+                    <td colSpan={10} className="text-center py-6">
                       No PRN requests
                     </td>
                   </tr>
                 ) : (
                   requests.map((r, i) => (
-                    <tr key={i}>
-                      <td className="px-4 py-3 font-mono text-blue-600">
-                        {r.ref}
-                      </td>
+                    <tr key={i} className="hover:bg-blue-50 transition-colors">
+                      <td className="px-4 py-3 font-mono text-blue-600">{r.ref}</td>
                       <td className="px-4 py-3">{r.transactionDate}</td>
-                      <td className="px-4 py-3 font-semibold text-green-600">
-                        {r.amount}
-                      </td>
+                      <td className="px-4 py-3 font-semibold text-green-600">{r.amount}</td>
                       <td className="px-4 py-3">{r.taxType}</td>
+                      <td className="px-4 py-3">{r.prn}</td>
+                      <td className="px-4 py-3">{r.kra}</td>
+                      <td className="px-4 py-3">{r.safaricom}</td>
+                      <td className="px-4 py-3">{r.trxCode}</td>
                       <td className="px-4 py-3">
-                        <Badge className="bg-yellow-500 text-white">
-                          Pending
-                        </Badge>
+                        <Badge className="bg-yellow-500 text-white">{r.status}</Badge>
+                      </td>
+                      <td className="px-4 py-3">
+                        <Button variant="ghost" size="icon">
+                          <Eye className="w-4 h-4" />
+                        </Button>
                       </td>
                     </tr>
                   ))
