@@ -1,20 +1,29 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
-import {Card,CardContent,CardHeader,CardTitle,} from "@/components/ui/card";
+import { Wallet, Plus, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {Table,TableBody,TableCell,TableHead,TableHeader, TableRow,} from "@/components/ui/table";
+import api from "@/services/api";
 
-const API_BASE = "https://db.x1.pitch90agent.com/api";
-const ENDPOINT = `${API_BASE}/withdrawalRequest`;
+/* ================= TYPES ================= */
+interface WithdrawalRequestFormData {
+  msisdn: string;
+  amount: string;
+  charges: string;
+  netPayout: string;
+  sourceIp: string;
+  transactionId: string;
+  approved: string;
+  sentTo: string;
+  apiResponse: string;
+  status: string;
+}
 
-export default function WithdrawalRequest() {
-  const [requests, setRequests] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+const WithdrawalRequestLog = () => {
   const [showForm, setShowForm] = useState(false);
 
-  const [form, setForm] = useState({
+  const [formData, setFormData] = useState<WithdrawalRequestFormData>({
     msisdn: "",
     amount: "",
     charges: "",
@@ -27,40 +36,39 @@ export default function WithdrawalRequest() {
     status: "PENDING",
   });
 
-  // 🔹 Fetch withdrawals (if GET exists)
+  const [withdrawals, setWithdrawals] = useState<WithdrawalRequestFormData[]>(
+    []
+  );
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  /* ================= FETCH DATA ================= */
   useEffect(() => {
+    const fetchWithdrawals = async () => {
+      try {
+        setLoading(true);
+        const res = await api.get("/withdrawalRequest");
+        setWithdrawals(res.data);
+      } catch (err: any) {
+        setError(
+          err.response?.data?.message || "Failed to fetch withdrawals"
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchWithdrawals();
   }, []);
 
-  const fetchWithdrawals = async () => {
+  /* ================= SAVE DATA ================= */
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      setLoading(true);
-      setError("");
-
-      const res = await axios.get(ENDPOINT);
-      setRequests(res.data || []);
-    } catch (err: any) {
-      console.warn("GET withdrawals not available");
-      setRequests([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSave = async () => {
-    if (!form.msisdn || !form.amount) {
-      alert("MSISDN and Amount are required");
-      return;
-    }
-
-    try {
-      await axios.post(ENDPOINT, form);
+      const res = await api.post("/withdrawalRequest", formData);
+      setWithdrawals([res.data, ...withdrawals]);
       setShowForm(false);
-      setForm({
+      setFormData({
         msisdn: "",
         amount: "",
         charges: "",
@@ -72,108 +80,133 @@ export default function WithdrawalRequest() {
         apiResponse: "",
         status: "PENDING",
       });
-      fetchWithdrawals();
     } catch (err: any) {
-      alert(err.message || "Failed to create withdrawal");
+      setError(
+        err.response?.data?.message || "Failed to save withdrawal request"
+      );
     }
   };
 
-  const statusBadge = (status: string) => {
-    if (status === "APPROVED")
-      return <Badge className="bg-green-600">Approved</Badge>;
-    if (status === "SENT")
-      return <Badge className="bg-blue-600">Sent</Badge>;
-    return <Badge variant="secondary">Pending</Badge>;
+  const getStatusBadge = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "approved":
+        return <Badge className="bg-green-500 text-white">Approved</Badge>;
+      case "sent":
+        return <Badge className="bg-blue-500 text-white">Sent</Badge>;
+      case "pending":
+        return <Badge className="bg-yellow-500 text-white">Pending</Badge>;
+      default:
+        return <Badge>{status}</Badge>;
+    }
   };
 
-  // ---------- FORM ----------
-  if (showForm) {
-    return (
-      <div className="p-6">
-        <Card className="max-w-2xl mx-auto rounded-2xl">
-          <CardHeader className="flex justify-between items-center">
-            <CardTitle>New Withdrawal Request</CardTitle>
-            <Button variant="outline" onClick={() => setShowForm(false)}>
-              Back
-            </Button>
-          </CardHeader>
-
-          <CardContent className="grid gap-4">
-            {Object.keys(form).map(
-              (key) =>
-                key !== "status" && (
-                  <input
-                    key={key}
-                    className="input"
-                    name={key}
-                    placeholder={key}
-                    value={(form as any)[key]}
-                    onChange={handleChange}
-                  />
-                )
-            )}
-          </CardContent>
-
-          <div className="flex justify-end gap-2 p-6">
-            <Button variant="outline" onClick={() => setShowForm(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleSave}>Save</Button>
-          </div>
-        </Card>
-      </div>
-    );
-  }
-
-  // ---------- TABLE ----------
   return (
     <div className="p-6">
-      <Card className="rounded-2xl">
-        <CardHeader className="flex justify-between items-center">
-          <CardTitle>Withdrawal Requests</CardTitle>
-          <Button onClick={() => setShowForm(true)}>New Withdrawal</Button>
+      <Card className="border-0 shadow-lg">
+
+        {/* ================= HEADER ================= */}
+        <CardHeader className="border-b bg-gradient-to-r from-blue-200 to-cyan-200">
+          <div className="flex items-center w-full">
+            <CardTitle className="flex items-center gap-2 text-blue-900">
+              <Wallet className="w-5 h-5" />
+              Withdrawal Requests
+            </CardTitle>
+
+            {!showForm && (
+              <Button
+                className="ml-auto bg-gradient-to-r from-blue-500 to-cyan-500 text-white"
+                onClick={() => setShowForm(true)}
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                New
+              </Button>
+            )}
+          </div>
         </CardHeader>
 
-        <CardContent>
-          {loading ? (
-            <div className="text-center py-10">Loading...</div>
-          ) : error ? (
-            <div className="text-center text-red-500 py-10">{error}</div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Charges</TableHead>
-                  <TableHead>Net</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Transaction</TableHead>
-                </TableRow>
-              </TableHeader>
+        {/* ================= FORM ================= */}
+        {showForm ? (
+          <CardContent>
+            <form onSubmit={handleSave} className="grid grid-cols-2 gap-4">
+              {Object.keys(formData).map((key) => (
+                <Input
+                  key={key}
+                  placeholder={key}
+                  value={formData[key as keyof WithdrawalRequestFormData]}
+                  onChange={(e) =>
+                    setFormData({ ...formData, [key]: e.target.value })
+                  }
+                  required={key !== "apiResponse"}
+                />
+              ))}
 
-              <TableBody>
-                {requests.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center">
-                      No withdrawals
-                    </TableCell>
-                  </TableRow>
+              <div className="col-span-2 flex justify-end gap-2 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowForm(false)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit">Save</Button>
+              </div>
+            </form>
+          </CardContent>
+        ) : (
+          /* ================= TABLE ================= */
+          <CardContent className="p-0">
+            <table className="w-full">
+              <thead className="bg-muted/50">
+                <tr>
+                  {Object.keys(formData).map((key) => (
+                    <th key={key} className="px-4 py-3 text-left">
+                      {key}
+                    </th>
+                  ))}
+                  <th className="px-4 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td colSpan={11} className="text-center py-6">
+                      Loading...
+                    </td>
+                  </tr>
+                ) : withdrawals.length === 0 ? (
+                  <tr>
+                    <td colSpan={11} className="text-center py-6">
+                      No withdrawal requests
+                    </td>
+                  </tr>
+                ) : (
+                  withdrawals.map((w, index) => (
+                    <tr key={index}>
+                      {Object.keys(w).map((key) => (
+                        <td key={key} className="px-4 py-3">
+                          {key === "status"
+                            ? getStatusBadge(
+                                w[key as keyof WithdrawalRequestFormData]
+                              )
+                            : w[key as keyof WithdrawalRequestFormData]}
+                        </td>
+                      ))}
+                      <td className="px-4 py-3 text-right">
+                        <Button variant="ghost" size="icon">
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
                 )}
-
-                {requests.map((r, i) => (
-                  <TableRow key={i}>
-                    <TableCell>{r.amount}</TableCell>
-                    <TableCell>{r.charges}</TableCell>
-                    <TableCell>{r.netPayout}</TableCell>
-                    <TableCell>{statusBadge(r.status)}</TableCell>
-                    <TableCell>{r.transactionId}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
+              </tbody>
+            </table>
+          </CardContent>
+        )}
       </Card>
     </div>
   );
 };
+
+export default WithdrawalRequestLog;
