@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import api from "@/services/api";
 
-/* ================= TYPES ================= */
 interface WithdrawalRequestFormData {
   msisdn: string;
   amount: string;
@@ -20,7 +19,7 @@ interface WithdrawalRequestFormData {
   status: string;
 }
 
-const WithdrawalRequestLog = () => {
+const WithdrawalRequest = () => {
   const [showForm, setShowForm] = useState(false);
 
   const [formData, setFormData] = useState<WithdrawalRequestFormData>({
@@ -41,8 +40,7 @@ const WithdrawalRequestLog = () => {
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  /* ================= FETCH DATA ================= */
+//fetch
   useEffect(() => {
     const fetchWithdrawals = async () => {
       try {
@@ -60,8 +58,7 @@ const WithdrawalRequestLog = () => {
 
     fetchWithdrawals();
   }, []);
-
-  /* ================= SAVE DATA ================= */
+//save data
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -104,7 +101,6 @@ const WithdrawalRequestLog = () => {
     <div className="p-6">
       <Card className="border-0 shadow-lg">
 
-        {/* ================= HEADER ================= */}
         <CardHeader className="border-b bg-gradient-to-r from-blue-200 to-cyan-200">
           <div className="flex items-center w-full">
             <CardTitle className="flex items-center gap-2 text-blue-900">
@@ -124,36 +120,44 @@ const WithdrawalRequestLog = () => {
           </div>
         </CardHeader>
 
-        {/* ================= FORM ================= */}
-        {showForm ? (
-          <CardContent>
-            <form onSubmit={handleSave} className="grid grid-cols-2 gap-4">
-              {Object.keys(formData).map((key) => (
-                <Input
-                  key={key}
-                  placeholder={key}
-                  value={formData[key as keyof WithdrawalRequestFormData]}
-                  onChange={(e) =>
-                    setFormData({ ...formData, [key]: e.target.value })
-                  }
-                  required={key !== "apiResponse"}
-                />
-              ))}
+      {/* ================= FORM ================= */}
+{showForm ? (
+  <CardContent>
+    <form onSubmit={handleSave} className="grid grid-cols-1 gap-4">
+      {Object.keys(formData).map((key) => (
+        <div key={key} className="space-y-1">
+          {/* Convert key to a readable title */}
+          <label className="block text-sm font-medium text-gray-700">
+            {key
+              .replace(/([A-Z])/g, " $1") // Add space before capital letters
+              .replace(/^./, (str) => str.toUpperCase()) // Capitalize first letter
+            }
+          </label>
+          <Input
+            placeholder={key}
+            value={formData[key as keyof WithdrawalRequestFormData]}
+            onChange={(e) =>
+              setFormData({ ...formData, [key]: e.target.value })
+            }
+            required={key !== "apiResponse"}
+          />
+        </div>
+      ))}
 
-              <div className="col-span-2 flex justify-end gap-2 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setShowForm(false)}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit">Save</Button>
-              </div>
-            </form>
+      <div className="flex justify-end gap-2 pt-4">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => setShowForm(false)}
+        >
+          Cancel
+        </Button>
+        <Button type="submit">Save</Button>
+      </div>
+    </form>
+
           </CardContent>
         ) : (
-          /* ================= TABLE ================= */
           <CardContent className="p-0">
             <table className="w-full">
               <thead className="bg-muted/50">
@@ -209,4 +213,4 @@ const WithdrawalRequestLog = () => {
   );
 };
 
-export default WithdrawalRequestLog;
+export default WithdrawalRequest;

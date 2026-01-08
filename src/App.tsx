@@ -54,12 +54,9 @@ function App() {
           <Route path="settings" element={<Settings />} />
           <Route path="profile" element={<Profile />} />
           <Route path="change-password" element={<ChangePassword />} />
-
-          {/* Withdrawal Requests */}
           <Route path="withdrawal-request" element={<WithdrawalRequest />} />
         </Route>
 
-        {/* Fallback */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
