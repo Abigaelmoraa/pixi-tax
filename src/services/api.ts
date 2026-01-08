@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://db.x1.pitch90agent.com",
+  baseURL: "https://db.x1.pitch90agent.com/api", // include /api
   headers: {
     "Content-Type": "application/json",
   },
@@ -25,62 +25,59 @@ export const loginUser = async (data: any) =>
 
 /* ===================== DASHBOARD ===================== */
 export const fetchStats = async () =>
-  (await api.get("/dashboard/stats")).data;
+  (await api.get("/dashboardTiles")).data;
 
 export const fetchRecentActivity = async () =>
-  (await api.get("/dashboard/recent-activity")).data;
-
-export const fetchUpcomingDeadlines = async () =>
-  (await api.get("/dashboard/upcoming-deadlines")).data;
+  (await api.get("/dashboardTilesStudio")).data;
 
 /* ===================== PRN REQUESTS ===================== */
 export const fetchPRNRequests = async () =>
-  (await api.get("/prn-requests")).data;
+  (await api.get("/prodPrnLog")).data; // fixed endpoint
 
 export const submitPRNRequest = async (data: any) =>
-  (await api.post("/prn-requests", data)).data;
+  (await api.post("/prodPrnLog", data)).data; // fixed endpoint
 
 /* ===================== PAYMENTS ===================== */
 export const fetchPayments = async () =>
-  (await api.get("/payments")).data;
+  (await api.get("/paymentRequest")).data;
 
 /* ===================== STK PUSH ===================== */
 export const fetchSTKPushRequests = async () =>
-  (await api.get("/stk-push-requests")).data;
+  (await api.get("/sTKCallback")).data;
 
 export const createSTKPushRequest = async (data: any) =>
-  (await api.post("/stk-push-request", data)).data;
+  (await api.post("/sTKCallback", data)).data;
 
 /* ===================== TAX PAYOUT RESPONSE ===================== */
 export const fetchTaxPayoutResponse = async () =>
-  (await api.get("/tax-payout-response")).data;
+  (await api.get("/taxPayoutResponse")).data;
 
 export const logTaxData = async (data: any) =>
   (await api.post("/taxDataLog", data)).data;
 
 /* ===================== DAILY TAX OBLIGATION ===================== */
 export const fetchDailyTaxObligation = async () =>
-  (await api.get("/daily-tax-obligation")).data;
+  (await api.get("/dailyTaxObligation")).data;
 
 export const createDailyTaxObligation = async (data: any) =>
-  (await api.post("/daily-tax-obligation", data)).data;
+  (await api.post("/dailyTaxObligation", data)).data;
 
 /* ===================== BET OUTCOMES ===================== */
 export const fetchBetOutcomes = async () =>
-  (await api.get("/bet-outcomes")).data;
+  (await api.get("/outcomeInfoLog")).data;
 
 export const createBetOutcome = async (data: any) =>
-  (await api.post("/bet-outcomes", data)).data;
+  (await api.post("/outcomeInfoLog", data)).data;
 
 /* ===================== WITHDRAWALS ===================== */
 export const fetchWithdrawalRequest = async () =>
-  (await api.get("/withdrawal-request")).data;
+  (await api.get("/withdrawalRequest")).data; // fixed endpoint
 
 export const createNewWithdrawalRequest = async (data: any) =>
-  (await api.post("/new-withdrawal-request", data)).data;
+  (await api.post("/withdrawalRequest", data)).data; // fixed endpoint
 
 /* ===================== STAKE DATA ===================== */
 export const fetchStakeData = async () =>
-  (await api.get("/stake-data")).data;
+  (await api.get("/stakeData")).data;
 
 export default api;
