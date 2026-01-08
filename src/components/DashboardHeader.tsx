@@ -52,59 +52,78 @@ const DashboardHeader = ({ title, subtitle }) => {
             className="pl-10 w-64 h-10 bg-gray-100"
           />
         </div>
+<DropdownMenu>
+  <DropdownMenuTrigger asChild>
+    <Button variant="ghost" size="icon">
+      <Bell className="w-6 h-6" />
+    </Button>
+  </DropdownMenuTrigger>
 
-        {/* Notifications */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <Bell className="w-6 h-6" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-72">
-            <DropdownMenuLabel>Notifications</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <div className="p-4 text-center text-sm text-gray-500">
-              No notifications
-            </div>
-          </DropdownMenuContent>
-        </DropdownMenu>
+  <DropdownMenuContent
+    align="end"
+    sideOffset={8}
+    className="z-50 w-72 bg-white border border-gray-200 shadow-xl rounded-xl"
+  >
+    <DropdownMenuLabel className="text-sm font-semibold text-gray-800">
+      Notifications
+    </DropdownMenuLabel>
 
-        {/* User */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 flex items-center justify-center">
-                <User className="w-5 h-5 text-white" />
-              </div>
-              <span className="hidden md:block text-sm font-medium">
-                {user.name}
-              </span>
-            </Button>
-          </DropdownMenuTrigger>
+    <DropdownMenuSeparator />
 
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => navigate("/dashboard/profile")}>
-              <User className="w-4 h-4 mr-2" /> Profile
-            </DropdownMenuItem>
+    <div className="p-4 text-center text-sm text-gray-500">
+      No notifications
+    </div>
+  </DropdownMenuContent>
+</DropdownMenu>
 
-            <DropdownMenuItem onClick={() => navigate("/dashboard/change-password")}>
-              <KeyRound className="w-4 h-4 mr-2" /> Change Password
-            </DropdownMenuItem>
+       <DropdownMenu>
+  <DropdownMenuTrigger asChild>
+    <Button variant="ghost" className="flex items-center gap-3">
+      <div className="w-9 h-9 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 flex items-center justify-center">
+        <User className="w-5 h-5 text-white" />
+      </div>
+      <span className="hidden md:block text-sm font-medium text-gray-800">
+        {user.name}
+      </span>
+    </Button>
+  </DropdownMenuTrigger>
 
-            <DropdownMenuSeparator />
+  <DropdownMenuContent
+    align="end"
+    sideOffset={8}
+    className="z-50 w-56 bg-white border border-gray-200 shadow-xl rounded-xl"
+  >
+    <DropdownMenuItem
+      className="cursor-pointer hover:bg-gray-100"
+      onClick={() => navigate("/dashboard/profile")}
+    >
+      <User className="w-4 h-4 mr-2 text-gray-600" />
+      Profile
+    </DropdownMenuItem>
 
-            <DropdownMenuItem
-              className="text-red-600"
-              onClick={() => {
-                localStorage.removeItem("token");
-                localStorage.removeItem("user");
-                navigate("/login");
-              }}
-            >
-              <LogOut className="w-4 h-4 mr-2" /> Log out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+    <DropdownMenuItem
+      className="cursor-pointer hover:bg-gray-100"
+      onClick={() => navigate("/dashboard/change-password")}
+    >
+      <KeyRound className="w-4 h-4 mr-2 text-gray-600" />
+      Change Password
+    </DropdownMenuItem>
+
+    <DropdownMenuSeparator />
+
+    <DropdownMenuItem
+      className="cursor-pointer text-red-600 hover:bg-red-50"
+      onClick={() => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        navigate("/login");
+      }}
+    >
+      <LogOut className="w-4 h-4 mr-2" />
+      Log out
+    </DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>
       </div>
     </header>
   );
