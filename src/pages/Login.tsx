@@ -9,27 +9,27 @@ import { loginUser } from "@/services/api";
 
 const Login = () => {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
 
     try {
-      const responseData = await loginUser({
+      await loginUser({
         email: formData.email,
         password: formData.password,
       });
 
-      toast.success(responseData.message || "Login successful!");
+      toast.success("Welcome back!");
       navigate("/dashboard");
     } catch (err: any) {
-      toast.error(err.response?.data?.message || err.message || "Login failed");
+      setError(err.message || "Login failed");
+      toast.error(err.message || "Login failed");
     } finally {
       setIsLoading(false);
     }
@@ -50,7 +50,10 @@ const Login = () => {
 
         {/* Right Form */}
         <div className="md:w-1/2 p-6 md:p-10">
-          <Link to="/" className="inline-flex items-center gap-2 mb-6 text-sm font-medium text-white bg-purple-600 px-3 py-1.5 rounded-md">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 mb-6 text-sm font-medium text-white bg-purple-600 px-3 py-1.5 rounded-md"
+          >
             <ArrowLeft className="w-4 h-4" />
             Back
           </Link>
@@ -65,9 +68,12 @@ const Login = () => {
           </div>
 
           <h1 className="text-2xl font-bold mb-2 text-gray-800">Welcome back</h1>
-          <p className="text-sm text-gray-600 mb-6">Enter your credentials to access your account</p>
+          <p className="text-sm text-gray-600 mb-6">
+            Enter your credentials to access your account
+          </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Email */}
             <div>
               <Label>Email</Label>
               <div className="relative mt-1">
@@ -83,6 +89,7 @@ const Login = () => {
               </div>
             </div>
 
+            {/* Password */}
             <div>
               <Label>Password</Label>
               <div className="relative mt-1">
@@ -105,6 +112,10 @@ const Login = () => {
               </div>
             </div>
 
+            {/* Inline Error */}
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+
+            {/* Submit */}
             <Button
               type="submit"
               className="w-full h-10 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold"
