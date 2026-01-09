@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosError } from "axios";
 
 // ---------------- AXIOS INSTANCE ----------------
 const api: AxiosInstance = axios.create({
-  baseURL: "https://db.x1.pitch90agent.com/api",
+  baseURL: "https://db.x1.pitch90agent.com/api", // Make sure this is your correct API base URL
   headers: { "Content-Type": "application/json" },
 });
 
@@ -37,7 +37,8 @@ api.interceptors.response.use(
 export const loginUser = async (data: { email: string; password: string }) => {
   const res = await api.post("/login", data);
 
-  const token = res.data?.token || res.data?.accessToken || res.data?.data?.token;
+  // Adjusted to match your API response structure
+  const token = res.data?.data?.token; 
   if (!token) throw new Error(res.data?.message || "Authentication token not returned");
 
   localStorage.setItem("token", token);
@@ -60,10 +61,6 @@ export const b2cPayoutResponse = async (data: any) => api.post("/b2cPayoutRespon
 export const taxPayoutResponse = async (data: any) => api.post("/taxPayoutResponse", data);
 export const logTaxData = async (data: any) => api.post("/taxDataLog", data);
 export const logTaxDataSandbox = async (data: any) => api.post("/taxDataLogSandbox", data);
-export const logOutcomeData = async (data: any) => api.post("/outcomeDataLog", data);
-export const logOutcomeInfo = async (data: any) => api.post("/outcomeInfoLog", data);
-export const logSandboxOutcomeInfo = async (data: any) => api.post("/sandboxOutcomeInfoLog", data);
-export const saveBettingOutcome = async (data: any) => api.post("/saveBettingOutcome", data);
 export const prodPrnLog = async (data: any) => api.post("/prodPrnLog", data);
 
 // ---------------- M-PESA ----------------

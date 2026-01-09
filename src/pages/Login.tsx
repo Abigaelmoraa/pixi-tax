@@ -1,31 +1,35 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Mail, Lock, Eye, EyeOff, ArrowLeft, Calculator } from "lucide-react";
+import { Calculator, Mail, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { loginUser } from "@/services/api";
 
 const Login = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      const data = await loginUser(formData);
-      console.log("Login success:", data);
+      const responseData = await loginUser({
+        email: formData.email,
+        password: formData.password,
+      });
 
-      toast.success("Welcome back!");
+      toast.success(responseData.message || "Login successful!");
       navigate("/dashboard");
     } catch (err: any) {
-      console.error("Login error:", err);
-      toast.error(err.message || "Login failed");
+      toast.error(err.response?.data?.message || err.message || "Login failed");
     } finally {
       setIsLoading(false);
     }
@@ -46,10 +50,7 @@ const Login = () => {
 
         {/* Right Form */}
         <div className="md:w-1/2 p-6 md:p-10">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 mb-6 text-sm font-medium text-white bg-purple-600 px-3 py-1.5 rounded-md"
-          >
+          <Link to="/" className="inline-flex items-center gap-2 mb-6 text-sm font-medium text-white bg-purple-600 px-3 py-1.5 rounded-md">
             <ArrowLeft className="w-4 h-4" />
             Back
           </Link>
