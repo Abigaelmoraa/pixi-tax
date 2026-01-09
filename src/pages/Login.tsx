@@ -3,14 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Calculator,
-  Mail,
-  Lock,
-  Eye,
-  EyeOff,
-  ArrowLeft,
-} from "lucide-react";
+import { Calculator, Mail, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import api from "@/services/api";
 
@@ -28,7 +21,7 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const response = await api.post("api/login", {
+      const response = await api.post("/login", {
         email: formData.email,
         password: formData.password,
       });
@@ -38,14 +31,14 @@ const Login = () => {
         response.data?.accessToken ||
         response.data?.data?.token;
 
-      if (!token) {
-        throw new Error("Authentication token not returned");
-      }
+      if (!token) throw new Error("Authentication token not returned");
+
       localStorage.setItem("token", token);
 
       toast.success("Welcome back!");
       navigate("/dashboard");
     } catch (err: any) {
+      // Show server message if exists
       toast.error(err.response?.data?.message || "Login failed");
     } finally {
       setIsLoading(false);
@@ -55,7 +48,6 @@ const Login = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 px-4">
       <div className="flex flex-col md:flex-row bg-white rounded-2xl shadow-lg overflow-hidden max-w-4xl w-full">
-
         {/* Left Image */}
         <div className="md:w-1/2 flex items-center justify-center bg-gray-50 p-4">
           <img
@@ -67,11 +59,15 @@ const Login = () => {
 
         {/* Right Form */}
         <div className="md:w-1/2 p-6 md:p-10">
-          <Link to="/" className="inline-flex items-center gap-2 mb-6 text-sm font-medium text-white bg-purple-600 px-3 py-1.5 rounded-md">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 mb-6 text-sm font-medium text-white bg-purple-600 px-3 py-1.5 rounded-md"
+          >
             <ArrowLeft className="w-4 h-4" />
             Back
           </Link>
 
+          {/* Logo */}
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
               <Calculator className="w-6 h-6 text-white" />
@@ -88,6 +84,7 @@ const Login = () => {
             Enter your credentials to access your account
           </p>
 
+          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email */}
             <div>
@@ -127,15 +124,12 @@ const Login = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
                 >
-                  {showPassword ? (
-                    <EyeOff className="w-4 h-4" />
-                  ) : (
-                    <Eye className="w-4 h-4" />
-                  )}
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
 
+            {/* Submit */}
             <Button
               type="submit"
               className="w-full h-10 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold"
@@ -147,7 +141,10 @@ const Login = () => {
 
           <p className="text-center text-sm mt-4">
             Don’t have an account?{" "}
-            <Link to="/register" className="text-purple-600 font-medium hover:underline">
+            <Link
+              to="/register"
+              className="text-purple-600 font-medium hover:underline"
+            >
               Sign up
             </Link>
           </p>
