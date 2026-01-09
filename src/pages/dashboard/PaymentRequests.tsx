@@ -1,12 +1,24 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 
 export default function PaymentRequests() {
   const [requests, setRequests] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   const API_BASE = "https://db.x1.pitch90agent.com";
@@ -14,14 +26,16 @@ export default function PaymentRequests() {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        setLoading(true);
-        const res = await axios.get(`${API_BASE}/paymentRequest`, {
-          headers: {
-          },
-        });
-        setRequests(res.data);
+        const res = await axios.get(`${API_BASE}/paymentRequest`);
+
+        // ✅ FIX: normalize API response
+        const data = Array.isArray(res.data)
+          ? res.data
+          : res.data?.data || [];
+
+        setRequests(data);
       } catch (err: any) {
-        setError(err.message || "Failed to load payment requests");
+        setError("Failed to load payment requests");
       } finally {
         setLoading(false);
       }
@@ -30,7 +44,7 @@ export default function PaymentRequests() {
     fetchRequests();
   }, []);
 
-  const statusBadge = (status: string) => {
+  const statusBadge = (status?: string) => {
     switch (status) {
       case "APPROVED":
         return <Badge className="bg-green-600">Approved</Badge>;
@@ -49,11 +63,17 @@ export default function PaymentRequests() {
         </CardHeader>
 
         <CardContent>
-          {loading ? (
+          {loading && (
             <div className="text-center py-10">Loading...</div>
-          ) : error ? (
-            <div className="text-center text-red-500 py-10">{error}</div>
-          ) : (
+          )}
+
+          {!loading && error && (
+            <div className="text-center text-red-500 py-10">
+              {error}
+            </div>
+          )}
+
+          {!loading && !error && (
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
@@ -70,26 +90,33 @@ export default function PaymentRequests() {
                 </TableHeader>
 
                 <TableBody>
-                  {requests.length === 0 && (
+                  {requests.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={8} className="text-center text-muted-foreground">
+                      <TableCell
+                        colSpan={8}
+                        className="text-center text-muted-foreground"
+                      >
                         No payment requests
                       </TableCell>
                     </TableRow>
+                  ) : (
+                    requests.map((r: any) => (
+                      <TableRow
+                        key={r.transactionId || r.id}
+                      >
+                        <TableCell>{r.amount ?? "-"}</TableCell>
+                        <TableCell>{r.charges ?? "-"}</TableCell>
+                        <TableCell>{r.netPayout ?? "-"}</TableCell>
+                        <TableCell>{r.sourceIp ?? "-"}</TableCell>
+                        <TableCell>{r.transactionId ?? "-"}</TableCell>
+                        <TableCell>{statusBadge(r.status)}</TableCell>
+                        <TableCell>{r.sentTo ?? "-"}</TableCell>
+                        <TableCell className="max-w-xs truncate">
+                          {r.apiResponse ?? "-"}
+                        </TableCell>
+                      </TableRow>
+                    ))
                   )}
-
-                  {requests.map((r: any, i: number) => (
-                    <TableRow key={i}>
-                      <TableCell>{r.amount}</TableCell>
-                      <TableCell>{r.charges}</TableCell>
-                      <TableCell>{r.netPayout}</TableCell>
-                      <TableCell>{r.sourceIp}</TableCell>
-                      <TableCell>{r.transactionId}</TableCell>
-                      <TableCell>{statusBadge(r.status)}</TableCell>
-                      <TableCell>{r.sentTo}</TableCell>
-                      <TableCell>{r.apiResponse}</TableCell>
-                    </TableRow>
-                  ))}
                 </TableBody>
               </Table>
             </div>
