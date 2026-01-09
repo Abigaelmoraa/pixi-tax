@@ -1,34 +1,30 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calculator, Mail, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ArrowLeft, Calculator } from "lucide-react";
 import { toast } from "sonner";
 import { loginUser } from "@/services/api";
 
 const Login = () => {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      // ✅ Use loginUser from api.ts
-      const response = await loginUser({
+      const data = await loginUser({
         email: formData.email,
         password: formData.password,
       });
 
-      toast.success("Welcome back!");
-      navigate("/dashboard");
+      toast.success("Login successful!");
+      navigate("/dashboard"); // redirect after login
     } catch (err: any) {
       toast.error(err.response?.data?.message || err.message || "Login failed");
     } finally {
@@ -39,26 +35,19 @@ const Login = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 px-4">
       <div className="flex flex-col md:flex-row bg-white rounded-2xl shadow-lg overflow-hidden max-w-4xl w-full">
+
         {/* Left Image */}
         <div className="md:w-1/2 flex items-center justify-center bg-gray-50 p-4">
-          <img
-            src="/login-image.png"
-            alt="Pixi Tax Management"
-            className="w-full h-auto object-contain rounded-xl"
-          />
+          <img src="/login-image.png" alt="Pixi Tax Management" className="w-full h-auto object-contain rounded-xl" />
         </div>
 
         {/* Right Form */}
         <div className="md:w-1/2 p-6 md:p-10">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 mb-6 text-sm font-medium text-white bg-purple-600 px-3 py-1.5 rounded-md"
-          >
+          <Link to="/" className="inline-flex items-center gap-2 mb-6 text-sm font-medium text-white bg-purple-600 px-3 py-1.5 rounded-md">
             <ArrowLeft className="w-4 h-4" />
             Back
           </Link>
 
-          {/* Logo */}
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
               <Calculator className="w-6 h-6 text-white" />
@@ -68,14 +57,9 @@ const Login = () => {
             </span>
           </div>
 
-          <h1 className="text-2xl font-bold mb-2 text-gray-800">
-            Welcome back
-          </h1>
-          <p className="text-sm text-gray-600 mb-6">
-            Enter your credentials to access your account
-          </p>
+          <h1 className="text-2xl font-bold mb-2 text-gray-800">Welcome back</h1>
+          <p className="text-sm text-gray-600 mb-6">Enter your credentials to access your account</p>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email */}
             <div>
@@ -87,9 +71,7 @@ const Login = () => {
                   placeholder="you@example.com"
                   className="pl-9 h-10"
                   value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   required
                 />
               </div>
@@ -105,9 +87,7 @@ const Login = () => {
                   placeholder="Enter your password"
                   className="pl-9 pr-9 h-10"
                   value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   required
                 />
                 <button
@@ -120,24 +100,14 @@ const Login = () => {
               </div>
             </div>
 
-            {/* Submit */}
-            <Button
-              type="submit"
-              className="w-full h-10 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold"
-              disabled={isLoading}
-            >
+            <Button type="submit" className="w-full h-10 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold" disabled={isLoading}>
               {isLoading ? "Signing in..." : "Sign in"}
             </Button>
           </form>
 
           <p className="text-center text-sm mt-4">
             Don’t have an account?{" "}
-            <Link
-              to="/register"
-              className="text-purple-600 font-medium hover:underline"
-            >
-              Sign up
-            </Link>
+            <Link to="/register" className="text-purple-600 font-medium hover:underline">Sign up</Link>
           </p>
         </div>
       </div>

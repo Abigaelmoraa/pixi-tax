@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import api from "@/services/api"; // Axios instance with baseURL
+import api from "@/services/api"; // Axios instance with baseURL and auth
 
 interface PRNRequest {
   ref: string;
@@ -28,14 +28,16 @@ const PRNRequests = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [formError, setFormError] = useState("");
 
-  // Fetch PRN Requests from backend
+  // Fetch PRN Requests
   useEffect(() => {
     const fetchPRNs = async () => {
       try {
         setLoading(true);
-        const res = await api.get("/prodPrnLog"); // Endpoint from your API docs
-        setRequests(res.data);
+        const res = await api.get("/prodPrnLog");
+        // Adjust depending on response structure
+        setRequests(res.data?.data || res.data || []);
       } catch (err: any) {
         setError(err.response?.data?.message || "Failed to fetch PRN requests");
       } finally {
@@ -48,28 +50,29 @@ const PRNRequests = () => {
 
   // Save new PRN request
   const handleSave = async () => {
-    if (!formData.transactionDate || !formData.amount || !formData.taxType) return;
+    if (!formData.transactionDate || !formData.amount || !formData.taxType) {
+      setFormError("All fields are required");
+      return;
+    }
 
-    const newPRN = {
-      transactionDate: formData.transactionDate,
-      amount: formData.amount,
-      taxType: formData.taxType,
-      ref: `PRN-${Date.now()}`,
-      prn: "N/A",
-      kra: "N/A",
-      safaricom: "N/A",
-      trxCode: "N/A",
-      status: "Pending",
-    };
+    setFormError("");
 
     try {
-      const res = await api.post("/prodPrnLog", newPRN);
-      setRequests([res.data, ...requests]);
+      const payload = {
+        transactionDate: formData.transactionDate,
+        amount: formData.amount,
+        taxType: formData.taxType,
+      };
+
+      const res = await api.post("/paymentRequest", payload); // create request via real endpoint
+      // Optionally refresh the logs
+      const updatedLogs = await api.get("/prodPrnLog");
+      setRequests(updatedLogs.data?.data || updatedLogs.data || []);
+
       setFormData({ transactionDate: "", amount: "", taxType: "" });
       setShowForm(false);
-      setError("");
     } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to save PRN request");
+      setFormError(err.response?.data?.message || "Failed to save PRN request");
     }
   };
 
@@ -78,34 +81,27 @@ const PRNRequests = () => {
       <Card className="border-0 shadow-lg">
 
         {/* HEADER */}
-        <CardHeader className="border-b bg-gradient-to-r from-blue-200 to-cyan-200 px-4 py-2">
-          <div className="flex items-center w-full">
-            <CardTitle className="flex items-center gap-2 text-blue-900 text-lg font-bold">
-              <FileText className="w-5 h-5" />
-              PRN Requests
-            </CardTitle>
+        <CardHeader className="border-b bg-gradient-to-r from-blue-200 to-cyan-200 px-4 py-2 flex justify-between items-center">
+          <CardTitle className="flex items-center gap-2 text-blue-900 text-lg font-bold">
+            <FileText className="w-5 h-5" /> PRN Requests
+          </CardTitle>
 
-            {!showForm && (
-              <Button
-                size="sm"
-                className="ml-auto bg-gradient-to-r from-blue-500 to-cyan-500 text-white flex items-center gap-1"
-                onClick={() => setShowForm(true)}
-              >
-                <Plus className="w-4 h-4" />
-                New
-              </Button>
-            )}
-          </div>
+          {!showForm && (
+            <Button
+              size="sm"
+              className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white flex items-center gap-1"
+              onClick={() => setShowForm(true)}
+            >
+              <Plus className="w-4 h-4" /> New
+            </Button>
+          )}
         </CardHeader>
 
         {/* FORM */}
         {showForm && (
           <CardContent className="space-y-6 p-6 bg-blue-50">
-            <h2 className="text-lg font-semibold text-blue-900">
-              New PRN Request
-            </h2>
-
-            {error && <p className="text-red-500 text-sm">{error}</p>}
+            <h2 className="text-lg font-semibold text-blue-900">New PRN Request</h2>
+            {formError && <p className="text-red-500 text-sm">{formError}</p>}
 
             <div className="space-y-2">
               <Label>Transaction Date</Label>
@@ -113,9 +109,7 @@ const PRNRequests = () => {
                 type="date"
                 className="input border-blue-300"
                 value={formData.transactionDate}
-                onChange={(e) =>
-                  setFormData({ ...formData, transactionDate: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, transactionDate: e.target.value })}
               />
             </div>
 
@@ -123,12 +117,9 @@ const PRNRequests = () => {
               <Label>Amount</Label>
               <input
                 type="number"
-                placeholder="Enter amount"
                 className="input border-blue-300"
                 value={formData.amount}
-                onChange={(e) =>
-                  setFormData({ ...formData, amount: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
               />
             </div>
 
@@ -137,9 +128,7 @@ const PRNRequests = () => {
               <select
                 className="input border-blue-300"
                 value={formData.taxType}
-                onChange={(e) =>
-                  setFormData({ ...formData, taxType: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, taxType: e.target.value })}
               >
                 <option value="">Select tax type</option>
                 <option value="Exercise (Deposits)">Exercise (Deposits)</option>
@@ -148,9 +137,7 @@ const PRNRequests = () => {
             </div>
 
             <div className="flex justify-end gap-2 pt-4">
-              <Button variant="outline" onClick={() => setShowForm(false)}>
-                Cancel
-              </Button>
+              <Button variant="outline" onClick={() => setShowForm(false)}>Cancel</Button>
               <Button onClick={handleSave}>Save</Button>
             </div>
           </CardContent>
@@ -182,9 +169,7 @@ const PRNRequests = () => {
                 <tbody>
                   {requests.length === 0 ? (
                     <tr>
-                      <td colSpan={10} className="text-center py-6">
-                        No PRN requests
-                      </td>
+                      <td colSpan={10} className="text-center py-6">No PRN requests</td>
                     </tr>
                   ) : (
                     requests.map((r, i) => (
