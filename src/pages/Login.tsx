@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Mail, Lock, Eye, EyeOff, ArrowLeft, Calculator } from "lucide-react";
 import { toast } from "sonner";
-import { loginUser } from "@/services/api";
+import { loginUser } from "@/services/api"; // ✅ Use loginUser helper
 
 const Login = () => {
   const navigate = useNavigate();
@@ -18,14 +18,13 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const data = await loginUser({
-        email: formData.email,
-        password: formData.password,
-      });
+      const data = await loginUser(formData); // ✅ Call loginUser
+      console.log("Login success:", data);
 
-      toast.success("Login successful!");
-      navigate("/dashboard"); // redirect after login
+      toast.success("Welcome back!");
+      navigate("/dashboard"); // ✅ Redirect to dashboard
     } catch (err: any) {
+      console.error(err);
       toast.error(err.response?.data?.message || err.message || "Login failed");
     } finally {
       setIsLoading(false);
@@ -38,7 +37,11 @@ const Login = () => {
 
         {/* Left Image */}
         <div className="md:w-1/2 flex items-center justify-center bg-gray-50 p-4">
-          <img src="/login-image.png" alt="Pixi Tax Management" className="w-full h-auto object-contain rounded-xl" />
+          <img
+            src="/login-image.png"
+            alt="Pixi Tax Management"
+            className="w-full h-auto object-contain rounded-xl"
+          />
         </div>
 
         {/* Right Form */}
@@ -100,6 +103,7 @@ const Login = () => {
               </div>
             </div>
 
+            {/* Submit */}
             <Button type="submit" className="w-full h-10 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold" disabled={isLoading}>
               {isLoading ? "Signing in..." : "Sign in"}
             </Button>
@@ -107,7 +111,9 @@ const Login = () => {
 
           <p className="text-center text-sm mt-4">
             Don’t have an account?{" "}
-            <Link to="/register" className="text-purple-600 font-medium hover:underline">Sign up</Link>
+            <Link to="/register" className="text-purple-600 font-medium hover:underline">
+              Sign up
+            </Link>
           </p>
         </div>
       </div>
