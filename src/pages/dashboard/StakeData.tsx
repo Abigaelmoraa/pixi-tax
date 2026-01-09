@@ -111,7 +111,7 @@ const StakeData = () => {
                 className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white"
                 onClick={() => setShowForm(true)}
               >
-                <Plus className="w-4 h-4 mr-2" /> New Stake
+                <Plus className="w-4 h-4 mr-2" /> New
               </Button>
             )}
           </div>

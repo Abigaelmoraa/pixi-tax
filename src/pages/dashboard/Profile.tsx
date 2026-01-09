@@ -35,7 +35,6 @@ const Profile = () => {
       </Button>
 
       <Card className="shadow-md border">
-        {/* Subtle Top Bar */}
         <div className="h-16 bg-slate-100" />
 
         <CardHeader className="-mt-10 pb-0">
