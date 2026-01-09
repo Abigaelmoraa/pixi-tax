@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Calculator, Mail, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
-import api from "@/services/api";
+import { loginUser } from "@/services/api";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -21,25 +21,16 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const response = await api.post("/login", {
+      // ✅ Use loginUser from api.ts
+      const response = await loginUser({
         email: formData.email,
         password: formData.password,
       });
 
-      const token =
-        response.data?.token ||
-        response.data?.accessToken ||
-        response.data?.data?.token;
-
-      if (!token) throw new Error("Authentication token not returned");
-
-      localStorage.setItem("token", token);
-
       toast.success("Welcome back!");
       navigate("/dashboard");
     } catch (err: any) {
-      // Show server message if exists
-      toast.error(err.response?.data?.message || "Login failed");
+      toast.error(err.response?.data?.message || err.message || "Login failed");
     } finally {
       setIsLoading(false);
     }
