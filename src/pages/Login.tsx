@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Mail, Lock, Eye, EyeOff, ArrowLeft, Calculator } from "lucide-react";
 import { toast } from "sonner";
-import { loginUser } from "@/services/api"; // ✅ Use loginUser helper
+import { loginUser } from "@/services/api";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -18,14 +18,14 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const data = await loginUser(formData); // ✅ Call loginUser
+      const data = await loginUser(formData);
       console.log("Login success:", data);
 
       toast.success("Welcome back!");
-      navigate("/dashboard"); // ✅ Redirect to dashboard
+      navigate("/dashboard");
     } catch (err: any) {
-      console.error(err);
-      toast.error(err.response?.data?.message || err.message || "Login failed");
+      console.error("Login error:", err);
+      toast.error(err.message || "Login failed");
     } finally {
       setIsLoading(false);
     }
@@ -46,7 +46,10 @@ const Login = () => {
 
         {/* Right Form */}
         <div className="md:w-1/2 p-6 md:p-10">
-          <Link to="/" className="inline-flex items-center gap-2 mb-6 text-sm font-medium text-white bg-purple-600 px-3 py-1.5 rounded-md">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 mb-6 text-sm font-medium text-white bg-purple-600 px-3 py-1.5 rounded-md"
+          >
             <ArrowLeft className="w-4 h-4" />
             Back
           </Link>
@@ -64,7 +67,6 @@ const Login = () => {
           <p className="text-sm text-gray-600 mb-6">Enter your credentials to access your account</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Email */}
             <div>
               <Label>Email</Label>
               <div className="relative mt-1">
@@ -80,7 +82,6 @@ const Login = () => {
               </div>
             </div>
 
-            {/* Password */}
             <div>
               <Label>Password</Label>
               <div className="relative mt-1">
@@ -103,8 +104,11 @@ const Login = () => {
               </div>
             </div>
 
-            {/* Submit */}
-            <Button type="submit" className="w-full h-10 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold" disabled={isLoading}>
+            <Button
+              type="submit"
+              className="w-full h-10 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold"
+              disabled={isLoading}
+            >
               {isLoading ? "Signing in..." : "Sign in"}
             </Button>
           </form>

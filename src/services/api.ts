@@ -1,30 +1,25 @@
 import axios, { AxiosInstance, AxiosError } from "axios";
 
-// --------------------
-// Axios instance
-// --------------------
+// ---------------- AXIOS INSTANCE ----------------
 const api: AxiosInstance = axios.create({
-  baseURL: "https://db.x1.pitch90agent.com/api", // Base API URL
+  baseURL: "https://db.x1.pitch90agent.com/api",
   headers: { "Content-Type": "application/json" },
 });
 
-// --------------------
-// Request interceptor (attach token)
-// --------------------
+// ---------------- INTERCEPTORS ----------------
+// Attach token automatically
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
     if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers["Authorization"] = `Bearer ${token}`;
     }
     return config;
   },
   (error: AxiosError) => Promise.reject(error)
 );
 
-// --------------------
-// Response interceptor (auto logout on 401)
-// --------------------
+// Auto-logout on 401
 api.interceptors.response.use(
   (res) => res,
   (error: AxiosError) => {
@@ -38,79 +33,71 @@ api.interceptors.response.use(
   }
 );
 
-// --------------------
-// Authentication & User Access
-// --------------------
+// ---------------- AUTH ----------------
 export const loginUser = async (data: { email: string; password: string }) => {
   const res = await api.post("/login", data);
+
   const token = res.data?.token || res.data?.accessToken || res.data?.data?.token;
-  if (!token) throw new Error("Authentication token not returned");
+  if (!token) throw new Error(res.data?.message || "Authentication token not returned");
+
   localStorage.setItem("token", token);
   return res.data;
 };
 
-export const registerUser = async (data: any) => await api.post("/userRegister", data);
-export const checkOtp = async (data: any) => await api.post("/checkOtp", data);
-export const logoutUser = async () => await api.post("/logout");
-export const changePassword = async (data: any) => await api.put("/users/password", data);
-export const selfPassChange = async (data: any) => await api.post("/selfPassChange", data);
+export const registerUser = async (data: { email: string; password: string; name?: string }) =>
+  api.post("/userRegister", data);
 
-// --------------------
-// Payments & Callbacks
-// --------------------
-export const createPaymentRequest = async (data: any) => await api.post("/paymentRequest", data);
-export const createWithdrawalRequest = async (data: any) => await api.post("/withdrawalRequest", data);
-export const b2cPayoutResponse = async (data: any) => await api.post("/b2cPayoutResponse", data);
-export const taxPayoutResponse = async (data: any) => await api.post("/taxPayoutResponse", data);
-export const logTaxData = async (data: any) => await api.post("/taxDataLog", data);
-export const logTaxDataSandbox = async (data: any) => await api.post("/taxDataLogSandbox", data);
-export const logOutcomeData = async (data: any) => await api.post("/outcomeDataLog", data);
-export const logOutcomeInfo = async (data: any) => await api.post("/outcomeInfoLog", data);
-export const logSandboxOutcomeInfo = async (data: any) => await api.post("/sandboxOutcomeInfoLog", data);
-export const saveBettingOutcome = async (data: any) => await api.post("/saveBettingOutcome", data);
-export const prodPrnLog = async (data: any) => await api.post("/prodPrnLog", data);
+export const checkOtp = async (data: { email: string; otp: string }) => api.post("/checkOtp", data);
+export const logoutUser = async () => api.post("/logout");
+export const changePassword = async (data: { oldPassword: string; newPassword: string }) =>
+  api.put("/users/password", data);
+export const selfPassChange = async (data: { newPassword: string }) => api.post("/selfPassChange", data);
 
-// --------------------
-// M-Pesa & STK Callbacks
-// --------------------
-// Mpesa IPN
-export const listMpesaIPN = async () => await api.get("/mpesaIPN");
-export const createMpesaIPN = async (data: any) => await api.post("/mpesaIPN", data);
-export const getMpesaIPN = async (id: string) => await api.get(`/mpesaIPN/${id}`);
-export const updateMpesaIPN = async (id: string, data: any) => await api.put(`/mpesaIPN/${id}`, data);
-export const deleteMpesaIPN = async (id: string) => await api.delete(`/mpesaIPN/${id}`);
-export const safIPN = async (data: any) => await api.post("/safIPN");
+// ---------------- PAYMENTS & TAX ----------------
+export const createPaymentRequest = async (data: any) => api.post("/paymentRequest", data);
+export const createWithdrawalRequest = async (data: any) => api.post("/withdrawalRequest", data);
+export const b2cPayoutResponse = async (data: any) => api.post("/b2cPayoutResponse", data);
+export const taxPayoutResponse = async (data: any) => api.post("/taxPayoutResponse", data);
+export const logTaxData = async (data: any) => api.post("/taxDataLog", data);
+export const logTaxDataSandbox = async (data: any) => api.post("/taxDataLogSandbox", data);
+export const logOutcomeData = async (data: any) => api.post("/outcomeDataLog", data);
+export const logOutcomeInfo = async (data: any) => api.post("/outcomeInfoLog", data);
+export const logSandboxOutcomeInfo = async (data: any) => api.post("/sandboxOutcomeInfoLog", data);
+export const saveBettingOutcome = async (data: any) => api.post("/saveBettingOutcome", data);
+export const prodPrnLog = async (data: any) => api.post("/prodPrnLog", data);
 
-// STK Callbacks
-export const listSTKCallback = async () => await api.get("/sTKCallback");
-export const createSTKCallback = async (data: any) => await api.post("/sTKCallback", data);
-export const getSTKCallback = async (id: string) => await api.get(`/sTKCallback/${id}`);
-export const updateSTKCallback = async (id: string, data: any) => await api.put(`/sTKCallback/${id}`, data);
-export const deleteSTKCallback = async (id: string) => await api.delete(`/sTKCallback/${id}`);
+// ---------------- M-PESA ----------------
+export const listMpesaIPN = async () => api.get("/mpesaIPN");
+export const createMpesaIPN = async (data: any) => api.post("/mpesaIPN", data);
+export const getMpesaIPN = async (id: string) => api.get(`/mpesaIPN/${id}`);
+export const updateMpesaIPN = async (id: string, data: any) => api.put(`/mpesaIPN/${id}`, data);
+export const deleteMpesaIPN = async (id: string) => api.delete(`/mpesaIPN/${id}`);
+export const safIPN = async (data: any) => api.post("/safIPN", data);
 
-// --------------------
-// Protected Clients & Users
-// --------------------
-// Clients
-export const listClients = async () => await api.get("/client");
-export const createClient = async (data: any) => await api.post("/client", data);
-export const getClient = async (id: string) => await api.get(`/client/${id}`);
-export const updateClient = async (id: string, data: any) => await api.put(`/client/${id}`, data);
-export const deleteClient = async (id: string) => await api.delete(`/client/${id}`);
+// ---------------- STK CALLBACK ----------------
+export const listSTKCallback = async () => api.get("/sTKCallback");
+export const createSTKCallback = async (data: any) => api.post("/sTKCallback", data);
+export const getSTKCallback = async (id: string) => api.get(`/sTKCallback/${id}`);
+export const updateSTKCallback = async (id: string, data: any) => api.put(`/sTKCallback/${id}`, data);
+export const deleteSTKCallback = async (id: string) => api.delete(`/sTKCallback/${id}`);
 
-// Users
-export const listUsers = async () => await api.get("/users");
-export const createUser = async (data: any) => await api.post("/users", data);
-export const getUser = async (id: string) => await api.get(`/users/${id}`);
-export const updateUser = async (id: string, data: any) => await api.put(`/users/${id}`, data);
-export const deleteUser = async (id: string) => await api.delete(`/users/${id}`);
-export const getCurrentUser = async () => await api.get("/user");
+// ---------------- CLIENTS ----------------
+export const listClients = async () => api.get("/client");
+export const createClient = async (data: any) => api.post("/client", data);
+export const getClient = async (id: string) => api.get(`/client/${id}`);
+export const updateClient = async (id: string, data: any) => api.put(`/client/${id}`, data);
+export const deleteClient = async (id: string) => api.delete(`/client/${id}`);
 
-// Dashboard
-export const getDashboardTiles = async () => await api.get("/dashboardTiles");
-export const getDashboardTilesStudio = async () => await api.get("/dashboardTilesStudio");
+// ---------------- USERS ----------------
+export const listUsers = async () => api.get("/users");
+export const createUser = async (data: any) => api.post("/users", data);
+export const getUser = async (id: string) => api.get(`/users/${id}`);
+export const updateUser = async (id: string, data: any) => api.put(`/users/${id}`, data);
+export const deleteUser = async (id: string) => api.delete(`/users/${id}`);
+export const getCurrentUser = async () => api.get("/user");
 
-// --------------------
-// Export default
-// --------------------
+// ---------------- DASHBOARD ----------------
+export const getDashboardTiles = async () => api.get("/dashboardTiles");
+export const getDashboardTilesStudio = async () => api.get("/dashboardTilesStudio");
+
 export default api;
