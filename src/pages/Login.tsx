@@ -28,13 +28,11 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      // ✅ CORRECT ENDPOINT (matches Axios baseURL)
-      const response = await api.post("/login", {
+      const response = await api.post("api/login", {
         email: formData.email,
         password: formData.password,
       });
 
-      // ✅ SAFE TOKEN EXTRACTION
       const token =
         response.data?.token ||
         response.data?.accessToken ||
@@ -43,8 +41,6 @@ const Login = () => {
       if (!token) {
         throw new Error("Authentication token not returned");
       }
-
-      // ✅ STORE TOKEN FOR INTERCEPTOR
       localStorage.setItem("token", token);
 
       toast.success("Welcome back!");

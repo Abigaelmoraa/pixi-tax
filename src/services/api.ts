@@ -5,22 +5,17 @@ import axios, {
 } from "axios";
 
 const api: AxiosInstance = axios.create({
-  baseURL: "https://db.x1.pitch90agent.com",
+  baseURL: "https://db.x1.pitch90agent.com/api",
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-/**
- * 🔐 Attach Authorization token to every request
- * (Axios v1 + TypeScript safe)
- */
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
 
     if (token) {
-      // ✅ Axios v1 headers are always defined
       config.headers.Authorization = `Bearer ${token}`;
     }
 
@@ -29,17 +24,14 @@ api.interceptors.request.use(
   (error: AxiosError) => Promise.reject(error)
 );
 
-/**
- * 🚨 Global 401 handler
- */
 api.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error: AxiosError) => {
     if (error.response?.status === 401) {
       localStorage.removeItem("token");
 
-      if (window.location.pathname !== "/login") {
-        window.location.href = "/login";
+      if (window.location.pathname !== "api/login") {
+        window.location.href = "api/login";
       }
     }
 
