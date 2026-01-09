@@ -17,7 +17,6 @@ const DashboardHeader = ({ title, subtitle }) => {
   const [user, setUser] = useState({ name: "User" });
 
   useEffect(() => {
-    // Load user info from localStorage
     const storedUser = localStorage.getItem("user");
     if (storedUser) setUser(JSON.parse(storedUser));
   }, []);

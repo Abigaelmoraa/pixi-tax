@@ -38,7 +38,7 @@ const BetOutcomeLog = () => {
   const fetchOutcomes = async () => {
     try {
       setLoading(true);
-      const res = await api.get("/outcomeInfoLog"); // backend endpoint
+      const res = await api.get("https://db.x1.pitch90agent.com/api/outcomeInfoLog"); 
       setOutcomes(res.data);
     } catch (err: any) {
       setError(err.response?.data?.message || "Failed to fetch bet outcomes");
@@ -54,7 +54,7 @@ const BetOutcomeLog = () => {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await api.post("/outcomeInfoLog", formData); // backend endpoint
+      const res = await api.post("/outcomeInfoLog", formData);
       setOutcomes([res.data, ...outcomes]);
       setShowForm(false);
       setFormData({

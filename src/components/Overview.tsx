@@ -17,12 +17,11 @@ import {
 } from "lucide-react";
 import { fetchStats, fetchRecentActivity } from "@/services/api";
 
-// Hook to animate numbers
 const useCountUp = (target: number | string, duration = 1500) => {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    if (typeof target === "string") return; // Skip if not a number
+    if (typeof target === "string") return;
     let start = 0;
     const end = target;
     const increment = end / (duration / 50);
@@ -129,7 +128,7 @@ const Overview = () => {
         subtitle="Overview of tax operations and payment activity"
       />
 
-      {/* ================= STATS CARDS ================= */}
+      {/* STATS CARDS  */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
         {stats.map((stat) => {
           const animatedValue =
@@ -167,7 +166,7 @@ const Overview = () => {
         })}
       </div>
 
-      {/* ================= MIDDLE CARDS ================= */}
+      {/* MIDDLE CARDS */}
       <div className="grid lg:grid-cols-2 gap-4">
         {/* System Activity */}
         <Card className="border-0 shadow-lg bg-white">
