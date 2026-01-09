@@ -20,16 +20,20 @@ const Login = () => {
     setError("");
 
     try {
-      await loginUser({
-        email: formData.email,
+      // Trim and lowercase email to avoid invisible mismatch issues
+      const data = await loginUser({
+        email: formData.email.trim().toLowerCase(),
         password: formData.password,
       });
 
       toast.success("Welcome back!");
       navigate("/dashboard");
     } catch (err: any) {
-      setError(err.message || "Login failed");
-      toast.error(err.message || "Login failed");
+      // Show inline error and toast popup
+      const message =
+        err.response?.data?.message || err.message || "Login failed";
+      setError(message);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -83,7 +87,9 @@ const Login = () => {
                   placeholder="you@example.com"
                   className="pl-9 h-10"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                   required
                 />
               </div>
@@ -99,7 +105,9 @@ const Login = () => {
                   placeholder="Enter your password"
                   className="pl-9 pr-9 h-10"
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
                   required
                 />
                 <button
