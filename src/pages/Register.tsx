@@ -23,7 +23,6 @@ const Register = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Password match validation
     if (formData.password !== formData.confirmPassword) {
       toast.error("Passwords do not match");
       return;
@@ -38,7 +37,6 @@ const Register = () => {
         password: formData.password,
       });
 
-      // Check if backend returned token
       const token = res.data?.token || res.data?.accessToken || res.data?.data?.token;
       if (!token) {
         toast.error(res.data?.message || "Registration failed");
