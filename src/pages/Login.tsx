@@ -20,7 +20,6 @@ const Login = () => {
     setError("");
 
     try {
-      // Trim and lowercase email to avoid invisible mismatch issues
       const data = await loginUser({
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
@@ -29,7 +28,6 @@ const Login = () => {
       toast.success("Welcome back!");
       navigate("/dashboard");
     } catch (err: any) {
-      // Show inline error and toast popup
       const message =
         err.response?.data?.message || err.message || "Login failed";
       setError(message);
@@ -41,19 +39,20 @@ const Login = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 px-4">
-      <div className="flex flex-col md:flex-row bg-white rounded-2xl shadow-lg overflow-hidden max-w-4xl w-full">
-
+      <div className="flex flex-col md:flex-row w-full max-w-4xl bg-white rounded-2xl shadow-lg overflow-hidden max-h-[90vh]">
+        
         {/* Left Image */}
-        <div className="md:w-1/2 flex items-center justify-center bg-gray-50 p-4">
+        <div className="hidden md:flex md:w-1/2 bg-gray-50 items-center justify-center p-4">
           <img
             src="/login-image.png"
             alt="Pixi Tax Management"
-            className="w-full h-auto object-contain rounded-xl"
+            className="w-full h-full object-contain rounded-xl"
           />
         </div>
 
         {/* Right Form */}
-        <div className="md:w-1/2 p-6 md:p-10">
+        <div className="w-full md:w-1/2 p-6 md:p-10 overflow-y-auto">
+          {/* Back Button */}
           <Link
             to="/"
             className="inline-flex items-center gap-2 mb-6 text-sm font-medium text-white bg-purple-600 px-3 py-1.5 rounded-md"
@@ -62,6 +61,7 @@ const Login = () => {
             Back
           </Link>
 
+          {/* Logo */}
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
               <Calculator className="w-6 h-6 text-white" />
@@ -135,7 +135,10 @@ const Login = () => {
 
           <p className="text-center text-sm mt-4">
             Don’t have an account?{" "}
-            <Link to="/register" className="text-purple-600 font-medium hover:underline">
+            <Link
+              to="/register"
+              className="text-purple-600 font-medium hover:underline"
+            >
               Sign up
             </Link>
           </p>

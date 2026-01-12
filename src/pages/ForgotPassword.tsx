@@ -17,11 +17,10 @@ const ForgotPassword = () => {
     setIsLoading(true);
 
     try {
-      // Call backend endpoint to send OTP
+      
       const response = await api.post("/api/checkOtp", { email });
       toast.success(response.data.message || "OTP sent to your email!");
 
-      // Navigate to Reset Password page and pass email
       navigate("/reset-password", { state: { email } });
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Failed to send OTP");

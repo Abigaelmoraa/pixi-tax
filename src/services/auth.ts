@@ -1,4 +1,3 @@
-// src/services/auth.ts
 import api from "./api";
 
 interface RegisterPayload {
@@ -11,14 +10,10 @@ interface LoginPayload {
   email: string;
   password: string;
 }
-
-// Register new user
 export const registerUser = async (data: RegisterPayload) => {
   const response = await api.post("/api/userRegister", data);
   return response.data;
 };
-
-// Login user
 export const loginUser = async (data: LoginPayload) => {
   const response = await api.post("/api/login", data);
   return response.data;
