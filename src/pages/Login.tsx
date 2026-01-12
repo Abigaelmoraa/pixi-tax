@@ -20,16 +20,21 @@ const Login = () => {
     setError("");
 
     try {
-      const data = await loginUser({
+      const res = await loginUser({
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
       });
 
+      // Ensure token exists
+      const token = res.token || res.accessToken || res.data?.token;
+      if (!token) throw new Error("Token not returned");
+
+      localStorage.setItem("token", token);
+
       toast.success("Welcome back!");
-      navigate("/dashboard");
+      navigate("/dashboard"); // Navigate after token is set
     } catch (err: any) {
-      const message =
-        err.response?.data?.message || err.message || "Login failed";
+      const message = err.response?.data?.message || err.message || "Login failed";
       setError(message);
       toast.error(message);
     } finally {
@@ -39,10 +44,10 @@ const Login = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 px-4">
-      <div className="flex flex-col md:flex-row w-full max-w-4xl bg-white rounded-2xl shadow-lg overflow-hidden max-h-[90vh]">
-        
+      <div className="flex flex-col md:flex-row bg-white rounded-2xl shadow-lg overflow-hidden max-w-3xl w-full h-auto">
+
         {/* Left Image */}
-        <div className="hidden md:flex md:w-1/2 bg-gray-50 items-center justify-center p-4">
+        <div className="md:w-1/2 hidden md:flex items-center justify-center bg-gray-50 p-4">
           <img
             src="/login-image.png"
             alt="Pixi Tax Management"
@@ -51,17 +56,14 @@ const Login = () => {
         </div>
 
         {/* Right Form */}
-        <div className="w-full md:w-1/2 p-6 md:p-10 overflow-y-auto">
-          {/* Back Button */}
+        <div className="md:w-1/2 flex flex-col justify-center p-6 md:p-10">
           <Link
             to="/"
             className="inline-flex items-center gap-2 mb-6 text-sm font-medium text-white bg-purple-600 px-3 py-1.5 rounded-md"
           >
-            <ArrowLeft className="w-4 h-4" />
-            Back
+            <ArrowLeft className="w-4 h-4" /> Back
           </Link>
 
-          {/* Logo */}
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
               <Calculator className="w-6 h-6 text-white" />
@@ -87,9 +89,7 @@ const Login = () => {
                   placeholder="you@example.com"
                   className="pl-9 h-10"
                   value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   required
                 />
               </div>
@@ -105,9 +105,7 @@ const Login = () => {
                   placeholder="Enter your password"
                   className="pl-9 pr-9 h-10"
                   value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   required
                 />
                 <button
@@ -135,10 +133,7 @@ const Login = () => {
 
           <p className="text-center text-sm mt-4">
             Don’t have an account?{" "}
-            <Link
-              to="/register"
-              className="text-purple-600 font-medium hover:underline"
-            >
+            <Link to="/register" className="text-purple-600 font-medium hover:underline">
               Sign up
             </Link>
           </p>
