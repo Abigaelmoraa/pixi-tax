@@ -25,14 +25,10 @@ const Login = () => {
         password: formData.password,
       });
 
-      // Ensure token exists
-      const token = res.token || res.accessToken || res.data?.token;
-      if (!token) throw new Error("Token not returned");
-
-      localStorage.setItem("token", token);
+      if (!res.token) throw new Error("Authentication token not returned");
 
       toast.success("Welcome back!");
-      navigate("/dashboard"); // Navigate after token is set
+      navigate("/dashboard");
     } catch (err: any) {
       const message = err.response?.data?.message || err.message || "Login failed";
       setError(message);
@@ -43,11 +39,11 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 px-4">
-      <div className="flex flex-col md:flex-row bg-white rounded-2xl shadow-lg overflow-hidden max-w-3xl w-full h-auto">
+    <div className="flex items-center justify-center w-full h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 px-4">
+      <div className="flex flex-col md:flex-row bg-white rounded-2xl shadow-lg overflow-hidden w-full max-w-3xl h-auto">
 
         {/* Left Image */}
-        <div className="md:w-1/2 hidden md:flex items-center justify-center bg-gray-50 p-4">
+        <div className="hidden md:flex md:w-1/2 items-center justify-center bg-gray-50 p-4">
           <img
             src="/login-image.png"
             alt="Pixi Tax Management"
@@ -79,7 +75,6 @@ const Login = () => {
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Email */}
             <div>
               <Label>Email</Label>
               <div className="relative mt-1">
@@ -95,7 +90,6 @@ const Login = () => {
               </div>
             </div>
 
-            {/* Password */}
             <div>
               <Label>Password</Label>
               <div className="relative mt-1">
@@ -118,10 +112,8 @@ const Login = () => {
               </div>
             </div>
 
-            {/* Inline Error */}
             {error && <p className="text-red-500 text-sm">{error}</p>}
 
-            {/* Submit */}
             <Button
               type="submit"
               className="w-full h-10 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold"

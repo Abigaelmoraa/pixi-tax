@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calculator, Mail, Lock, Eye, EyeOff, ArrowLeft, User } from "lucide-react";
+import { Calculator, User, Mail, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
-import { registerUser } from "@/services/api"; // make sure you import from api.ts
+import { registerUser } from "@/services/api";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -19,6 +19,14 @@ const Register = () => {
     password: "",
     confirmPassword: "",
   });
+
+  // Prevent scrolling while on register page
+  useEffect(() => {
+    document.body.classList.add("overflow-hidden");
+    return () => {
+      document.body.classList.remove("overflow-hidden");
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,13 +45,11 @@ const Register = () => {
         password: formData.password,
       });
 
-      const token = res.data?.token || res.data?.accessToken || res.data?.data?.token;
-      if (!token) {
-        toast.error(res.data?.message || "Registration failed");
+      if (!res.token) {
+        toast.error("Registration failed, no token returned");
         return;
       }
 
-      localStorage.setItem("token", token);
       toast.success("Account created successfully!");
       navigate("/dashboard");
     } catch (err: any) {
@@ -55,9 +61,9 @@ const Register = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 px-4 sm:px-6 py-8 sm:py-12">
+    <div className="flex items-center justify-center w-full h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 px-4 sm:px-6 py-8 sm:py-12">
       <div className="flex flex-col lg:flex-row w-full max-w-5xl rounded-3xl shadow-xl bg-white/80 backdrop-blur-md overflow-hidden">
-        
+
         {/* Left Image */}
         <div className="hidden lg:flex w-1/2 relative">
           <img src="/register.png" alt="Pixi Tax Management" className="absolute inset-0 w-full h-full object-cover" />
