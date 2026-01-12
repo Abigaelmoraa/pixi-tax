@@ -48,6 +48,7 @@ const Register = () => {
         return;
       }
 
+      localStorage.setItem("token", res.token);
       toast.success("Account created successfully!");
       navigate("/dashboard");
     } catch (err: any) {
@@ -59,140 +60,137 @@ const Register = () => {
   };
 
   return (
-    <div className="flex items-center justify-center w-full min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 px-4 py-8">
-      <div className="flex flex-col lg:flex-row w-full max-w-4xl rounded-2xl shadow-xl bg-white/90 backdrop-blur-md overflow-hidden">
-
-        {/* Left Image */}
-        <div className="hidden lg:flex w-1/3 relative">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 px-4">
+      <div className="flex flex-col md:flex-row w-full max-w-3xl bg-white rounded-2xl shadow-lg overflow-hidden">
+        
+        {/* Side Image */}
+        <div className="hidden md:flex md:w-1/2 items-center justify-center bg-gray-50 p-4">
           <img
             src="/register.png"
-            alt="Pixi Tax Management"
-            className="absolute inset-0 w-full h-full object-cover"
+            alt="Register"
+            className="w-4/5 h-4/5 object-contain rounded-xl"
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/20 via-purple-600/20 to-pink-500/20" />
         </div>
 
-        {/* Right Form */}
-        <div className="w-full lg:w-2/3 flex flex-col justify-center px-6 md:px-8 py-8">
-          <Link to="/" className="inline-block mb-4">
-            <button className="flex items-center gap-2 px-2 py-1 rounded-md bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-sm font-medium shadow-sm hover:shadow-md">
-              <ArrowLeft className="w-4 h-4" /> Back
-            </button>
+        {/* Form */}
+        <div className="w-full md:w-1/2 flex flex-col justify-center p-6">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 mb-6 text-sm font-medium text-white bg-purple-600 px-3 py-1.5 rounded-md"
+          >
+            <ArrowLeft className="w-4 h-4" /> Back
           </Link>
 
-          {/* Logo */}
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-md">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
               <Calculator className="w-6 h-6 text-white" />
             </div>
-            <span className="text-2xl font-extrabold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+            <span className="text-3xl font-extrabold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
               Pixi
             </span>
           </div>
 
-          <div className="bg-white/95 border border-primary/20 rounded-xl p-4 md:p-6 shadow-md">
-            <h1 className="text-xl md:text-2xl font-bold mb-1">Create your account</h1>
-            <p className="text-muted-foreground mb-4 text-sm">Get started with Pixi tax management.</p>
+          <h1 className="text-2xl font-bold mb-2 text-gray-800">Create Account</h1>
+          <p className="text-sm text-gray-600 mb-6">Enter your details to get started</p>
 
-            <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4" autoComplete="off">
-              {/* Name */}
-              <div>
-                <Label htmlFor="name">Full Name</Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary" />
-                  <Input
-                    id="name"
-                    type="text"
-                    placeholder="Full Name"
-                    className="w-full pl-9 h-9 md:h-10"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    required
-                  />
-                </div>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Name */}
+            <div>
+              <Label htmlFor="name">Full Name</Label>
+              <div className="relative mt-1">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="Full Name"
+                  className="pl-9 h-10"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  required
+                />
               </div>
+            </div>
 
-              {/* Email */}
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary" />
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="you@example.com"
-                    className="w-full pl-9 h-9 md:h-10"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    required
-                  />
-                </div>
+            {/* Email */}
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <div className="relative mt-1">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  className="pl-9 h-10"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  required
+                />
               </div>
+            </div>
 
-              {/* Password */}
-              <div>
-                <Label htmlFor="password">Password</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary" />
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
-                    className="w-full pl-9 pr-9 h-9 md:h-10"
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2"
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
+            {/* Password */}
+            <div>
+              <Label htmlFor="password">Password</Label>
+              <div className="relative mt-1">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your password"
+                  className="pl-9 pr-9 h-10"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
+            </div>
 
-              {/* Confirm Password */}
-              <div>
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary" />
-                  <Input
-                    id="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    placeholder="Re-enter your password"
-                    className="w-full pl-9 pr-9 h-9 md:h-10"
-                    value={formData.confirmPassword}
-                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2"
-                  >
-                    {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
+            {/* Confirm Password */}
+            <div>
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <div className="relative mt-1">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  id="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="Re-enter password"
+                  className="pl-9 pr-9 h-10"
+                  value={formData.confirmPassword}
+                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                >
+                  {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
+            </div>
 
-              <Button
-                type="submit"
-                className="w-full h-9 md:h-10 bg-gradient-to-r from-purple-700 via-purple-600 to-pink-500 text-white font-semibold shadow-md"
-                disabled={isLoading}
-              >
-                {isLoading ? "Creating..." : "Create account"}
-              </Button>
-            </form>
+            <Button
+              type="submit"
+              className="w-full h-10 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold"
+              disabled={isLoading}
+            >
+              {isLoading ? "Creating..." : "Create account"}
+            </Button>
+          </form>
 
-            <p className="text-center text-muted-foreground mt-4 text-sm">
-              Already have an account?{" "}
-              <Link to="/login" className="text-primary font-medium hover:underline">
-                Sign in
-              </Link>
-            </p>
-          </div>
+          <p className="text-center text-sm mt-4 text-gray-600">
+            Already have an account?{" "}
+            <Link to="/login" className="text-purple-600 font-medium hover:underline">
+              Sign in
+            </Link>
+          </p>
         </div>
       </div>
     </div>
