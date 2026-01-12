@@ -20,12 +20,10 @@ const Register = () => {
     confirmPassword: "",
   });
 
-  // Prevent scrolling while on register page
+  // Prevent scrolling
   useEffect(() => {
     document.body.classList.add("overflow-hidden");
-    return () => {
-      document.body.classList.remove("overflow-hidden");
-    };
+    return () => document.body.classList.remove("overflow-hidden");
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -61,19 +59,23 @@ const Register = () => {
   };
 
   return (
-    <div className="flex items-center justify-center w-full h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 px-4 sm:px-6 py-8 sm:py-12">
-      <div className="flex flex-col lg:flex-row w-full max-w-5xl rounded-3xl shadow-xl bg-white/80 backdrop-blur-md overflow-hidden">
+    <div className="flex items-center justify-center w-full min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 px-4 py-8">
+      <div className="flex flex-col lg:flex-row w-full max-w-4xl rounded-2xl shadow-xl bg-white/90 backdrop-blur-md overflow-hidden">
 
         {/* Left Image */}
-        <div className="hidden lg:flex w-1/2 relative">
-          <img src="/register.png" alt="Pixi Tax Management" className="absolute inset-0 w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/30 via-purple-600/30 to-pink-500/30" />
+        <div className="hidden lg:flex w-1/3 relative">
+          <img
+            src="/register.png"
+            alt="Pixi Tax Management"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/20 via-purple-600/20 to-pink-500/20" />
         </div>
 
         {/* Right Form */}
-        <div className="w-full lg:w-1/2 flex flex-col justify-center px-6 md:px-10 py-8 md:py-10">
-          <Link to="/" className="inline-block mb-6">
-            <button className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-sm font-medium shadow-sm hover:shadow-md">
+        <div className="w-full lg:w-2/3 flex flex-col justify-center px-6 md:px-8 py-8">
+          <Link to="/" className="inline-block mb-4">
+            <button className="flex items-center gap-2 px-2 py-1 rounded-md bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-sm font-medium shadow-sm hover:shadow-md">
               <ArrowLeft className="w-4 h-4" /> Back
             </button>
           </Link>
@@ -88,11 +90,11 @@ const Register = () => {
             </span>
           </div>
 
-          <div className="bg-white/90 border border-primary/20 rounded-2xl p-6 md:p-8 shadow-lg">
-            <h1 className="text-2xl font-bold mb-1">Create your account</h1>
+          <div className="bg-white/95 border border-primary/20 rounded-xl p-4 md:p-6 shadow-md">
+            <h1 className="text-xl md:text-2xl font-bold mb-1">Create your account</h1>
             <p className="text-muted-foreground mb-4 text-sm">Get started with Pixi tax management.</p>
 
-            <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
+            <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4" autoComplete="off">
               {/* Name */}
               <div>
                 <Label htmlFor="name">Full Name</Label>
@@ -102,7 +104,7 @@ const Register = () => {
                     id="name"
                     type="text"
                     placeholder="Full Name"
-                    className="w-full pl-9 h-10"
+                    className="w-full pl-9 h-9 md:h-10"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     required
@@ -119,7 +121,7 @@ const Register = () => {
                     id="email"
                     type="email"
                     placeholder="you@example.com"
-                    className="w-full pl-9 h-10"
+                    className="w-full pl-9 h-9 md:h-10"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     required
@@ -136,7 +138,7 @@ const Register = () => {
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
-                    className="w-full pl-9 pr-9 h-10"
+                    className="w-full pl-9 pr-9 h-9 md:h-10"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     required
@@ -160,7 +162,7 @@ const Register = () => {
                     id="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
                     placeholder="Re-enter your password"
-                    className="w-full pl-9 pr-9 h-10"
+                    className="w-full pl-9 pr-9 h-9 md:h-10"
                     value={formData.confirmPassword}
                     onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                     required
@@ -177,7 +179,7 @@ const Register = () => {
 
               <Button
                 type="submit"
-                className="w-full h-10 bg-gradient-to-r from-purple-700 via-purple-600 to-pink-500 text-white font-semibold shadow-md"
+                className="w-full h-9 md:h-10 bg-gradient-to-r from-purple-700 via-purple-600 to-pink-500 text-white font-semibold shadow-md"
                 disabled={isLoading}
               >
                 {isLoading ? "Creating..." : "Create account"}
