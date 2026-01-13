@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,7 @@ import { registerUser } from "@/services/api";
 const Register = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -19,6 +19,11 @@ const Register = () => {
     password: "",
     confirmPassword: "",
   });
+
+  useEffect(() => {
+    document.body.classList.add("overflow-hidden");
+    return () => document.body.classList.remove("overflow-hidden");
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,66 +42,53 @@ const Register = () => {
         password: formData.password,
       });
 
-      if (!res.token) {
-        toast.error("Registration failed");
-        return;
-      }
+      if (!res.token) throw new Error("No token returned");
 
-      localStorage.setItem("token", res.token);
-      toast.success("Account created successfully!");
-      navigate("/dashboard");
+      toast.success("Account created!");
+      navigate("/dashboard", { replace: true });
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Registration failed");
+      toast.error(err.response?.data?.message || err.message || "Registration failed");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 px-4">
-      <div className="relative w-full max-w-4xl min-h-[600px] bg-white rounded-2xl shadow-xl overflow-hidden flex">
+    <div className="h-screen w-full flex items-center justify-center bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
+      <div className="flex w-full max-w-4xl h-[560px] bg-white rounded-2xl shadow-lg overflow-hidden">
 
-        {/* IMAGE SIDE */}
-        <div className="hidden md:block relative w-1/2">
+        {/* Image */}
+        <div className="hidden md:block w-1/2">
           <img
             src="/register.png"
             alt="Register"
-            className="absolute inset-0 w-full h-full object-cover"
+            className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/30 via-purple-600/30 to-pink-500/30" />
         </div>
 
-        {/* FORM SIDE */}
-        <div className="w-full md:w-1/2 flex flex-col justify-center px-6 py-8 overflow-y-auto">
+        {/* Form */}
+        <div className="w-full md:w-1/2 flex flex-col justify-center px-8">
 
-          {/* Back */}
-          <Link to="/" className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-purple-600">
+          <Link to="/" className="inline-flex items-center gap-1 text-xs text-purple-600 mb-4">
             <ArrowLeft className="w-4 h-4" /> Back
           </Link>
 
-          {/* Logo */}
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
-              <Calculator className="w-6 h-6 text-white" />
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-500 to-pink-500 flex items-center justify-center">
+              <Calculator className="w-5 h-5 text-white" />
             </div>
-            <span className="text-2xl font-extrabold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-              Pixi
-            </span>
+            <span className="text-2xl font-bold text-purple-600">Pixi</span>
           </div>
 
-          <h1 className="text-xl font-bold mb-1">Create Account</h1>
-          <p className="text-sm text-muted-foreground mb-4">
-            Get started with Pixi tax management
-          </p>
+          <h1 className="text-xl font-bold mb-3">Create account</h1>
 
           <form onSubmit={handleSubmit} className="space-y-3">
-            {/* Name */}
             <div>
               <Label>Full Name</Label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input
-                  className="pl-9 h-10"
+                  className="pl-9 h-9"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
@@ -104,14 +96,13 @@ const Register = () => {
               </div>
             </div>
 
-            {/* Email */}
             <div>
               <Label>Email</Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input
                   type="email"
-                  className="pl-9 h-10"
+                  className="pl-9 h-9"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   required
@@ -119,64 +110,54 @@ const Register = () => {
               </div>
             </div>
 
-            {/* Password */}
             <div>
               <Label>Password</Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input
                   type={showPassword ? "text" : "password"}
-                  className="pl-9 pr-9 h-10"
+                  className="pl-9 pr-9 h-9"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   required
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2"
-                >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                <button type="button" onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2">
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
 
-            {/* Confirm Password */}
             <div>
               <Label>Confirm Password</Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input
-                  type={showConfirmPassword ? "text" : "password"}
-                  className="pl-9 pr-9 h-10"
+                  type={showConfirm ? "text" : "password"}
+                  className="pl-9 pr-9 h-9"
                   value={formData.confirmPassword}
-                  onChange={(e) =>
-                    setFormData({ ...formData, confirmPassword: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                   required
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2"
-                >
-                  {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                <button type="button" onClick={() => setShowConfirm(!showConfirm)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2">
+                  {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
 
             <Button
               type="submit"
-              className="w-full h-10 bg-gradient-to-r from-indigo-600 to-pink-500"
+              className="w-full h-9 bg-gradient-to-r from-indigo-500 to-pink-500"
               disabled={isLoading}
             >
-              {isLoading ? "Creating..." : "Create Account"}
+              {isLoading ? "Creating..." : "Create account"}
             </Button>
           </form>
 
-          <p className="text-center text-sm mt-4">
+          <p className="text-sm text-center mt-4">
             Already have an account?{" "}
-            <Link to="/login" className="text-primary font-medium">
+            <Link to="/login" className="text-purple-600 font-medium">
               Sign in
             </Link>
           </p>
