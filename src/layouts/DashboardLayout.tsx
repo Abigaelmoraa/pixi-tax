@@ -10,7 +10,7 @@ const DashboardLayout = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const data = await getCurrentUser(); // cookie-based auth
+        const data = await getCurrentUser();
         setUser(data);
       } catch {
         setUser(null);
@@ -21,7 +21,7 @@ const DashboardLayout = () => {
     fetchUser();
   }, []);
 
-  if (loading) return <div>Loading dashboard...</div>;
+  if (loading) return <div className="flex items-center justify-center min-h-screen">Loading dashboard...</div>;
   if (!user) return <Navigate to="/login" replace />;
 
   return (
