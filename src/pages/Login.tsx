@@ -1,5 +1,5 @@
 // src/pages/Login.tsx
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,33 +14,29 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Lock scrolling
-  useEffect(() => {
-    document.body.classList.add("overflow-hidden");
-    return () => document.body.classList.remove("overflow-hidden");
-  }, []);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      // Login request
       const res = await loginUser({
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
       });
 
-      // --------------------------
-      // ✅ Fix: Save token if backend is token-based
-      // --------------------------
+      // ---------------------------
+      // ✅ Token-based auth
+      // ---------------------------
       if (res.data?.token) {
         localStorage.setItem("token", res.data.token);
       }
 
-      // --------------------------
-      // ✅ Successful login
-      // --------------------------
+      // ---------------------------
+      // ✅ Cookie-based auth
+      // ---------------------------
+      // If backend uses HttpOnly cookie, nothing else is needed
+      // axios is already configured with `withCredentials: true`
+
       toast.success("Welcome back!");
       navigate("/dashboard", { replace: true });
     } catch (err: any) {

@@ -6,18 +6,20 @@ import api, { getCurrentUser } from "@/services/api";
 
 const DashboardLayout = () => {
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null); // store actual user data
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        // If token exists in localStorage, attach it
+        // ✅ Token-based auth: attach token if exists
         const token = localStorage.getItem("token");
         if (token) {
           api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        } else {
+          delete api.defaults.headers.common["Authorization"];
         }
 
-        // fetch current user, disable cache to avoid 304
+        // fetch current user
         const data = await getCurrentUser();
         setUser(data);
       } catch (err) {
@@ -30,7 +32,6 @@ const DashboardLayout = () => {
     fetchUser();
   }, []);
 
-  // show loading spinner/page while fetching user
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -39,12 +40,10 @@ const DashboardLayout = () => {
     );
   }
 
-  // redirect to login if user is not authenticated
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  // render dashboard layout if authenticated
   return (
     <div className="flex min-h-screen w-full bg-background">
       <DashboardSidebar />
