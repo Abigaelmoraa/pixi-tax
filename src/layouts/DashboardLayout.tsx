@@ -1,13 +1,22 @@
+import { useState, useEffect } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import DashboardSidebar from "@/components/DashboardSidebar";
+import { getCurrentUser } from "@/services/api";
 
 const DashboardLayout = () => {
-  const token = localStorage.getItem("token");
+  const [loading, setLoading] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
 
-  // If no token, redirect to login
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
+  useEffect(() => {
+    getCurrentUser()
+      .then(() => setAuthenticated(true))
+      .catch(() => setAuthenticated(false))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div className="flex items-center justify-center h-screen">Loading...</div>;
+
+  if (!authenticated) return <Navigate to="/login" replace />;
 
   return (
     <div className="flex min-h-screen w-full bg-background">

@@ -36,16 +36,15 @@ const Register = () => {
     setIsLoading(true);
 
     try {
-      const res = await registerUser({
+      // ✅ registerUser will use cookie-based JWT
+      await registerUser({
         name: formData.name.trim(),
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
       });
 
-      if (!res.token) throw new Error("No token returned");
-
       toast.success("Account created!");
-      navigate("/dashboard", { replace: true });
+      navigate("/dashboard", { replace: true}); // ✅ Navigate after success
     } catch (err: any) {
       toast.error(err.response?.data?.message || err.message || "Registration failed");
     } finally {
@@ -59,16 +58,11 @@ const Register = () => {
 
         {/* Image */}
         <div className="hidden md:block w-1/2">
-          <img
-            src="/register.png"
-            alt="Register"
-            className="w-full h-full object-cover"
-          />
+          <img src="/register.png" alt="Register" className="w-full h-full object-cover" />
         </div>
 
         {/* Form */}
         <div className="w-full md:w-1/2 flex flex-col justify-center px-8">
-
           <Link to="/" className="inline-flex items-center gap-1 text-xs text-purple-600 mb-4">
             <ArrowLeft className="w-4 h-4" /> Back
           </Link>

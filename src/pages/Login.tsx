@@ -14,6 +14,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Lock scrolling when modal is open
   useEffect(() => {
     document.body.classList.add("overflow-hidden");
     return () => document.body.classList.remove("overflow-hidden");
@@ -22,12 +23,15 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+
     try {
-      const res = await loginUser({
+      // Login request
+      await loginUser({
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
       });
-      if (!res.token) throw new Error("No token returned");
+
+      // ✅ Navigate on successful login
       toast.success("Welcome back!");
       navigate("/dashboard", { replace: true });
     } catch (err: any) {
@@ -78,7 +82,9 @@ const Login = () => {
                   placeholder="you@example.com"
                   className="pl-9 h-10 w-full"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                   required
                 />
               </div>
@@ -93,7 +99,9 @@ const Login = () => {
                   placeholder="Enter your password"
                   className="pl-9 pr-9 h-10 w-full"
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
                   required
                 />
                 <button
@@ -101,7 +109,11 @@ const Login = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
             </div>
