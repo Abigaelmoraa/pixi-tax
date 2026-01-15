@@ -1,4 +1,3 @@
-// src/layouts/DashboardLayout.tsx
 import { useState, useEffect } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import DashboardSidebar from "@/components/DashboardSidebar";
@@ -6,39 +5,25 @@ import { getCurrentUser } from "@/services/api";
 
 const DashboardLayout = () => {
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null); // store user info
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        // ✅ Simply fetch current user; cookie handles auth
-        const data = await getCurrentUser();
+        const data = await getCurrentUser(); // cookie-based auth
         setUser(data);
-      } catch (err) {
-        setUser(null); // user not authenticated
+      } catch {
+        setUser(null);
       } finally {
         setLoading(false);
       }
     };
-
     fetchUser();
   }, []);
 
-  // show loading spinner while fetching
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <span className="text-gray-500">Loading dashboard...</span>
-      </div>
-    );
-  }
+  if (loading) return <div>Loading dashboard...</div>;
+  if (!user) return <Navigate to="/login" replace />;
 
-  // redirect if not authenticated
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-
-  // render dashboard if authenticated
   return (
     <div className="flex min-h-screen w-full bg-background">
       <DashboardSidebar />

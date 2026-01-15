@@ -25,10 +25,11 @@ const Login = () => {
         password: formData.password,
       });
 
-      // ✅ Login succeeded; no need to store token
+      // ✅ Login succeeded; backend sets HttpOnly cookie automatically
       toast.success("Welcome back!");
       navigate("/dashboard", { replace: true });
     } catch (err: any) {
+      // Show backend error or fallback message
       toast.error(err.response?.data?.message || err.message || "Login failed");
     } finally {
       setIsLoading(false);

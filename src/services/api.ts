@@ -5,15 +5,25 @@ import axios, { AxiosInstance, AxiosError, AxiosResponse } from "axios";
 const api: AxiosInstance = axios.create({
   baseURL: "https://db.x1.pitch90agent.com/api",
   headers: { "Content-Type": "application/json" },
-  withCredentials: true, // ✅ send cookies automatically
+  // remove withCredentials because we will use token header
+});
+
+// ---------------- REQUEST INTERCEPTOR ----------------
+api.interceptors.request.use((config) => {
+  // Attach token to all requests if it exists
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 
 // ---------------- RESPONSE INTERCEPTOR ----------------
 api.interceptors.response.use(
   (res) => res,
   (error: AxiosError) => {
-    // Let components handle 401
     if (error.response?.status === 401) {
+      // Let frontend handle unauthorized
       return Promise.reject(new Error("Unauthorized"));
     }
     return Promise.reject(error);
@@ -25,12 +35,16 @@ interface ApiResponse<T = any> {
   data?: T;
   message?: string;
   user?: any;
+  token?: string;
 }
 
 // ---------------- AUTH ----------------
 export const loginUser = async (data: { email: string; password: string }) => {
   const res: AxiosResponse<ApiResponse> = await api.post("/login", data);
-  // Cookie is sent automatically; no need to save token
+  // Save token if backend sends one
+  if (res.data.token) {
+    localStorage.setItem("token", res.data.token);
+  }
   return res.data;
 };
 
@@ -39,7 +53,10 @@ export const registerUser = async (data: { name: string; email: string; password
   return res.data;
 };
 
-export const logoutUser = async () => api.post("/logout");
+export const logoutUser = async () => {
+  localStorage.removeItem("token"); // remove token on logout
+  return api.post("/logout");
+};
 
 // ---------------- CURRENT USER ----------------
 export const getCurrentUser = async () => {
