@@ -5,19 +5,31 @@ import { getCurrentUser } from "@/services/api";
 
 const DashboardLayout = () => {
   const [loading, setLoading] = useState(true);
-  const [authenticated, setAuthenticated] = useState(false);
+  const [user, setUser] = useState<any>(null); // store actual user data
 
   useEffect(() => {
+    // fetch current user, disable cache to avoid 304
     getCurrentUser()
-      .then(() => setAuthenticated(true))
-      .catch(() => setAuthenticated(false))
+      .then((data) => setUser(data)) // user is authenticated
+      .catch(() => setUser(null))    // user not authenticated
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="flex items-center justify-center h-screen">Loading...</div>;
+  // show a loading spinner/page while fetching user
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        Loading...
+      </div>
+    );
+  }
 
-  if (!authenticated) return <Navigate to="/login" replace />;
+  // redirect to login if user is not authenticated
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
 
+  // render dashboard layout if authenticated
   return (
     <div className="flex min-h-screen w-full bg-background">
       <DashboardSidebar />

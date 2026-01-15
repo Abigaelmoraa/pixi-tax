@@ -14,7 +14,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Lock scrolling when modal is open
+  // Lock scrolling
   useEffect(() => {
     document.body.classList.add("overflow-hidden");
     return () => document.body.classList.remove("overflow-hidden");
@@ -26,12 +26,12 @@ const Login = () => {
 
     try {
       // Login request
-      await loginUser({
+      const res = await loginUser({
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
       });
 
-      // ✅ Navigate on successful login
+      // ✅ Successful login
       toast.success("Welcome back!");
       navigate("/dashboard", { replace: true });
     } catch (err: any) {
@@ -109,13 +109,16 @@ const Login = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
                 >
-                  {showPassword ? (
-                    <EyeOff className="w-4 h-4" />
-                  ) : (
-                    <Eye className="w-4 h-4" />
-                  )}
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
+            </div>
+
+            {/* Forgot Password Link */}
+            <div className="text-right text-sm">
+              <Link to="/forgot-password" className="text-purple-600 font-medium">
+                Forgot password?
+              </Link>
             </div>
 
             <Button

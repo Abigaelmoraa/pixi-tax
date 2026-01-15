@@ -13,10 +13,8 @@ api.interceptors.response.use(
   (res) => res,
   (error: AxiosError) => {
     if (error.response?.status === 401) {
-      // Unauthorized → redirect to login
-      if (window.location.pathname !== "/login") {
-        window.location.href = "/login";
-      }
+      // Unauthorized → let components handle navigation
+      return Promise.reject(new Error("Unauthorized"));
     }
     return Promise.reject(error);
   }
@@ -32,13 +30,11 @@ interface ApiResponse<T = any> {
 // ---------------- AUTH ----------------
 export const loginUser = async (data: { email: string; password: string }) => {
   const res: AxiosResponse<ApiResponse> = await api.post("/login", data);
-  if (res.status !== 200) throw new Error(res.data?.message || "Login failed");
-  return res.data; // optional: user info
+  return res.data; // contains user/token info
 };
 
 export const registerUser = async (data: { name: string; email: string; password: string }) => {
   const res: AxiosResponse<ApiResponse> = await api.post("/userRegister", data);
-  if (res.status !== 200) throw new Error(res.data?.message || "Registration failed");
   return res.data;
 };
 
@@ -47,7 +43,7 @@ export const logoutUser = async () => api.post("/logout");
 // ---------------- CURRENT USER ----------------
 export const getCurrentUser = async () => {
   const res: AxiosResponse<ApiResponse> = await api.get("/user");
-  return res.data?.data;
+  return res.data?.user || res.data?.data; // support both response shapes
 };
 
 // ---------------- DASHBOARD ----------------
@@ -76,11 +72,11 @@ export const deleteMpesaIPN = async (id: string) => api.delete(`/mpesaIPN/${id}`
 export const safIPN = async (data: Record<string, any>) => api.post("/safIPN", data);
 
 // ---------------- STK CALLBACK ----------------
-export const listSTKCallback = async () => api.get("/sTKCallback");
-export const createSTKCallback = async (data: Record<string, any>) => api.post("/sTKCallback", data);
-export const getSTKCallback = async (id: string) => api.get(`/sTKCallback/${id}`);
-export const updateSTKCallback = async (id: string, data: Record<string, any>) => api.put(`/sTKCallback/${id}`, data);
-export const deleteSTKCallback = async (id: string) => api.delete(`/sTKCallback/${id}`);
+export const listSTKCallback = async () => api.get("/stkCallback");
+export const createSTKCallback = async (data: Record<string, any>) => api.post("/stkCallback", data);
+export const getSTKCallback = async (id: string) => api.get(`/stkCallback/${id}`);
+export const updateSTKCallback = async (id: string, data: Record<string, any>) => api.put(`/stkCallback/${id}`, data);
+export const deleteSTKCallback = async (id: string) => api.delete(`/stkCallback/${id}`);
 
 // ---------------- CLIENTS ----------------
 export const listClients = async () => api.get("/client");
