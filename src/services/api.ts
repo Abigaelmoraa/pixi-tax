@@ -12,8 +12,8 @@ const api: AxiosInstance = axios.create({
 api.interceptors.response.use(
   (res) => res,
   (error: AxiosError) => {
+    // Let components handle 401
     if (error.response?.status === 401) {
-      // Unauthorized → let components handle navigation
       return Promise.reject(new Error("Unauthorized"));
     }
     return Promise.reject(error);
@@ -30,7 +30,8 @@ interface ApiResponse<T = any> {
 // ---------------- AUTH ----------------
 export const loginUser = async (data: { email: string; password: string }) => {
   const res: AxiosResponse<ApiResponse> = await api.post("/login", data);
-  return res.data; // contains user/token info
+  // Cookie is sent automatically; no need to save token
+  return res.data;
 };
 
 export const registerUser = async (data: { name: string; email: string; password: string }) => {
@@ -43,7 +44,8 @@ export const logoutUser = async () => api.post("/logout");
 // ---------------- CURRENT USER ----------------
 export const getCurrentUser = async () => {
   const res: AxiosResponse<ApiResponse> = await api.get("/user");
-  return res.data?.user || res.data?.data; // support both response shapes
+  // Return user object if backend sends it
+  return res.data?.user || res.data?.data || null;
 };
 
 // ---------------- DASHBOARD ----------------

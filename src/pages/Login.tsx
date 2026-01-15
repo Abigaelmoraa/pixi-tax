@@ -19,24 +19,13 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const res = await loginUser({
+      // ✅ Login request (cookie-based auth)
+      await loginUser({
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
       });
 
-      // ---------------------------
-      // ✅ Token-based auth
-      // ---------------------------
-      if (res.data?.token) {
-        localStorage.setItem("token", res.data.token);
-      }
-
-      // ---------------------------
-      // ✅ Cookie-based auth
-      // ---------------------------
-      // If backend uses HttpOnly cookie, nothing else is needed
-      // axios is already configured with `withCredentials: true`
-
+      // ✅ Login succeeded; no need to store token
       toast.success("Welcome back!");
       navigate("/dashboard", { replace: true });
     } catch (err: any) {
@@ -119,7 +108,6 @@ const Login = () => {
               </div>
             </div>
 
-            {/* Forgot Password Link */}
             <div className="text-right text-sm">
               <Link to="/forgot-password" className="text-purple-600 font-medium">
                 Forgot password?

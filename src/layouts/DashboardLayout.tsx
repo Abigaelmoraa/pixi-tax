@@ -2,28 +2,20 @@
 import { useState, useEffect } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import DashboardSidebar from "@/components/DashboardSidebar";
-import api, { getCurrentUser } from "@/services/api";
+import { getCurrentUser } from "@/services/api";
 
 const DashboardLayout = () => {
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(null); // store user info
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        // ✅ Token-based auth: attach token if exists
-        const token = localStorage.getItem("token");
-        if (token) {
-          api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-        } else {
-          delete api.defaults.headers.common["Authorization"];
-        }
-
-        // fetch current user
+        // ✅ Simply fetch current user; cookie handles auth
         const data = await getCurrentUser();
         setUser(data);
       } catch (err) {
-        setUser(null); // not authenticated
+        setUser(null); // user not authenticated
       } finally {
         setLoading(false);
       }
@@ -32,6 +24,7 @@ const DashboardLayout = () => {
     fetchUser();
   }, []);
 
+  // show loading spinner while fetching
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -40,10 +33,12 @@ const DashboardLayout = () => {
     );
   }
 
+  // redirect if not authenticated
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
+  // render dashboard if authenticated
   return (
     <div className="flex min-h-screen w-full bg-background">
       <DashboardSidebar />
