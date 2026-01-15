@@ -1,25 +1,40 @@
+// src/layouts/DashboardLayout.tsx
 import { useState, useEffect } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import DashboardSidebar from "@/components/DashboardSidebar";
-import { getCurrentUser } from "@/services/api";
+import api, { getCurrentUser } from "@/services/api";
 
 const DashboardLayout = () => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null); // store actual user data
 
   useEffect(() => {
-    // fetch current user, disable cache to avoid 304
-    getCurrentUser()
-      .then((data) => setUser(data)) // user is authenticated
-      .catch(() => setUser(null))    // user not authenticated
-      .finally(() => setLoading(false));
+    const fetchUser = async () => {
+      try {
+        // If token exists in localStorage, attach it
+        const token = localStorage.getItem("token");
+        if (token) {
+          api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        }
+
+        // fetch current user, disable cache to avoid 304
+        const data = await getCurrentUser();
+        setUser(data);
+      } catch (err) {
+        setUser(null); // not authenticated
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
   }, []);
 
-  // show a loading spinner/page while fetching user
+  // show loading spinner/page while fetching user
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        Loading...
+        <span className="text-gray-500">Loading dashboard...</span>
       </div>
     );
   }

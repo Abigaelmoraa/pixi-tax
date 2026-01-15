@@ -31,7 +31,16 @@ const Login = () => {
         password: formData.password,
       });
 
+      // --------------------------
+      // ✅ Fix: Save token if backend is token-based
+      // --------------------------
+      if (res.data?.token) {
+        localStorage.setItem("token", res.data.token);
+      }
+
+      // --------------------------
       // ✅ Successful login
+      // --------------------------
       toast.success("Welcome back!");
       navigate("/dashboard", { replace: true });
     } catch (err: any) {

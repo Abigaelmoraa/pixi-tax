@@ -17,8 +17,9 @@ const ForgotPassword = () => {
     setIsLoading(true);
 
     try {
-      
-      const response = await api.post("/api/checkOtp", { email });
+      // ✅ Correct endpoint
+      const response = await api.post("/checkOtp", { email });
+
       toast.success(response.data.message || "OTP sent to your email!");
 
       navigate("/reset-password", { state: { email } });
@@ -55,7 +56,7 @@ const ForgotPassword = () => {
 
           <Button
             type="submit"
-            className="w-full h-10 bg-indigo-600 text-white font-semibold"
+            className="w-full h-10 bg-gradient-to-r from-indigo-500 to-pink-500 text-white font-semibold"
             disabled={isLoading}
           >
             {isLoading ? "Sending..." : "Send OTP"}

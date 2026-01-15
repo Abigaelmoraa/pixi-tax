@@ -27,15 +27,6 @@ import WithdrawalRequest from "./pages/dashboard/WithdrawalRequest";
 // Fallback
 import NotFound from "./pages/NotFound";
 
-// --------------------
-// Optional PrivateRoute component
-// --------------------
-const PrivateRoute = ({ children }: { children: JSX.Element }) => {
-  // DashboardLayout already does the backend check,
-  // so we just render children here
-  return children;
-};
-
 function App() {
   return (
     <Router>
@@ -50,14 +41,7 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Dashboard Pages */}
-        <Route
-          path="/dashboard/*"
-          element={
-            <PrivateRoute>
-              <DashboardLayout />
-            </PrivateRoute>
-          }
-        >
+        <Route path="/dashboard/*" element={<DashboardLayout />}>
           <Route index element={<Overview />} />
           <Route path="overview" element={<Overview />} />
           <Route path="prn-requests" element={<PRNRequests />} />
