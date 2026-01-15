@@ -1,4 +1,3 @@
-// src/pages/Login.tsx
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -19,17 +18,14 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      // ✅ Login request (cookie-based auth)
       await loginUser({
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
       });
 
-      // ✅ Login succeeded; backend sets HttpOnly cookie automatically
       toast.success("Welcome back!");
       navigate("/dashboard", { replace: true });
     } catch (err: any) {
-      // Show backend error or fallback message
       toast.error(err.response?.data?.message || err.message || "Login failed");
     } finally {
       setIsLoading(false);
