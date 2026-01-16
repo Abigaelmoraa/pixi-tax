@@ -1,15 +1,12 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-// Auth Pages
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 
-// Landing Page
 import Landing from "./pages/Landing";
 
-// Dashboard Layout & Pages
 import DashboardLayout from "./layouts/DashboardLayout";
 import Overview from "./components/Overview";
 import PRNRequests from "./pages/dashboard/PRNRequests";
@@ -23,8 +20,6 @@ import Settings from "./pages/dashboard/Settings";
 import Profile from "./pages/dashboard/Profile";
 import ChangePassword from "./pages/dashboard/ChangePassword";
 import WithdrawalRequest from "./pages/dashboard/WithdrawalRequest";
-
-// Fallback
 import NotFound from "./pages/NotFound";
 
 function App() {
