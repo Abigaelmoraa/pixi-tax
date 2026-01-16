@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosResponse } from "axios";
 
 const api: AxiosInstance = axios.create({
   baseURL: "https://db.x1.pitch90agent.com/api",
-  withCredentials: true, // 🔥 REQUIRED FOR SESSION AUTH
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
@@ -14,9 +14,7 @@ interface ApiResponse<T = any> {
   user?: any;
 }
 
-/* ================================
-   AUTH
-================================ */
+// auth
 
 export const loginUser = async (data: {
   email: string;
@@ -43,17 +41,10 @@ export const getCurrentUser = async () => {
   const res: AxiosResponse<ApiResponse> = await api.get("/user");
   return res.data?.user || res.data?.data || null;
 };
-
-/* ================================
-   DASHBOARD
-================================ */
+//dashboard
 
 export const getDashboardTiles = async () => api.get("/dashboardTiles");
 export const getDashboardTilesStudio = async () => api.get("/dashboardTilesStudio");
-
-/* ================================
-   PAYMENTS
-================================ */
 
 export const createPaymentRequest = async (data: Record<string, any>) =>
   api.post("/paymentRequest", data);
@@ -67,9 +58,7 @@ export const b2cPayoutResponse = async (data: Record<string, any>) =>
 export const taxPayoutResponse = async (data: Record<string, any>) =>
   api.post("/taxPayoutResponse", data);
 
-/* ================================
-   M-PESA
-================================ */
+
 
 export const listMpesaIPN = async () => api.get("/mpesaIPN");
 export const createMpesaIPN = async (data: Record<string, any>) =>
@@ -80,11 +69,6 @@ export const updateMpesaIPN = async (id: string, data: Record<string, any>) =>
   api.put(`/mpesaIPN/${id}`, data);
 export const deleteMpesaIPN = async (id: string) =>
   api.delete(`/mpesaIPN/${id}`);
-
-/* ================================
-   STK CALLBACK
-================================ */
-
 export const listSTKCallback = async () => api.get("/stkCallback");
 export const createSTKCallback = async (data: Record<string, any>) =>
   api.post("/stkCallback", data);
@@ -94,11 +78,6 @@ export const updateSTKCallback = async (id: string, data: Record<string, any>) =
   api.put(`/stkCallback/${id}`, data);
 export const deleteSTKCallback = async (id: string) =>
   api.delete(`/stkCallback/${id}`);
-
-/* ================================
-   CLIENTS
-================================ */
-
 export const listClients = async () => api.get("/client");
 export const createClient = async (data: Record<string, any>) =>
   api.post("/client", data);
@@ -109,9 +88,6 @@ export const updateClient = async (id: string, data: Record<string, any>) =>
 export const deleteClient = async (id: string) =>
   api.delete(`/client/${id}`);
 
-/* ================================
-   USERS
-================================ */
 
 export const listUsers = async () => api.get("/users");
 export const createUser = async (data: Record<string, any>) =>
