@@ -9,11 +9,7 @@ import { loginUser } from "@/services/api";
 
 const Login = () => {
   const navigate = useNavigate();
-
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -22,18 +18,18 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      await loginUser({
+      const user = await loginUser({
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
       });
 
-      toast.success("Welcome back!");
+      toast.success(`Welcome back, ${user?.name || "User"}!`);
+
+      // Navigate to dashboard after successful login
       navigate("/dashboard", { replace: true });
     } catch (err: any) {
       toast.error(
-        err.response?.data?.message ||
-          err.message ||
-          "Invalid email or password"
+        err.response?.data?.message || err.message || "Invalid email or password"
       );
     } finally {
       setIsLoading(false);
@@ -67,9 +63,7 @@ const Login = () => {
           </div>
 
           <h1 className="text-xl font-bold mb-1">Welcome back</h1>
-          <p className="text-sm text-gray-500 mb-4">
-            Sign in to your account
-          </p>
+          <p className="text-sm text-gray-500 mb-4">Sign in to your account</p>
 
           <form onSubmit={handleSubmit} className="space-y-3">
             <div>
@@ -108,20 +102,13 @@ const Login = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
                 >
-                  {showPassword ? (
-                    <EyeOff className="w-4 h-4" />
-                  ) : (
-                    <Eye className="w-4 h-4" />
-                  )}
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
 
             <div className="text-right text-sm">
-              <Link
-                to="/forgot-password"
-                className="text-purple-600 font-medium"
-              >
+              <Link to="/forgot-password" className="text-purple-600 font-medium">
                 Forgot password?
               </Link>
             </div>
