@@ -1,13 +1,14 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 
+// Base axios instance
 const api: AxiosInstance = axios.create({
   baseURL: "https://db.x1.pitch90agent.com/api",
-  withCredentials: true, // ensures cookies are sent if backend uses cookie-based auth
   headers: {
     "Content-Type": "application/json",
   },
 });
 
+// Generic API response type
 interface ApiResponse<T = any> {
   data?: T;
   message?: string;
@@ -16,107 +17,193 @@ interface ApiResponse<T = any> {
 
 // ---------------- AUTH ----------------
 
-// Login user and store token if backend returns one
+// Login user and store token
 export const loginUser = async (data: { email: string; password: string }) => {
   const res: AxiosResponse<ApiResponse> = await api.post("/login", data);
 
-  // If backend returns a token (JWT), store it in localStorage
-  if (res.data.user?.token) {
-    localStorage.setItem("authToken", res.data.user.token);
-  }
+  const user = res.data.user || res.data.data;
+  if (!user?.token) throw new Error("No token returned from server");
 
-  return res.data.user || res.data.data;
+  // Store token in localStorage
+  localStorage.setItem("authToken", user.token);
+
+  return user;
 };
 
 // Register user
-export const registerUser = async (data: {
-  name: string;
-  email: string;
-  password: string;
-}) => {
+export const registerUser = async (data: { name: string; email: string; password: string }) => {
   const res: AxiosResponse<ApiResponse> = await api.post("/userRegister", data);
   return res.data;
 };
 
 // Logout user
 export const logoutUser = async () => {
-  localStorage.removeItem("authToken"); // remove stored token
+  localStorage.removeItem("authToken");
   return api.post("/logout");
 };
 
 // Get current logged-in user
 export const getCurrentUser = async () => {
   const token = localStorage.getItem("authToken");
+  if (!token) throw new Error("User not authenticated");
 
-  if (token) {
-    // Use token-based auth if token exists
-    const authApi = axios.create({
-      baseURL: api.defaults.baseURL,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  const res: AxiosResponse<ApiResponse> = await axios.get(`${api.defaults.baseURL}/user`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 
-    const res: AxiosResponse<ApiResponse> = await authApi.get("/user");
-    return res.data?.user || res.data?.data || null;
-  }
-
-  // fallback to cookie-based request
-  const res: AxiosResponse<ApiResponse> = await api.get("/user");
-  return res.data?.user || res.data?.data || null;
+  return res.data.user || res.data.data;
 };
 
 // ---------------- DASHBOARD ----------------
-export const getDashboardTiles = async () => api.get("/dashboardTiles");
-export const getDashboardTilesStudio = async () => api.get("/dashboardTilesStudio");
+export const getDashboardTiles = async () => {
+  const token = localStorage.getItem("authToken");
+  return axios.get(`${api.defaults.baseURL}/dashboardTiles`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+export const getDashboardTilesStudio = async () => {
+  const token = localStorage.getItem("authToken");
+  return axios.get(`${api.defaults.baseURL}/dashboardTilesStudio`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
 
 // ---------------- PAYMENTS ----------------
-export const createPaymentRequest = async (data: Record<string, any>) =>
-  api.post("/paymentRequest", data);
+export const createPaymentRequest = async (data: Record<string, any>) => {
+  const token = localStorage.getItem("authToken");
+  return axios.post(`${api.defaults.baseURL}/paymentRequest`, data, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
 
-export const createWithdrawalRequest = async (data: Record<string, any>) =>
-  api.post("/withdrawalRequest", data);
+export const createWithdrawalRequest = async (data: Record<string, any>) => {
+  const token = localStorage.getItem("authToken");
+  return axios.post(`${api.defaults.baseURL}/withdrawalRequest`, data, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
 
-export const b2cPayoutResponse = async (data: Record<string, any>) =>
-  api.post("/b2cPayoutResponse", data);
+export const b2cPayoutResponse = async (data: Record<string, any>) => {
+  const token = localStorage.getItem("authToken");
+  return axios.post(`${api.defaults.baseURL}/b2cPayoutResponse`, data, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
 
-export const taxPayoutResponse = async (data: Record<string, any>) =>
-  api.post("/taxPayoutResponse", data);
+export const taxPayoutResponse = async (data: Record<string, any>) => {
+  const token = localStorage.getItem("authToken");
+  return axios.post(`${api.defaults.baseURL}/taxPayoutResponse`, data, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
 
 // ---------------- MPESA ----------------
-export const listMpesaIPN = async () => api.get("/mpesaIPN");
-export const createMpesaIPN = async (data: Record<string, any>) =>
-  api.post("/mpesaIPN", data);
-export const getMpesaIPN = async (id: string) => api.get(`/mpesaIPN/${id}`);
-export const updateMpesaIPN = async (id: string, data: Record<string, any>) =>
-  api.put(`/mpesaIPN/${id}`, data);
-export const deleteMpesaIPN = async (id: string) => api.delete(`/mpesaIPN/${id}`);
+export const listMpesaIPN = async () => {
+  const token = localStorage.getItem("authToken");
+  return axios.get(`${api.defaults.baseURL}/mpesaIPN`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
 
-export const listSTKCallback = async () => api.get("/stkCallback");
-export const createSTKCallback = async (data: Record<string, any>) =>
-  api.post("/stkCallback", data);
-export const getSTKCallback = async (id: string) => api.get(`/stkCallback/${id}`);
-export const updateSTKCallback = async (id: string, data: Record<string, any>) =>
-  api.put(`/stkCallback/${id}`, data);
-export const deleteSTKCallback = async (id: string) => api.delete(`/stkCallback/${id}`);
+export const createMpesaIPN = async (data: Record<string, any>) => {
+  const token = localStorage.getItem("authToken");
+  return axios.post(`${api.defaults.baseURL}/mpesaIPN`, data, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+export const getMpesaIPN = async (id: string) => {
+  const token = localStorage.getItem("authToken");
+  return axios.get(`${api.defaults.baseURL}/mpesaIPN/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+export const updateMpesaIPN = async (id: string, data: Record<string, any>) => {
+  const token = localStorage.getItem("authToken");
+  return axios.put(`${api.defaults.baseURL}/mpesaIPN/${id}`, data, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+export const deleteMpesaIPN = async (id: string) => {
+  const token = localStorage.getItem("authToken");
+  return axios.delete(`${api.defaults.baseURL}/mpesaIPN/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
 
 // ---------------- CLIENTS ----------------
-export const listClients = async () => api.get("/client");
-export const createClient = async (data: Record<string, any>) =>
-  api.post("/client", data);
-export const getClient = async (id: string) => api.get(`/client/${id}`);
-export const updateClient = async (id: string, data: Record<string, any>) =>
-  api.put(`/client/${id}`, data);
-export const deleteClient = async (id: string) => api.delete(`/client/${id}`);
+export const listClients = async () => {
+  const token = localStorage.getItem("authToken");
+  return axios.get(`${api.defaults.baseURL}/client`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+export const createClient = async (data: Record<string, any>) => {
+  const token = localStorage.getItem("authToken");
+  return axios.post(`${api.defaults.baseURL}/client`, data, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+export const getClient = async (id: string) => {
+  const token = localStorage.getItem("authToken");
+  return axios.get(`${api.defaults.baseURL}/client/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+export const updateClient = async (id: string, data: Record<string, any>) => {
+  const token = localStorage.getItem("authToken");
+  return axios.put(`${api.defaults.baseURL}/client/${id}`, data, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+export const deleteClient = async (id: string) => {
+  const token = localStorage.getItem("authToken");
+  return axios.delete(`${api.defaults.baseURL}/client/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
 
 // ---------------- USERS ----------------
-export const listUsers = async () => api.get("/users");
-export const createUser = async (data: Record<string, any>) =>
-  api.post("/users", data);
-export const getUser = async (id: string) => api.get(`/users/${id}`);
-export const updateUser = async (id: string, data: Record<string, any>) =>
-  api.put(`/users/${id}`, data);
-export const deleteUser = async (id: string) => api.delete(`/users/${id}`);
+export const listUsers = async () => {
+  const token = localStorage.getItem("authToken");
+  return axios.get(`${api.defaults.baseURL}/users`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+export const createUser = async (data: Record<string, any>) => {
+  const token = localStorage.getItem("authToken");
+  return axios.post(`${api.defaults.baseURL}/users`, data, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+export const getUser = async (id: string) => {
+  const token = localStorage.getItem("authToken");
+  return axios.get(`${api.defaults.baseURL}/users/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+export const updateUser = async (id: string, data: Record<string, any>) => {
+  const token = localStorage.getItem("authToken");
+  return axios.put(`${api.defaults.baseURL}/users/${id}`, data, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+export const deleteUser = async (id: string) => {
+  const token = localStorage.getItem("authToken");
+  return axios.delete(`${api.defaults.baseURL}/users/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
 
 export default api;
