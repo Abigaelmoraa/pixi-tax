@@ -23,12 +23,13 @@ const Login = () => {
         password: formData.password,
       });
 
-      toast.success(`Welcome back, ${user.name || "User"}!`);
+      toast.success(`Welcome back, ${user?.name || "User"}!`);
 
-      // Redirect to dashboard
       navigate("/dashboard", { replace: true });
     } catch (err: any) {
-      toast.error(err.response?.data?.message || err.message || "Login failed");
+      toast.error(
+        err.response?.data?.message || err.message || "Invalid email or password"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -38,11 +39,18 @@ const Login = () => {
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-4">
       <div className="flex flex-col md:flex-row w-full max-w-4xl bg-white rounded-2xl shadow-lg overflow-hidden">
         <div className="hidden md:block md:w-1/2">
-          <img src="/login-image.png" alt="Login" className="w-full h-full object-cover" />
+          <img
+            src="/login-image.png"
+            alt="Login"
+            className="w-full h-full object-cover"
+          />
         </div>
 
         <div className="w-full md:w-1/2 flex flex-col justify-center p-6 sm:p-10">
-          <Link to="/" className="inline-flex items-center gap-1 text-xs text-purple-600 mb-4">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-1 text-xs text-purple-600 mb-4"
+          >
             <ArrowLeft className="w-4 h-4" /> Back
           </Link>
 
@@ -66,7 +74,9 @@ const Login = () => {
                   placeholder="you@example.com"
                   className="pl-9 h-10 w-full"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                   required
                 />
               </div>
@@ -81,7 +91,9 @@ const Login = () => {
                   placeholder="Enter your password"
                   className="pl-9 pr-9 h-10 w-full"
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
                   required
                 />
                 <button
