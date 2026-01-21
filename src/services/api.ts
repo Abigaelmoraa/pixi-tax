@@ -7,10 +7,7 @@ const api: AxiosInstance = axios.create({
   },
 });
 
-/* ============================
-   REQUEST INTERCEPTOR
-   Attach JWT automatically
-============================ */
+
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("authToken");
   if (token) {
@@ -19,10 +16,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-/* ============================
-   RESPONSE INTERCEPTOR
-   Handle expired/invalid token
-============================ */
+
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -34,18 +28,13 @@ api.interceptors.response.use(
   }
 );
 
-/* ============================
-   TYPES
-============================ */
 interface ApiResponse<T = any> {
   data?: T;
   message?: string;
   user?: any;
 }
 
-/* ============================
-   AUTH
-============================ */
+
 export const loginUser = async (data: {
   email: string;
   password: string;
@@ -78,17 +67,12 @@ export const getCurrentUser = async () => {
   return res.data.user || res.data.data;
 };
 
-/* ============================
-   DASHBOARD
-============================ */
+
 export const getDashboardTiles = () => api.get("/dashboardTiles");
 
 export const getDashboardTilesStudio = () =>
   api.get("/dashboardTilesStudio");
 
-/* ============================
-   PAYMENTS
-============================ */
 export const createPaymentRequest = (data: Record<string, any>) =>
   api.post("/paymentRequest", data);
 
@@ -101,9 +85,7 @@ export const b2cPayoutResponse = (data: Record<string, any>) =>
 export const taxPayoutResponse = (data: Record<string, any>) =>
   api.post("/taxPayoutResponse", data);
 
-/* ============================
-   MPESA IPN
-============================ */
+
 export const listMpesaIPN = () => api.get("/mpesaIPN");
 
 export const createMpesaIPN = (data: Record<string, any>) =>
@@ -118,9 +100,7 @@ export const updateMpesaIPN = (id: string, data: Record<string, any>) =>
 export const deleteMpesaIPN = (id: string) =>
   api.delete(`/mpesaIPN/${id}`);
 
-/* ============================
-   CLIENTS
-============================ */
+
 export const listClients = () => api.get("/client");
 
 export const createClient = (data: Record<string, any>) =>
@@ -135,9 +115,8 @@ export const updateClient = (id: string, data: Record<string, any>) =>
 export const deleteClient = (id: string) =>
   api.delete(`/client/${id}`);
 
-/* ============================
-   USERS
-============================ */
+
+
 export const listUsers = () => api.get("/users");
 
 export const createUser = (data: Record<string, any>) =>
