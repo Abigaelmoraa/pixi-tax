@@ -23,13 +23,11 @@ const Login = () => {
         password: formData.password,
       });
 
-      toast.success(`Welcome back, ${user?.name || "User"}!`);
+      toast.success(`Welcome back${user?.name ? `, ${user.name}` : ""}!`);
 
       navigate("/dashboard", { replace: true });
     } catch (err: any) {
-      toast.error(
-        err.response?.data?.message || err.message || "Invalid email or password"
-      );
+      toast.error(err.message || "Invalid email or password");
     } finally {
       setIsLoading(false);
     }
@@ -38,6 +36,7 @@ const Login = () => {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-4">
       <div className="flex flex-col md:flex-row w-full max-w-4xl bg-white rounded-2xl shadow-lg overflow-hidden">
+        {/* Left Image */}
         <div className="hidden md:block md:w-1/2">
           <img
             src="/login-image.png"
@@ -46,6 +45,7 @@ const Login = () => {
           />
         </div>
 
+        {/* Form */}
         <div className="w-full md:w-1/2 flex flex-col justify-center p-6 sm:p-10">
           <Link
             to="/"
@@ -101,7 +101,11 @@ const Login = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
             </div>
