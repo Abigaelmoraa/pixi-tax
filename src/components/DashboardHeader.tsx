@@ -20,11 +20,11 @@ const DashboardHeader = ({ title, subtitle }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const u = await getCurrentUser(); // Fetch user from backend (cookie-based)
+        const u = await getCurrentUser();
         setUser(u);
       } catch (err) {
         console.error("Failed to fetch user:", err);
-        navigate("/login"); // Redirect if not authenticated
+        navigate("/login");
       }
     };
 
@@ -33,11 +33,11 @@ const DashboardHeader = ({ title, subtitle }) => {
 
   const handleLogout = async () => {
     try {
-      await logoutUser(); // Clears cookie on backend
+      await logoutUser(); 
     } catch (err) {
       console.error("Logout failed:", err);
     } finally {
-      navigate("/login"); // Always redirect to login
+      navigate("/login"); 
     }
   };
 

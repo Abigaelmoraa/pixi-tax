@@ -40,7 +40,7 @@ const Overview = () => {
         setPaymentsCount(paymentsRes.data?.length ?? 0);
 
         // Withdrawals
-        const withdrawalsRes = await createPaymentRequest({}); // replace with actual withdrawal API
+        const withdrawalsRes = await createPaymentRequest({});
         setWithdrawalsCount(withdrawalsRes.data?.length ?? 0);
 
       } catch (err: any) {
