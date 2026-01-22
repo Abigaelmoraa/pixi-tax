@@ -1,33 +1,61 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { listUsers, listClients, getDashboardTiles } from "@/services/api";
+import {
+  listUsers,
+  listClients,
+  getDashboardTiles,
+  createPaymentRequest,
+} from "@/services/api";
 
 const Overview = () => {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [usersCount, setUsersCount] = useState(0);
   const [clientsCount, setClientsCount] = useState(0);
+  const [paymentsCount, setPaymentsCount] = useState(0);
+  const [withdrawalsCount, setWithdrawalsCount] = useState(0);
   const [tiles, setTiles] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+
       try {
-        // Fetch users
+        // Users
         const usersRes = await listUsers();
-        setUsersCount(usersRes.data?.length || 0);
+        setUsersCount(usersRes.data?.length ?? 0);
 
-        // Fetch clients
+        // Clients
         const clientsRes = await listClients();
-        setClientsCount(clientsRes.data?.length || 0);
+        setClientsCount(clientsRes.data?.length ?? 0);
 
-        // Fetch dashboard tiles
+        // Dashboard Tiles
         const tilesRes = await getDashboardTiles();
-        setTiles(tilesRes.data || []);
-      } catch (err) {
+        setTiles(tilesRes.data?.tiles ?? tilesRes.data ?? []);
+
+        // Payments
+        const paymentsRes = await createPaymentRequest({});
+        setPaymentsCount(paymentsRes.data?.length ?? 0);
+
+        // Withdrawals
+        const withdrawalsRes = await createPaymentRequest({}); // replace with actual withdrawal API
+        setWithdrawalsCount(withdrawalsRes.data?.length ?? 0);
+
+      } catch (err: any) {
         console.error("Failed to fetch dashboard data:", err);
+        setError("Failed to load dashboard data.");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchData();
   }, []);
+
+  if (loading) return <div className="flex items-center justify-center min-h-screen">Loading dashboard...</div>;
+  if (error) return <div className="flex items-center justify-center min-h-screen text-red-600">{error}</div>;
 
   return (
     <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -47,30 +75,31 @@ const Overview = () => {
         <CardContent>{clientsCount}</CardContent>
       </Card>
 
+      {/* Payments */}
+      <Card className="rounded-2xl shadow-sm">
+        <CardHeader>
+          <CardTitle>Total Payments</CardTitle>
+        </CardHeader>
+        <CardContent>{paymentsCount}</CardContent>
+      </Card>
+
+      {/* Withdrawals */}
+      <Card className="rounded-2xl shadow-sm">
+        <CardHeader>
+          <CardTitle>Total Withdrawals</CardTitle>
+        </CardHeader>
+        <CardContent>{withdrawalsCount}</CardContent>
+      </Card>
+
       {/* Dashboard Tiles */}
-      {tiles.map((tile: any, i: number) => (
-        <Card key={i} className="rounded-2xl shadow-sm">
+      {tiles.map((tile: any) => (
+        <Card key={tile.id ?? tile.title} className="rounded-2xl shadow-sm">
           <CardHeader>
             <CardTitle>{tile.title}</CardTitle>
           </CardHeader>
           <CardContent>{tile.value}</CardContent>
         </Card>
       ))}
-
-      {/* Mock Payments & Withdrawals */}
-      <Card className="rounded-2xl shadow-sm">
-        <CardHeader>
-          <CardTitle>Total Payments</CardTitle>
-        </CardHeader>
-        <CardContent>120</CardContent>
-      </Card>
-
-      <Card className="rounded-2xl shadow-sm">
-        <CardHeader>
-          <CardTitle>Total Withdrawals</CardTitle>
-        </CardHeader>
-        <CardContent>30</CardContent>
-      </Card>
     </div>
   );
 };
