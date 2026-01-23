@@ -11,8 +11,9 @@ const DashboardLayout = () => {
     const fetchUser = async () => {
       try {
         const data = await getCurrentUser();
-        setUser(data);
-      } catch {
+        setUser(data ?? true);
+      } catch (err) {
+        console.error("Auth check failed (/user):", err);
         setUser(null);
       } finally {
         setLoading(false);

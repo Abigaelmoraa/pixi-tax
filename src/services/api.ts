@@ -62,7 +62,9 @@ export const logoutUser = async () => {
 // --- USER ---
 export const getCurrentUser = async () => {
   const res = await api.get("/user");
-  return res.data.user || res.data.data;
+  // Backend may return either { user }, { data }, or a success envelope without user info.
+  // As long as this request is 200, treat it as an authenticated session.
+  return res.data?.user ?? res.data?.data ?? res.data ?? true;
 };
 
 // --- DASHBOARD ---
