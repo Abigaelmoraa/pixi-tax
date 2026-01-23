@@ -74,9 +74,11 @@ export const getDashboardTilesStudio = () =>
   api.get("/dashboardTilesStudio");
 
 // --- PAYMENTS ---
+export const getPaymentRequests = () => api.get("/paymentRequest");
 export const createPaymentRequest = (data: Record<string, any>) =>
   api.post("/paymentRequest", data);
 
+export const getWithdrawalRequests = () => api.get("/withdrawalRequest");
 export const createWithdrawalRequest = (data: Record<string, any>) =>
   api.post("/withdrawalRequest", data);
 

@@ -4,7 +4,8 @@ import {
   listUsers,
   listClients,
   getDashboardTiles,
-  createPaymentRequest,
+  getPaymentRequests,
+  getWithdrawalRequests,
 } from "@/services/api";
 
 const Overview = () => {
@@ -25,23 +26,27 @@ const Overview = () => {
       try {
         // Users
         const usersRes = await listUsers();
-        setUsersCount(usersRes.data?.length ?? 0);
+        const usersData = Array.isArray(usersRes.data) ? usersRes.data : usersRes.data?.data || [];
+        setUsersCount(usersData.length);
 
         // Clients
         const clientsRes = await listClients();
-        setClientsCount(clientsRes.data?.length ?? 0);
+        const clientsData = Array.isArray(clientsRes.data) ? clientsRes.data : clientsRes.data?.data || [];
+        setClientsCount(clientsData.length);
 
         // Dashboard Tiles
         const tilesRes = await getDashboardTiles();
-        setTiles(tilesRes.data?.tiles ?? tilesRes.data ?? []);
+        setTiles(tilesRes.data?.tiles ?? (Array.isArray(tilesRes.data) ? tilesRes.data : []) ?? []);
 
         // Payments
-        const paymentsRes = await createPaymentRequest({});
-        setPaymentsCount(paymentsRes.data?.length ?? 0);
+        const paymentsRes = await getPaymentRequests();
+        const paymentsData = Array.isArray(paymentsRes.data) ? paymentsRes.data : paymentsRes.data?.data || [];
+        setPaymentsCount(paymentsData.length);
 
         // Withdrawals
-        const withdrawalsRes = await createPaymentRequest({});
-        setWithdrawalsCount(withdrawalsRes.data?.length ?? 0);
+        const withdrawalsRes = await getWithdrawalRequests();
+        const withdrawalsData = Array.isArray(withdrawalsRes.data) ? withdrawalsRes.data : withdrawalsRes.data?.data || [];
+        setWithdrawalsCount(withdrawalsData.length);
 
       } catch (err: any) {
         console.error("Failed to fetch dashboard data:", err);

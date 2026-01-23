@@ -21,10 +21,18 @@ const DashboardHeader = ({ title, subtitle }) => {
     const fetchUser = async () => {
       try {
         const u = await getCurrentUser();
-        setUser(u);
+        // Handle different response shapes: { name }, { user: { name } }, or just true/object
+        if (u && typeof u === 'object' && !Array.isArray(u)) {
+          setUser({
+            name: u.name || u.user?.name || u.email || u.username || "User"
+          });
+        } else {
+          setUser({ name: "User" });
+        }
       } catch (err) {
         console.error("Failed to fetch user:", err);
-        navigate("/login");
+        // Don't navigate away - just show default user name
+        setUser({ name: "User" });
       }
     };
 
