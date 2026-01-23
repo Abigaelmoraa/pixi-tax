@@ -29,7 +29,8 @@ const Login = () => {
       
       console.log("jjjjjjjjjjjjjjjj",login_response);
       toast.success("Login successful!");
-      navigate("/dashboard", { replace: true });
+      window.location.href = "/dashboard";
+      // navigate("/dashboard", { replace: true });
 
     } catch (err: unknown) {
       const message =
