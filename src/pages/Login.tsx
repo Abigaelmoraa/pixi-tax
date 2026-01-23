@@ -18,16 +18,19 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const user = await loginUser({
+      const login_response = await loginUser({
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
       });
+
+      if (login_response.response_code !== 0) {
+        throw new Error(login_response.message || "Login failed");
+      }
       
-      console.log("jjjjjjjjjjjjjjjj",user)
-
-      toast.success(`Welcome back${user?.name ? `, ${user.name}` : ""}!`);
-
+      console.log("jjjjjjjjjjjjjjjj",login_response);
+      toast.success("Login successful!");
       navigate("/dashboard", { replace: true });
+      
     } catch (err: any) {
       toast.error(err.message || "Invalid email or password");
     } finally {
