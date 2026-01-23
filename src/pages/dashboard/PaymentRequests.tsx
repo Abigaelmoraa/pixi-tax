@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "@/services/api";
 import {
   Card,
   CardContent,
@@ -21,12 +21,10 @@ export default function PaymentRequests() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const API_BASE = "https://db.x1.pitch90agent.com";
-
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const res = await axios.get(`${API_BASE}/paymentRequest`);
+        const res = await api.get("/paymentRequest");
 
         // ✅ FIX: normalize API response
         const data = Array.isArray(res.data)

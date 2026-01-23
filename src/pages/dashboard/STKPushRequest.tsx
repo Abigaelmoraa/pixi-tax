@@ -4,9 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import axios from "axios";
-
-const API_BASE = "https://db.x1.pitch90agent.com";
+import api from "@/services/api";
 
 const STKPushRequest = () => {
   const [stkRequests, setStkRequests] = useState<any[]>([]);
@@ -28,11 +26,7 @@ const STKPushRequest = () => {
     const fetchSTK = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`${API_BASE}/sTKCallback`, {
-          headers: {
-            // Authorization: `Bearer ${localStorage.getItem("token")}`, // if required
-          },
-        });
+        const res = await api.get("/sTKCallback");
         setStkRequests(res.data);
       } catch (err: any) {
         setError(err.message || "Failed to fetch STK Push requests");
@@ -47,11 +41,7 @@ const STKPushRequest = () => {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${API_BASE}/sTKCallback`, formData, {
-        headers: {
-          // Authorization if needed
-        },
-      });
+      const res = await api.post("/sTKCallback", formData);
       setStkRequests([res.data, ...stkRequests]);
       setFormData({ timeIn: "", phoneNumber: "", amount: "", mpesaReceipt: "", resultDesc: "", misc5: "" });
       setShowFormPage(false);

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "@/services/api";
 
 interface TaxFormData {
   taxDate: string;
@@ -15,8 +15,6 @@ interface TaxFormData {
   trxCode: string;
   prnCode: string;
 }
-
-const BASE_URL = "https://db.x1.pitch90agent.com/api";
 
 const DailyTaxObligation = () => {
   const [showForm, setShowForm] = useState(false);
@@ -39,7 +37,7 @@ const DailyTaxObligation = () => {
     const fetchObligations = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`${BASE_URL}/dailyTaxObligations`);
+        const res = await api.get("/dailyTaxObligations");
         setObligations(res.data);
       } catch (err: any) {
         console.error(err);
@@ -54,7 +52,7 @@ const DailyTaxObligation = () => {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${BASE_URL}/dailyTaxObligations`, formData);
+      const res = await api.post("/dailyTaxObligations", formData);
       setObligations([res.data, ...obligations]);
       setFormData({
         taxDate: "",

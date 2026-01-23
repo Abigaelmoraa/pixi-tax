@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import axios from "axios";
+import api from "@/services/api";
 
 interface Payout {
   ref: string;
@@ -17,8 +17,6 @@ interface Payout {
   status: string;
 }
 
-const BASE_URL = "https://db.x1.pitch90agent.com/api";
-
 const TaxPayoutResponse = () => {
   const [payouts, setPayouts] = useState<Payout[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -30,7 +28,7 @@ const TaxPayoutResponse = () => {
     const fetchPayouts = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`${BASE_URL}/taxPayoutResponse`);
+        const res = await api.get("/taxPayoutResponse");
         setPayouts(res.data);
       } catch (err: any) {
         console.error(err);

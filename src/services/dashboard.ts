@@ -1,11 +1,12 @@
 import axios from "axios";
-const API_URL = import.meta.env.VITE_API_URL || " https://db.x1.pitch90agent.com";
+const API_URL = (import.meta.env.VITE_API_URL || "https://db.x1.pitch90agent.com").trim();
 
 const api = axios.create({
   baseURL: API_URL,
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true,
 });
 
 // Example functions based on typical API endpoints

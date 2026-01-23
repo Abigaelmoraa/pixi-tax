@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "@/services/api";
 
 interface StakeDataType {
   betId: string;
@@ -19,8 +19,6 @@ interface StakeDataType {
   exciseAmt: string;
   walletBalanceStake: string;
 }
-
-const BASE_URL = "https://db.x1.pitch90agent.com/api";
 
 const StakeData = () => {
   const [stakeData, setStakeData] = useState<StakeDataType[]>([]);
@@ -46,7 +44,7 @@ const StakeData = () => {
     const fetchStakeData = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`${BASE_URL}/stakeData`);
+        const res = await api.get("/stakeData");
         setStakeData(res.data);
       } catch (err: any) {
         console.error(err);
@@ -62,7 +60,7 @@ const StakeData = () => {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${BASE_URL}/stakeData`, formData);
+      const res = await api.post("/stakeData", formData);
       setStakeData([res.data, ...stakeData]);
       setFormData({
         betId: "",

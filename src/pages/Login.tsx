@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Calculator, Mail, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
-import { loginUser } from "@/services/api";
+import { getCurrentUser, loginUser } from "@/services/api";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -36,6 +36,11 @@ const Login = () => {
       // keep logs for debugging; navigate via react-router to avoid full page reload
       console.log("login_response:", login_response);
       toast.success("Login successful!");
+
+      // Ensure cookie-based session is usable before entering guarded dashboard routes.
+      // (Avoids rare timing where the first /user check runs before cookies are applied.)
+      await getCurrentUser().catch(() => undefined);
+
       navigate("/dashboard", { replace: true });
     } catch (err: unknown) {
       const message =

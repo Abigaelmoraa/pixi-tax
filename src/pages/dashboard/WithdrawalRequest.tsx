@@ -4,14 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import axios from "axios";
-
-const api = axios.create({
-  baseURL: "https://db.x1.pitch90agent.com", 
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+import api from "@/services/api";
 interface WithdrawalRequestFormData {
   msisdn: string;
   amount: string;

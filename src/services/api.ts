@@ -32,12 +32,16 @@ interface ApiResponse<T = any> {
   data?: T;
   message?: string;
   user?: any;
+  status?: string;
+  response_code?: string | number;
 }
 
 // --- AUTH ---
 export const loginUser = async (data: { email: string; password: string }) => {
   const res: AxiosResponse<ApiResponse> = await api.post("/login", data);
-  return res.data.user || res.data.data || res.data;
+  // Cookie-based auth: backend returns status fields and sets cookies via Set-Cookie.
+  // Return the full response so callers can check response_code/status/message reliably.
+  return res.data;
 };
 
 export const registerUser = async (data: {
