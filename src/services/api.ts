@@ -22,7 +22,9 @@ api.interceptors.response.use(
       !originalRequest.url?.includes("/login") &&
       !originalRequest.url?.includes("/userRegister")
     ) {
-      window.location.href = "/login";
+      // Don't hard-refresh the SPA (clears console / causes "blink").
+      // Let route guards (e.g. DashboardLayout) handle navigation to /login.
+      // If you want a global redirect, implement it via react-router navigation instead.
     }
     return Promise.reject(error);
   }
