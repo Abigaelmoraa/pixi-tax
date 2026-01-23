@@ -22,6 +22,8 @@ const Login = () => {
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
       });
+      
+      console.log("jjjjjjjjjjjjjjjj",user)
 
       toast.success(`Welcome back${user?.name ? `, ${user.name}` : ""}!`);
 
