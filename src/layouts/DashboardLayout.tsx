@@ -5,12 +5,15 @@ import { getCurrentUser } from "@/services/api";
 
 const DashboardLayout = () => {
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
+  // undefined = not checked yet, null = unauthenticated, any other value = authenticated
+  const [user, setUser] = useState<any | null | undefined>(undefined);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const data = await getCurrentUser();
+        console.log("getCurrentUser() success payload:", data);
+        // Any successful response (even empty object/string) is considered authenticated
         setUser(data ?? true);
       } catch (err) {
         console.error("Auth check failed (/user):", err);
@@ -23,7 +26,8 @@ const DashboardLayout = () => {
   }, []);
 
   if (loading) return <div className="flex items-center justify-center min-h-screen">Loading dashboard...</div>;
-  if (!user) return <Navigate to="/login" replace />;
+  // Only redirect when we've explicitly marked the user as unauthenticated (null)
+  if (user === null) return <Navigate to="/login" replace />;
 
   return (
     <div className="flex min-h-screen w-full bg-background">
