@@ -23,15 +23,20 @@ const Login = () => {
         password: formData.password,
       });
 
-      if (login_response.response_code !== 0) {
-        throw new Error(login_response.message || "Login failed");
-      }
-      
-      console.log("jjjjjjjjjjjjjjjj",login_response);
-      toast.success("Login successful!");
-      window.location.href = "/dashboard";
-      // navigate("/dashboard", { replace: true });
+      // accept string "0" or numeric 0, or status "success"
+      const success =
+        String(login_response?.response_code) === "0" ||
+        login_response?.response_code === 0 ||
+        login_response?.status === "success";
 
+      if (!success) {
+        throw new Error(login_response?.message || "Login failed");
+      }
+
+      // keep logs for debugging; navigate via react-router to avoid full page reload
+      console.log("login_response:", login_response);
+      toast.success("Login successful!");
+      navigate("/dashboard", { replace: true });
     } catch (err: unknown) {
       const message =
         typeof err === "string"
@@ -39,6 +44,7 @@ const Login = () => {
           : err && typeof (err as any).message === "string"
           ? (err as any).message
           : "Invalid email or password";
+      console.error("login error:", err);
       toast.error(message);
     } finally {
       setIsLoading(false);
