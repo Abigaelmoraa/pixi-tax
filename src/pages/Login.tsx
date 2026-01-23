@@ -30,9 +30,15 @@ const Login = () => {
       console.log("jjjjjjjjjjjjjjjj",login_response);
       toast.success("Login successful!");
       navigate("/dashboard", { replace: true });
-      
-    } catch (err: any) {
-      toast.error(err.message || "Invalid email or password");
+
+    } catch (err: unknown) {
+      const message =
+        typeof err === "string"
+          ? err
+          : err && typeof (err as any).message === "string"
+          ? (err as any).message
+          : "Invalid email or password";
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
