@@ -96,17 +96,22 @@ const Overview = () => {
         <CardContent>{withdrawalsCount}</CardContent>
       </Card>
 
-      {/* Dashboard Tiles */}
-      {tiles.map((tile: any) => (
-        <Card key={tile.id ?? tile.title} className="rounded-2xl shadow-sm">
-          <CardHeader>
-            <CardTitle>{tile.title}</CardTitle>
-          </CardHeader>
-          <CardContent>{tile.value}</CardContent>
-        </Card>
-      ))}
-    </div>
-  );
-};
+  {/* Dashboard Tiles */}
+{Array.isArray(tiles) && tiles.length > 0 ? (
+  tiles.map((tile: any) => (
+    <Card key={tile.id ?? tile.title} className="rounded-2xl shadow-sm">
+      <CardHeader>
+        <CardTitle>{tile.title}</CardTitle>
+      </CardHeader>
+      <CardContent>{tile.value}</CardContent>
+    </Card>
+  ))
+) : (
+  <div className="col-span-full text-center text-muted-foreground">
+    No dashboard tiles available
+  </div>)}
+  </div>
+)}
+
 
 export default Overview;

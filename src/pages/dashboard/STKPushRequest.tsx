@@ -26,7 +26,7 @@ const STKPushRequest = () => {
     const fetchSTK = async () => {
       try {
         setLoading(true);
-        const res = await api.get("/sTKCallback");
+        const res = await api.get("/api/sTKCallback");
         setStkRequests(res.data);
       } catch (err: any) {
         setError(err.message || "Failed to fetch STK Push requests");
@@ -41,7 +41,7 @@ const STKPushRequest = () => {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await api.post("/sTKCallback", formData);
+      const res = await api.post("/api/sTKCallback", formData);
       setStkRequests([res.data, ...stkRequests]);
       setFormData({ timeIn: "", phoneNumber: "", amount: "", mpesaReceipt: "", resultDesc: "", misc5: "" });
       setShowFormPage(false);

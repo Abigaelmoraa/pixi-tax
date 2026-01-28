@@ -44,7 +44,7 @@ const StakeData = () => {
     const fetchStakeData = async () => {
       try {
         setLoading(true);
-        const res = await api.get("/stakeData");
+        const res = await api.get("api/stakeData");
         setStakeData(res.data);
       } catch (err: any) {
         console.error(err);

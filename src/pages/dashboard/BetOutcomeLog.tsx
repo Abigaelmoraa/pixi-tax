@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import api from "@/services/api"; // <-- your axios instance
+import api from "@/services/api";
 import { Label } from "@/components/ui/label";
 
 interface BetOutcomeFormData {
@@ -38,7 +38,7 @@ const BetOutcomeLog = () => {
   const fetchOutcomes = async () => {
     try {
       setLoading(true);
-      const res = await api.get("https://db.x1.pitch90agent.com/api/outcomeInfoLog"); 
+      const res = await api.get("https://db.x1.pitch90agent.com/api/saveBettingOutcome"); 
       setOutcomes(res.data);
     } catch (err: any) {
       setError(err.response?.data?.message || "Failed to fetch bet outcomes");
