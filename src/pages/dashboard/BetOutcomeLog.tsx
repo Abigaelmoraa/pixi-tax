@@ -38,7 +38,7 @@ const BetOutcomeLog = () => {
   const fetchOutcomes = async () => {
     try {
       setLoading(true);
-      const res = await api.get("https://db.x1.pitch90agent.com/api/saveBettingOutcome"); 
+      const res = await api.get("/saveBettingOutcome"); 
       setOutcomes(res.data);
     } catch (err: any) {
       setError(err.response?.data?.message || "Failed to fetch bet outcomes");
