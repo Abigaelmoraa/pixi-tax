@@ -35,7 +35,7 @@ const PRNRequests = () => {
     const fetchPRNs = async () => {
       try {
         setLoading(true);
-        const res = await api.get("api/prodPrnLog");
+        const res = await api.get("/prodPrnLog"); // ✅ FIXED: Removed /api/
         setRequests(res.data?.data || res.data || []);
       } catch (err: any) {
         setError(err.response?.data?.message || "Failed to fetch PRN requests");
@@ -55,6 +55,7 @@ const PRNRequests = () => {
     }
 
     setFormError("");
+    setLoading(true); // ✅ ADDED: Loading state for save
 
     try {
       const payload = {
@@ -63,14 +64,16 @@ const PRNRequests = () => {
         taxType: formData.taxType,
       };
 
-      const res = await api.post("/api/pRNRequest", payload); 
-      const updatedLogs = await api.get("/prodPrnLog");
+      await api.post("/pRNRequest", payload); // ✅ FIXED: Removed /api/
+      const updatedLogs = await api.get("/prodPrnLog"); // ✅ FIXED: Removed /api/
       setRequests(updatedLogs.data?.data || updatedLogs.data || []);
 
       setFormData({ transactionDate: "", amount: "", taxType: "" });
       setShowForm(false);
     } catch (err: any) {
       setFormError(err.response?.data?.message || "Failed to save PRN request");
+    } finally {
+      setLoading(false); // ✅ ADDED: Stop loading
     }
   };
 
@@ -105,7 +108,7 @@ const PRNRequests = () => {
               <Label>Transaction Date</Label>
               <input
                 type="date"
-                className="input border-blue-300"
+                className="input border-blue-300 w-full px-3 py-2 rounded"
                 value={formData.transactionDate}
                 onChange={(e) => setFormData({ ...formData, transactionDate: e.target.value })}
               />
@@ -115,7 +118,8 @@ const PRNRequests = () => {
               <Label>Amount</Label>
               <input
                 type="number"
-                className="input border-blue-300"
+                className="input border-blue-300 w-full px-3 py-2 rounded"
+                placeholder="Enter amount"
                 value={formData.amount}
                 onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
               />
@@ -124,7 +128,7 @@ const PRNRequests = () => {
             <div className="space-y-2">
               <Label>Tax Type</Label>
               <select
-                className="input border-blue-300"
+                className="input border-blue-300 w-full px-3 py-2 rounded"
                 value={formData.taxType}
                 onChange={(e) => setFormData({ ...formData, taxType: e.target.value })}
               >
@@ -135,8 +139,12 @@ const PRNRequests = () => {
             </div>
 
             <div className="flex justify-end gap-2 pt-4">
-              <Button variant="outline" onClick={() => setShowForm(false)}>Cancel</Button>
-              <Button onClick={handleSave}>Save</Button>
+              <Button variant="outline" onClick={() => setShowForm(false)} disabled={loading}>
+                Cancel
+              </Button>
+              <Button onClick={handleSave} disabled={loading}>
+                {loading ? "Saving..." : "Save"}
+              </Button>
             </div>
           </CardContent>
         )}
@@ -145,7 +153,10 @@ const PRNRequests = () => {
         {!showForm && (
           <CardContent className="p-0 overflow-x-auto">
             {loading ? (
-              <p className="text-center py-6">Loading...</p>
+              <div className="text-center py-10">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                <p className="mt-2 text-gray-600">Loading...</p>
+              </div>
             ) : error ? (
               <p className="text-center py-6 text-red-500">{error}</p>
             ) : (
@@ -167,21 +178,27 @@ const PRNRequests = () => {
                 <tbody>
                   {requests.length === 0 ? (
                     <tr>
-                      <td colSpan={10} className="text-center py-6">No PRN requests</td>
+                      <td colSpan={10} className="text-center py-6 text-gray-500">
+                        No PRN requests found
+                      </td>
                     </tr>
                   ) : (
                     requests.map((r, i) => (
-                      <tr key={i} className="hover:bg-blue-50 transition-colors">
-                        <td className="px-4 py-3 font-mono text-blue-600">{r.ref}</td>
-                        <td className="px-4 py-3">{r.transactionDate}</td>
-                        <td className="px-4 py-3 font-semibold text-green-600">{r.amount}</td>
-                        <td className="px-4 py-3">{r.taxType}</td>
-                        <td className="px-4 py-3">{r.prn}</td>
-                        <td className="px-4 py-3">{r.kra}</td>
-                        <td className="px-4 py-3">{r.safaricom}</td>
-                        <td className="px-4 py-3">{r.trxCode}</td>
+                      <tr key={r.ref || i} className="hover:bg-blue-50 transition-colors border-b">
+                        <td className="px-4 py-3 font-mono text-blue-600">{r.ref || "-"}</td>
+                        <td className="px-4 py-3">{r.transactionDate || "-"}</td>
+                        <td className="px-4 py-3 font-semibold text-green-600">
+                          {r.amount ? `KES ${parseFloat(r.amount).toLocaleString()}` : "-"}
+                        </td>
+                        <td className="px-4 py-3">{r.taxType || "-"}</td>
+                        <td className="px-4 py-3">{r.prn || "-"}</td>
+                        <td className="px-4 py-3">{r.kra || "-"}</td>
+                        <td className="px-4 py-3">{r.safaricom || "-"}</td>
+                        <td className="px-4 py-3">{r.trxCode || "-"}</td>
                         <td className="px-4 py-3">
-                          <Badge className="bg-yellow-500 text-white">{r.status}</Badge>
+                          <Badge className="bg-yellow-500 text-white">
+                            {r.status || "Pending"}
+                          </Badge>
                         </td>
                         <td className="px-4 py-3">
                           <Button variant="ghost" size="icon">
