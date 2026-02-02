@@ -26,8 +26,10 @@ const STKPushRequest = () => {
     const fetchSTK = async () => {
       try {
         setLoading(true);
-        const res = await api.get("/api/sTKCallback");
-        setStkRequests(res.data);
+       
+        const res = await api.get("/sTKCallback");
+        setStkRequests(res.data.data || []);
+
       } catch (err: any) {
         setError(err.message || "Failed to fetch STK Push requests");
       } finally {
