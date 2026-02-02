@@ -125,4 +125,5 @@ export const updateUser = (id: string, data: Record<string, any>) =>
 
 export const deleteUser = (id: string) => api.delete(`/users/${id}`);
 
+
 export default api;

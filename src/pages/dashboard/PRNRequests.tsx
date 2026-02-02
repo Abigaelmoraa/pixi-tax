@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import api from "@/services/api"; // Axios instance with baseURL and auth
+import api from "@/services/api"; 
 
 interface PRNRequest {
   ref: string;
@@ -35,8 +35,7 @@ const PRNRequests = () => {
     const fetchPRNs = async () => {
       try {
         setLoading(true);
-        const res = await api.get("/prodPrnLog");
-        // Adjust depending on response structure
+        const res = await api.get("api/prodPrnLog");
         setRequests(res.data?.data || res.data || []);
       } catch (err: any) {
         setError(err.response?.data?.message || "Failed to fetch PRN requests");
@@ -64,8 +63,7 @@ const PRNRequests = () => {
         taxType: formData.taxType,
       };
 
-      const res = await api.post("/paymentRequest", payload); // create request via real endpoint
-      // Optionally refresh the logs
+      const res = await api.post("/api/pRNRequest", payload); 
       const updatedLogs = await api.get("/prodPrnLog");
       setRequests(updatedLogs.data?.data || updatedLogs.data || []);
 

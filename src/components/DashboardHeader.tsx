@@ -13,31 +13,46 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { getCurrentUser, logoutUser } from "@/services/api";
 
-const DashboardHeader = ({ title, subtitle }) => {
+interface User {
+  id?: number;
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  role_id?: number;
+  name?: string;
+  username?: string;
+}
+
+const DashboardHeader = ({ title, subtitle }: { title: string; subtitle?: string }) => {
   const navigate = useNavigate();
-  const [user, setUser] = useState({ name: "User" });
+  const [user, setUser] = useState<{ name: string; email?: string }>({ name: "User" });
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const u = await getCurrentUser();
-        // Handle different response shapes: { name }, { user: { name } }, or just true/object
+        
         if (u && typeof u === 'object' && !Array.isArray(u)) {
+          // Extract first_name and last_name from API response
+          const firstName = u.first_name || u.name || "";
+          const lastName = u.last_name || "";
+          const fullName = `${firstName} ${lastName}`.trim() || u.email || u.username || "User";
+          
           setUser({
-            name: u.name || u.user?.name || u.email || u.username || "User"
+            name: fullName,
+            email: u.email
           });
         } else {
           setUser({ name: "User" });
         }
       } catch (err) {
         console.error("Failed to fetch user:", err);
-        // Don't navigate away - just show default user name
         setUser({ name: "User" });
       }
     };
 
     fetchUser();
-  }, [navigate]);
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -108,9 +123,16 @@ const DashboardHeader = ({ title, subtitle }) => {
               <div className="w-9 h-9 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 flex items-center justify-center">
                 <User className="w-5 h-5 text-white" />
               </div>
-              <span className="hidden md:block text-sm font-medium text-gray-800">
-                {user.name}
-              </span>
+              <div className="hidden md:block text-left">
+                <div className="text-sm font-medium text-gray-800">
+                  {user.name}
+                </div>
+                {user.email && (
+                  <div className="text-xs text-gray-500">
+                    {user.email}
+                  </div>
+                )}
+              </div>
             </Button>
           </DropdownMenuTrigger>
 
@@ -119,6 +141,19 @@ const DashboardHeader = ({ title, subtitle }) => {
             sideOffset={8}
             className="z-50 w-56 bg-white border border-gray-200 shadow-xl rounded-xl"
           >
+            <DropdownMenuLabel className="font-normal">
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-medium leading-none">{user.name}</p>
+                {user.email && (
+                  <p className="text-xs leading-none text-muted-foreground">
+                    {user.email}
+                  </p>
+                )}
+              </div>
+            </DropdownMenuLabel>
+            
+            <DropdownMenuSeparator />
+
             <DropdownMenuItem
               className="cursor-pointer hover:bg-gray-100"
               onClick={() => navigate("/dashboard/profile")}
@@ -139,7 +174,7 @@ const DashboardHeader = ({ title, subtitle }) => {
 
             <DropdownMenuItem
               className="cursor-pointer text-red-600 hover:bg-red-50"
-              onClick={handleLogout} // Calls backend to clear cookie
+              onClick={handleLogout}
             >
               <LogOut className="w-4 h-4 mr-2" />
               Log out
