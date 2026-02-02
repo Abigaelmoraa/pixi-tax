@@ -28,7 +28,7 @@ const TaxPayoutResponse = () => {
     const fetchPayouts = async () => {
       try {
         setLoading(true);
-        const res = await api.get("/api/taxPayoutResponse");
+        const res = await api.get("/taxPayoutResponse");
         setPayouts(res.data);
       } catch (err: any) {
         console.error(err);
