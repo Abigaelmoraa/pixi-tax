@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
-import { Outlet, Navigate } from "react-router-dom";
+import { Outlet, Navigate, useLocation } from "react-router-dom";
 import DashboardSidebar from "@/components/DashboardSidebar";
+import DashboardHeader from "@/components/DashboardHeader";
 import { getCurrentUser } from "@/services/api";
 
 const DashboardLayout = () => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any | null | undefined>(undefined);
+  const location = useLocation();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -22,6 +24,9 @@ const DashboardLayout = () => {
     };
     fetchUser();
   }, []);
+
+  // ✅ Check if current page is the main dashboard
+  const isDashboardPage = location.pathname === "/dashboard" || location.pathname === "/dashboard/";
 
   if (loading) {
     return (
@@ -40,7 +45,10 @@ const DashboardLayout = () => {
     <div className="flex min-h-screen w-full bg-gray-50">
       <DashboardSidebar />
       <main className="flex-1 flex flex-col overflow-hidden">
-        {/* ✅ REMOVED: DashboardHeader - no longer shown on any page */}
+        {/* ✅ Show header ONLY on main dashboard page */}
+        {isDashboardPage && (
+          <DashboardHeader title="Dashboard" subtitle="Welcome back" />
+        )}
         <div className="flex-1 overflow-auto">
           <Outlet />
         </div>
