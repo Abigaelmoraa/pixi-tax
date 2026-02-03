@@ -65,25 +65,34 @@ export default function PaymentRequests() {
 
   const responseBadge = (code?: string) => {
     if (code === "0")
-      return <Badge className="bg-green-600">Success</Badge>;
+      return (
+        <Badge className="bg-emerald-600 text-white">
+          Success
+        </Badge>
+      );
     if (code)
-      return <Badge className="bg-red-600">Failed</Badge>;
+      return (
+        <Badge className="bg-red-500 text-white">
+          Failed
+        </Badge>
+      );
     return <Badge variant="secondary">N/A</Badge>;
   };
 
   return (
-    <div className="p-6 min-h-screen bg-gradient-to-br from-indigo-50 via-white to-blue-50">
-      <Card className="rounded-2xl shadow-lg border border-indigo-100">
-        <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-t-2xl">
+    <div className="p-6 min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50">
+      <Card className="rounded-2xl shadow-lg border border-emerald-100">
+        <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-t-2xl">
           <CardTitle className="text-xl font-bold">
             Payment Requests
           </CardTitle>
+
           <Button
             variant="secondary"
             size="sm"
             onClick={fetchRequests}
             disabled={loading}
-            className="bg-white text-indigo-700 hover:bg-indigo-100"
+            className="bg-white text-emerald-700 hover:bg-emerald-100"
           >
             <RefreshCw
               className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}
@@ -94,7 +103,7 @@ export default function PaymentRequests() {
 
         <CardContent className="p-4">
           {loading && (
-            <div className="text-center py-10 text-indigo-600 font-medium">
+            <div className="text-center py-10 text-emerald-600 font-medium">
               Loading payment requests...
             </div>
           )}
@@ -106,10 +115,10 @@ export default function PaymentRequests() {
           )}
 
           {!loading && !error && (
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto rounded-xl border border-emerald-100">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-indigo-100">
+                  <TableRow className="bg-emerald-100">
                     <TableHead>#</TableHead>
                     <TableHead>Ref</TableHead>
                     <TableHead>Time In</TableHead>
@@ -139,14 +148,14 @@ export default function PaymentRequests() {
                     requests.map((r, index) => (
                       <TableRow
                         key={r.requestId || r.id}
-                        className="hover:bg-indigo-50 transition"
+                        className="hover:bg-emerald-50 transition"
                       >
                         <TableCell>{index + 1}</TableCell>
                         <TableCell className="font-mono text-xs">
                           {r.ref ?? "-"}
                         </TableCell>
                         <TableCell>{r.timeIn ?? "-"}</TableCell>
-                        <TableCell className="font-semibold text-green-700">
+                        <TableCell className="font-semibold text-emerald-700">
                           {formatCurrency(r.amount)}
                         </TableCell>
                         <TableCell>{r.partyA ?? "-"}</TableCell>
