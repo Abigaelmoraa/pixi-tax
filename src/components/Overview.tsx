@@ -1,20 +1,20 @@
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Users, Building2, CreditCard, Wallet, TrendingUp, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { Users, FileText, CreditCard, Wallet, TrendingUp, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import {
   listUsers,
-  listClients,
   getDashboardTiles,
   getPaymentRequests,
   getWithdrawalRequests,
 } from "@/services/api";
+import api from "@/services/api";
 
 const Overview = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [usersCount, setUsersCount] = useState(0);
-  const [clientsCount, setClientsCount] = useState(0);
+  const [prnCount, setPrnCount] = useState(0);
   const [paymentsCount, setPaymentsCount] = useState(0);
   const [withdrawalsCount, setWithdrawalsCount] = useState(0);
   const [tiles, setTiles] = useState<any[]>([]);
@@ -25,21 +25,26 @@ const Overview = () => {
       setError(null);
 
       try {
+        // Users
         const usersRes = await listUsers();
         const usersData = Array.isArray(usersRes.data) ? usersRes.data : usersRes.data?.data || [];
         setUsersCount(usersData.length);
 
-        const clientsRes = await listClients();
-        const clientsData = Array.isArray(clientsRes.data) ? clientsRes.data : clientsRes.data?.data || [];
-        setClientsCount(clientsData.length);
+        // PRN Requests
+        const prnRes = await api.get("/prodPrnLog");
+        const prnData = Array.isArray(prnRes.data) ? prnRes.data : prnRes.data?.data || [];
+        setPrnCount(prnData.length);
 
+        // Dashboard Tiles
         const tilesRes = await getDashboardTiles();
         setTiles(tilesRes.data?.tiles ?? (Array.isArray(tilesRes.data) ? tilesRes.data : []) ?? []);
 
+        // Payments
         const paymentsRes = await getPaymentRequests();
         const paymentsData = Array.isArray(paymentsRes.data) ? paymentsRes.data : paymentsRes.data?.data || [];
         setPaymentsCount(paymentsData.length);
 
+        // Withdrawals
         const withdrawalsRes = await getWithdrawalRequests();
         const withdrawalsData = Array.isArray(withdrawalsRes.data) ? withdrawalsRes.data : withdrawalsRes.data?.data || [];
         setWithdrawalsCount(withdrawalsData.length);
@@ -112,24 +117,24 @@ const Overview = () => {
             </CardContent>
           </Card>
 
-          {/* Total Clients Card */}
+          {/* PRN Requests Card */}
           <Card className="rounded-2xl shadow-md border border-purple-100 bg-gradient-to-br from-purple-50 to-pink-50 overflow-hidden relative group hover:shadow-lg transition-all duration-300">
             <div className="absolute top-0 right-0 w-32 h-32 bg-purple-100/30 rounded-full -mr-16 -mt-16"></div>
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-medium text-purple-700">Total Clients</CardTitle>
+                <CardTitle className="text-sm font-medium text-purple-700">PRN Requests</CardTitle>
                 <div className="p-2 bg-purple-100 rounded-lg">
-                  <Building2 className="w-5 h-5 text-purple-600" />
+                  <FileText className="w-5 h-5 text-purple-600" />
                 </div>
               </div>
             </CardHeader>
             <CardContent>
               <div className="flex items-end justify-between">
                 <div>
-                  <p className="text-4xl font-bold text-purple-900 mb-1">{clientsCount}</p>
+                  <p className="text-4xl font-bold text-purple-900 mb-1">{prnCount}</p>
                   <p className="text-xs text-purple-600 flex items-center gap-1">
                     <TrendingUp className="w-3 h-3" />
-                    Registered clients
+                    Total PRN requests
                   </p>
                 </div>
                 <ArrowUpRight className="w-8 h-8 text-purple-300" />
