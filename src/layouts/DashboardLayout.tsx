@@ -25,7 +25,6 @@ const DashboardLayout = () => {
     fetchUser();
   }, []);
 
-  // Get page title based on current route
   const getPageTitle = () => {
     const path = location.pathname;
     if (path === "/dashboard" || path === "/dashboard/") return "Dashboard";
@@ -45,6 +44,16 @@ const DashboardLayout = () => {
     return undefined;
   };
 
+  // ✅ ADD THIS: Routes that should NOT show the header
+  const shouldShowHeader = () => {
+    const path = location.pathname;
+    const hiddenHeaderRoutes = [
+      "/dashboard/settings",
+      "/dashboard/profile",
+    ];
+    return !hiddenHeaderRoutes.some(route => path.includes(route));
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -62,10 +71,13 @@ const DashboardLayout = () => {
     <div className="flex min-h-screen w-full bg-gray-50">
       <DashboardSidebar />
       <main className="flex-1 flex flex-col overflow-hidden">
-        <DashboardHeader 
-          title={getPageTitle()} 
-          subtitle={getPageSubtitle()} 
-        />
+        {/* ✅ CONDITIONALLY RENDER HEADER */}
+        {shouldShowHeader() && (
+          <DashboardHeader 
+            title={getPageTitle()} 
+            subtitle={getPageSubtitle()} 
+          />
+        )}
         <div className="flex-1 overflow-auto">
           <Outlet />
         </div>
