@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FileText, Plus, Eye, RefreshCw, Search } from "lucide-react";
+import { FileText, Plus, Eye, RefreshCw, Search, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,15 +9,16 @@ import api from "@/services/api";
 
 interface PRNRequest {
   id?: number;
-  ref: string;
-  transactionDate: string;
-  amount: string;
-  taxType: string;
-  prn: string;
-  kra: string;
-  safaricom: string;
-  trxCode: string;
-  status: string;
+  ref?: string | number;
+  transDate?: string;
+  amount?: number | string;
+  taxType?: string;
+  prn?: string;
+  kra?: string;
+  safaricom?: string;
+  trxCode?: string;
+  status?: string;
+  [key: string]: any;
 }
 
 const PRNRequests = () => {
@@ -25,7 +26,7 @@ const PRNRequests = () => {
   const [requests, setRequests] = useState<PRNRequest[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [formData, setFormData] = useState({
-    transactionDate: "",
+    transDate: "",
     amount: "",
     taxType: "",
   });
@@ -33,51 +34,23 @@ const PRNRequests = () => {
   const [error, setError] = useState("");
   const [formError, setFormError] = useState("");
 
-  // Fetch PRN Requests
   const fetchPRNs = async () => {
     try {
       setLoading(true);
       setError("");
       
-      console.log("Fetching PRN requests...");
       const res = await api.get("/prodPrnLog");
       
-      console.log("Full response:", res);
-      console.log("Response data:", res.data);
+      // Backend returns { data: [...], meta: {...} }
+      const data = res.data?.data || [];
       
-      // ✅ FIX: Handle ALL possible response structures
-      let data = [];
-      
-      if (Array.isArray(res.data)) {
-        data = res.data;
-      } else if (res.data && Array.isArray(res.data.data)) {
-        data = res.data.data;
-      } else if (res.data && typeof res.data === 'object') {
-        // Sometimes backend returns single object, wrap in array
-        data = [res.data];
-      }
-      
-      console.log("Processed data:", data);
-      console.log("Data length:", data.length);
-      
+      console.log("PRN Requests received:", data);
       setRequests(data);
       
-      // If we got data but it's empty, that's not an error
-      if (data.length === 0) {
-        console.log("No PRN requests found (empty array)");
-      }
-      
     } catch (err: any) {
-      console.error("Fetch error details:", err);
-      console.error("Error response:", err.response);
-      
-      const errorMsg = err.response?.data?.message || 
-                       err.response?.data?.error || 
-                       err.message || 
-                       "Failed to fetch PRN requests";
-      
-      setError(errorMsg);
-      setRequests([]); // Set to empty array on error
+      console.error("Fetch error:", err);
+      setError(err.response?.data?.message || "Failed to fetch PRN requests");
+      setRequests([]);
     } finally {
       setLoading(false);
     }
@@ -87,9 +60,8 @@ const PRNRequests = () => {
     fetchPRNs();
   }, []);
 
-  // Save new PRN request
   const handleSave = async () => {
-    if (!formData.transactionDate || !formData.amount || !formData.taxType) {
+    if (!formData.transDate || !formData.amount || !formData.taxType) {
       setFormError("All fields are required");
       return;
     }
@@ -99,18 +71,17 @@ const PRNRequests = () => {
 
     try {
       const payload = {
-        transactionDate: formData.transactionDate,
-        amount: formData.amount,
+        transDate: formData.transDate,
+        amount: parseFloat(formData.amount),
         taxType: formData.taxType,
       };
 
       console.log("Saving PRN request:", payload);
       await api.post("/pRNRequest", payload);
       
-      // Refresh the list
       await fetchPRNs();
 
-      setFormData({ transactionDate: "", amount: "", taxType: "" });
+      setFormData({ transDate: "", amount: "", taxType: "" });
       setShowForm(false);
     } catch (err: any) {
       console.error("Save error:", err);
@@ -120,27 +91,44 @@ const PRNRequests = () => {
     }
   };
 
-  // Filter requests based on search
+  const handleRetryPayment = async (id: number) => {
+    try {
+      console.log("Retrying payment for ID:", id);
+      // Call the retry endpoint - adjust based on your API
+      await api.post(`/withdrawalRetry/${id}`);
+      await fetchPRNs();
+    } catch (err: any) {
+      console.error("Retry error:", err);
+      alert("Failed to retry payment");
+    }
+  };
+
   const filteredRequests = requests.filter((r) => {
     if (!searchTerm) return true;
     
     const search = searchTerm.toLowerCase();
     return (
-      (r.ref && r.ref.toLowerCase().includes(search)) ||
-      (r.transactionDate && r.transactionDate.toLowerCase().includes(search)) ||
-      (r.amount && r.amount.toString().toLowerCase().includes(search)) ||
+      (r.ref && r.ref.toString().includes(search)) ||
+      (r.amount && r.amount.toString().includes(search)) ||
       (r.taxType && r.taxType.toLowerCase().includes(search)) ||
       (r.prn && r.prn.toLowerCase().includes(search)) ||
-      (r.status && r.status.toLowerCase().includes(search))
+      (r.trxCode && r.trxCode.toLowerCase().includes(search))
     );
   });
 
-  console.log("Render state:", { loading, error, requestsCount: requests.length, filteredCount: filteredRequests.length });
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return "-";
+    try {
+      const date = new Date(dateStr);
+      return date.toLocaleString();
+    } catch {
+      return dateStr;
+    }
+  };
 
   return (
     <div className="p-6">
       <Card className="border-0 shadow-lg">
-        {/* HEADER */}
         <CardHeader className="border-b bg-gradient-to-r from-blue-200 to-cyan-200 px-4 py-3">
           <div className="flex items-center justify-between w-full">
             <CardTitle className="flex items-center gap-2 text-blue-900 text-lg font-bold">
@@ -182,15 +170,12 @@ const PRNRequests = () => {
           </div>
         </CardHeader>
 
-        {/* Error Banner */}
         {error && (
           <div className="p-4 bg-red-50 border-b border-red-200">
             <p className="text-red-600 text-sm font-semibold">⚠️ {error}</p>
-            <p className="text-red-500 text-xs mt-1">Check browser console (F12) for details</p>
           </div>
         )}
 
-        {/* FORM */}
         {showForm && (
           <CardContent className="space-y-6 p-6 bg-blue-50">
             <h2 className="text-lg font-semibold text-blue-900">New PRN Request</h2>
@@ -201,8 +186,8 @@ const PRNRequests = () => {
               <input
                 type="date"
                 className="input border-blue-300 w-full px-3 py-2 rounded border"
-                value={formData.transactionDate}
-                onChange={(e) => setFormData({ ...formData, transactionDate: e.target.value })}
+                value={formData.transDate}
+                onChange={(e) => setFormData({ ...formData, transDate: e.target.value })}
               />
             </div>
 
@@ -225,8 +210,8 @@ const PRNRequests = () => {
                 onChange={(e) => setFormData({ ...formData, taxType: e.target.value })}
               >
                 <option value="">Select tax type</option>
-                <option value="Exercise (Deposits)">Exercise (Deposits)</option>
-                <option value="Withholdings (Withdrawals)">Withholdings (Withdrawals)</option>
+                <option value="EXCISE">EXCISE (Deposits)</option>
+                <option value="IT_WHT_0222">IT_WHT_0222 (Withholdings)</option>
               </select>
             </div>
 
@@ -241,7 +226,6 @@ const PRNRequests = () => {
           </CardContent>
         )}
 
-        {/* TABLE */}
         {!showForm && (
           <CardContent className="p-0 overflow-x-auto">
             {loading ? (
@@ -249,25 +233,13 @@ const PRNRequests = () => {
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
                 <p className="mt-2 text-gray-600">Loading PRN requests...</p>
               </div>
-            ) : error ? (
-              <div className="text-center py-10 text-red-500">
-                <p className="font-semibold mb-2">Failed to load PRN requests</p>
-                <p className="text-sm text-gray-600 mb-4">{error}</p>
-                <Button onClick={fetchPRNs} variant="outline">
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  Try Again
-                </Button>
-              </div>
             ) : filteredRequests.length === 0 ? (
               <div className="text-center py-10 text-gray-500">
                 <FileText className="w-12 h-12 mx-auto mb-4 text-gray-300" />
                 <p className="font-medium">{searchTerm ? "No PRN requests match your search" : "No PRN requests found"}</p>
-                <p className="text-sm text-gray-400 mt-1">
-                  {requests.length === 0 ? "Create your first PRN request using the 'New' button" : "Try adjusting your search"}
-                </p>
               </div>
             ) : (
-              <table className="w-full text-sm min-w-[800px]">
+              <table className="w-full text-sm min-w-[1000px]">
                 <thead className="bg-blue-50">
                   <tr>
                     <th className="px-4 py-3 text-left">#Ref</th>
@@ -277,33 +249,63 @@ const PRNRequests = () => {
                     <th className="px-4 py-3 text-left">PRN</th>
                     <th className="px-4 py-3 text-left">KRA</th>
                     <th className="px-4 py-3 text-left">Safaricom</th>
-                    <th className="px-4 py-3 text-left">TRX CODE</th>
-                    <th className="px-4 py-3 text-left">Status</th>
+                    <th className="px-4 py-3 text-left">TRX Code</th>
                     <th className="px-4 py-3 text-left">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredRequests.map((r, i) => (
-                    <tr key={r.id || r.ref || i} className="hover:bg-blue-50 transition-colors border-b">
-                      <td className="px-4 py-3 font-mono text-blue-600">{r.ref || "-"}</td>
-                      <td className="px-4 py-3">{r.transactionDate || "-"}</td>
-                      <td className="px-4 py-3 font-semibold text-green-600">
-                        {r.amount ? `KES ${parseFloat(r.amount).toLocaleString()}` : "-"}
+                    <tr key={r.id || i} className="hover:bg-blue-50 transition-colors border-b">
+                      <td className="px-4 py-3 font-mono text-blue-600 font-semibold">
+                        {r.ref || r.id || "-"}
                       </td>
-                      <td className="px-4 py-3">{r.taxType || "-"}</td>
-                      <td className="px-4 py-3">{r.prn || "-"}</td>
-                      <td className="px-4 py-3">{r.kra || "-"}</td>
-                      <td className="px-4 py-3">{r.safaricom || "-"}</td>
-                      <td className="px-4 py-3">{r.trxCode || "-"}</td>
+                      <td className="px-4 py-3 text-xs">
+                        {formatDate(r.transDate)}
+                      </td>
+                      <td className="px-4 py-3 font-semibold text-green-600">
+                        {r.amount ? `KES ${parseFloat(r.amount.toString()).toLocaleString()}` : "-"}
+                      </td>
                       <td className="px-4 py-3">
-                        <Badge className="bg-yellow-500 text-white">
-                          {r.status || "Pending"}
+                        <Badge variant="outline" className="text-xs">
+                          {r.taxType || "-"}
                         </Badge>
                       </td>
+                      <td className="px-4 py-3 font-mono text-xs">
+                        {r.prn || "-"}
+                      </td>
                       <td className="px-4 py-3">
-                        <Button variant="ghost" size="icon">
-                          <Eye className="w-4 h-4" />
-                        </Button>
+                        {r.kra ? (
+                          <Badge className={r.kra.includes("Success") ? "bg-green-500 text-white text-xs" : "bg-red-500 text-white text-xs"}>
+                            {r.kra.substring(0, 20)}...
+                          </Badge>
+                        ) : "-"}
+                      </td>
+                      <td className="px-4 py-3 text-xs max-w-xs truncate" title={r.safaricom}>
+                        {r.safaricom || "-"}
+                      </td>
+                      <td className="px-4 py-3 font-mono text-xs">
+                        {r.trxCode || "-"}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            title="View details"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                          {r.id && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleRetryPayment(r.id!)}
+                              title="Retry payment"
+                            >
+                              <RotateCcw className="w-4 h-4 text-orange-600" />
+                            </Button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
