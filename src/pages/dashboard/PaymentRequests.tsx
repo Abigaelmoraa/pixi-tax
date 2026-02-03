@@ -20,15 +20,17 @@ import { Badge } from "@/components/ui/badge";
 
 interface PaymentRequest {
   id?: number;
+  ref?: string;
+  timeIn?: string;
   amount?: string | number;
-  charges?: string | number;
-  netPayout?: string | number;
-  sourceIp?: string;
-  transactionId?: string;
-  status?: string;
-  sentTo?: string;
-  apiResponse?: string;
-  createdAt?: string;
+  partyA?: string;
+  partyB?: string;
+  accountReference?: string;
+  responseCode?: string;
+  responseDescription?: string;
+  errorMessage?: string;
+  errorCode?: string;
+  requestId?: string;
 }
 
 export default function PaymentRequests() {
@@ -45,7 +47,7 @@ export default function PaymentRequests() {
         ? res.data
         : res.data?.data || [];
       setRequests(data);
-    } catch (err: any) {
+    } catch {
       setError("Failed to load payment requests");
     } finally {
       setLoading(false);
@@ -61,58 +63,65 @@ export default function PaymentRequests() {
     return `KES ${parseFloat(value.toString()).toLocaleString()}`;
   };
 
-  const statusBadge = (status?: string) => {
-    switch (status?.toUpperCase()) {
-      case "APPROVED":
-        return <Badge className="bg-green-600">Approved</Badge>;
-      case "SENT":
-        return <Badge className="bg-blue-600">Sent</Badge>;
-      case "PENDING":
-        return <Badge className="bg-yellow-600">Pending</Badge>;
-      case "FAILED":
-      case "REJECTED":
-        return <Badge className="bg-red-600">{status}</Badge>;
-      default:
-        return <Badge variant="secondary">{status || "Unknown"}</Badge>;
-    }
+  const responseBadge = (code?: string) => {
+    if (code === "0")
+      return <Badge className="bg-green-600">Success</Badge>;
+    if (code)
+      return <Badge className="bg-red-600">Failed</Badge>;
+    return <Badge variant="secondary">N/A</Badge>;
   };
 
   return (
-    <div className="p-6">
-      <Card className="rounded-2xl shadow-sm">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-xl">Payment Requests</CardTitle>
+    <div className="p-6 min-h-screen bg-gradient-to-br from-indigo-50 via-white to-blue-50">
+      <Card className="rounded-2xl shadow-lg border border-indigo-100">
+        <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-t-2xl">
+          <CardTitle className="text-xl font-bold">
+            Payment Requests
+          </CardTitle>
           <Button
-            variant="outline"
+            variant="secondary"
             size="sm"
             onClick={fetchRequests}
             disabled={loading}
+            className="bg-white text-indigo-700 hover:bg-indigo-100"
           >
-            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
+            <RefreshCw
+              className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}
+            />
             Refresh
           </Button>
         </CardHeader>
 
-        <CardContent>
-          {loading && <div className="text-center py-10">Loading...</div>}
+        <CardContent className="p-4">
+          {loading && (
+            <div className="text-center py-10 text-indigo-600 font-medium">
+              Loading payment requests...
+            </div>
+          )}
 
           {!loading && error && (
-            <div className="text-center text-red-500 py-10">{error}</div>
+            <div className="text-center text-red-500 py-10">
+              {error}
+            </div>
           )}
 
           {!loading && !error && (
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow>
+                  <TableRow className="bg-indigo-100">
+                    <TableHead>#</TableHead>
+                    <TableHead>Ref</TableHead>
+                    <TableHead>Time In</TableHead>
                     <TableHead>Amount</TableHead>
-                    <TableHead>Charges</TableHead>
-                    <TableHead>Net Payout</TableHead>
-                    <TableHead>Source IP</TableHead>
-                    <TableHead>Transaction ID</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Sent To</TableHead>
-                    <TableHead>API Response</TableHead>
+                    <TableHead>Party A</TableHead>
+                    <TableHead>Party B</TableHead>
+                    <TableHead>Account Ref</TableHead>
+                    <TableHead>Response</TableHead>
+                    <TableHead>Description</TableHead>
+                    <TableHead>Error Msg</TableHead>
+                    <TableHead>Error Code</TableHead>
+                    <TableHead>Request ID</TableHead>
                   </TableRow>
                 </TableHeader>
 
@@ -120,33 +129,41 @@ export default function PaymentRequests() {
                   {requests.length === 0 ? (
                     <TableRow>
                       <TableCell
-                        colSpan={8}
-                        className="text-center text-muted-foreground"
+                        colSpan={12}
+                        className="text-center text-muted-foreground py-6"
                       >
-                        No payment requests
+                        No payment records found
                       </TableCell>
                     </TableRow>
                   ) : (
-                    requests.map((r) => (
-                      <TableRow key={r.transactionId || r.id}>
-                        <TableCell>{formatCurrency(r.amount)}</TableCell>
-                        <TableCell>{formatCurrency(r.charges)}</TableCell>
-                        <TableCell className="font-semibold text-green-600">
-                          {formatCurrency(r.netPayout)}
-                        </TableCell>
-                        <TableCell>{r.sourceIp ?? "-"}</TableCell>
+                    requests.map((r, index) => (
+                      <TableRow
+                        key={r.requestId || r.id}
+                        className="hover:bg-indigo-50 transition"
+                      >
+                        <TableCell>{index + 1}</TableCell>
                         <TableCell className="font-mono text-xs">
-                          {r.transactionId ?? "-"}
+                          {r.ref ?? "-"}
                         </TableCell>
-                        <TableCell>{statusBadge(r.status)}</TableCell>
-                        <TableCell>{r.sentTo ?? "-"}</TableCell>
-                        <TableCell className="max-w-xs">
-                          <div
-                            className="truncate text-xs"
-                            title={r.apiResponse ?? "-"}
-                          >
-                            {r.apiResponse ?? "-"}
-                          </div>
+                        <TableCell>{r.timeIn ?? "-"}</TableCell>
+                        <TableCell className="font-semibold text-green-700">
+                          {formatCurrency(r.amount)}
+                        </TableCell>
+                        <TableCell>{r.partyA ?? "-"}</TableCell>
+                        <TableCell>{r.partyB ?? "-"}</TableCell>
+                        <TableCell>{r.accountReference ?? "-"}</TableCell>
+                        <TableCell>
+                          {responseBadge(r.responseCode)}
+                        </TableCell>
+                        <TableCell className="max-w-xs truncate">
+                          {r.responseDescription ?? "-"}
+                        </TableCell>
+                        <TableCell className="text-red-600">
+                          {r.errorMessage ?? "-"}
+                        </TableCell>
+                        <TableCell>{r.errorCode ?? "-"}</TableCell>
+                        <TableCell className="font-mono text-xs">
+                          {r.requestId ?? "-"}
                         </TableCell>
                       </TableRow>
                     ))
