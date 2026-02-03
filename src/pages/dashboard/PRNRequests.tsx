@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FileText, Plus, Eye, RefreshCw, Search } from "lucide-react";
+import { FileText, Plus, Eye, RefreshCw, Search, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,12 +9,16 @@ import api from "@/services/api";
 
 interface PRNRequest {
   id?: number;
-  msisdn?: string;
-  amount?: number;
+  ref?: string | number;
+  transDate?: string;
+  amount?: number | string;
+  taxType?: string;
+  prn?: string;
+  kra?: string;
+  safaricom?: string;
   trxCode?: string;
-  time_in?: string;
-  CreatedAt?: string;
-  UpdatedAt?: string;
+  status?: string;
+  [key: string]: any;
 }
 
 const PRNRequests = () => {
@@ -22,7 +26,7 @@ const PRNRequests = () => {
   const [requests, setRequests] = useState<PRNRequest[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [formData, setFormData] = useState({
-    transactionDate: "",
+    transDate: "",
     amount: "",
     taxType: "",
   });
@@ -37,10 +41,10 @@ const PRNRequests = () => {
       
       const res = await api.get("/prodPrnLog");
       
-      // ✅ FIX: Backend returns { data: [...], meta: {...} }
+      // Backend returns { data: [...], meta: {...} }
       const data = res.data?.data || [];
       
-      console.log("PRN Requests:", data);
+      console.log("PRN Requests received:", data);
       setRequests(data);
       
     } catch (err: any) {
@@ -57,7 +61,7 @@ const PRNRequests = () => {
   }, []);
 
   const handleSave = async () => {
-    if (!formData.transactionDate || !formData.amount || !formData.taxType) {
+    if (!formData.transDate || !formData.amount || !formData.taxType) {
       setFormError("All fields are required");
       return;
     }
@@ -67,8 +71,8 @@ const PRNRequests = () => {
 
     try {
       const payload = {
-        transactionDate: formData.transactionDate,
-        amount: formData.amount,
+        transDate: formData.transDate,
+        amount: parseFloat(formData.amount),
         taxType: formData.taxType,
       };
 
@@ -77,7 +81,7 @@ const PRNRequests = () => {
       
       await fetchPRNs();
 
-      setFormData({ transactionDate: "", amount: "", taxType: "" });
+      setFormData({ transDate: "", amount: "", taxType: "" });
       setShowForm(false);
     } catch (err: any) {
       console.error("Save error:", err);
@@ -87,20 +91,39 @@ const PRNRequests = () => {
     }
   };
 
+  const handleRetryPayment = async (id: number) => {
+    try {
+      console.log("Retrying payment for ID:", id);
+      // Call the retry endpoint - adjust based on your API
+      await api.post(`/withdrawalRetry/${id}`);
+      await fetchPRNs();
+    } catch (err: any) {
+      console.error("Retry error:", err);
+      alert("Failed to retry payment");
+    }
+  };
+
   const filteredRequests = requests.filter((r) => {
     if (!searchTerm) return true;
     
     const search = searchTerm.toLowerCase();
     return (
-      (r.id && r.id.toString().includes(search)) ||
-      (r.msisdn && r.msisdn.toLowerCase().includes(search)) ||
+      (r.ref && r.ref.toString().includes(search)) ||
+      (r.amount && r.amount.toString().includes(search)) ||
+      (r.taxType && r.taxType.toLowerCase().includes(search)) ||
+      (r.prn && r.prn.toLowerCase().includes(search)) ||
       (r.trxCode && r.trxCode.toLowerCase().includes(search))
     );
   });
 
   const formatDate = (dateStr?: string) => {
-    if (!dateStr || dateStr === "0001-01-01T00:00:00Z") return "-";
-    return new Date(dateStr).toLocaleDateString();
+    if (!dateStr) return "-";
+    try {
+      const date = new Date(dateStr);
+      return date.toLocaleString();
+    } catch {
+      return dateStr;
+    }
   };
 
   return (
@@ -153,17 +176,6 @@ const PRNRequests = () => {
           </div>
         )}
 
-        {/* Info Banner - Shows data is empty */}
-        {!loading && requests.length > 0 && requests.every(r => !r.amount && !r.msisdn) && (
-          <div className="p-4 bg-yellow-50 border-b border-yellow-200">
-            <p className="text-yellow-800 text-sm font-semibold">ℹ️ Notice:</p>
-            <p className="text-yellow-700 text-xs mt-1">
-              Found {requests.length} PRN request(s), but they contain no data. 
-              The records may be placeholders or incomplete submissions.
-            </p>
-          </div>
-        )}
-
         {showForm && (
           <CardContent className="space-y-6 p-6 bg-blue-50">
             <h2 className="text-lg font-semibold text-blue-900">New PRN Request</h2>
@@ -174,8 +186,8 @@ const PRNRequests = () => {
               <input
                 type="date"
                 className="input border-blue-300 w-full px-3 py-2 rounded border"
-                value={formData.transactionDate}
-                onChange={(e) => setFormData({ ...formData, transactionDate: e.target.value })}
+                value={formData.transDate}
+                onChange={(e) => setFormData({ ...formData, transDate: e.target.value })}
               />
             </div>
 
@@ -198,8 +210,8 @@ const PRNRequests = () => {
                 onChange={(e) => setFormData({ ...formData, taxType: e.target.value })}
               >
                 <option value="">Select tax type</option>
-                <option value="Exercise (Deposits)">Exercise (Deposits)</option>
-                <option value="Withholdings (Withdrawals)">Withholdings (Withdrawals)</option>
+                <option value="EXCISE">EXCISE (Deposits)</option>
+                <option value="IT_WHT_0222">IT_WHT_0222 (Withholdings)</option>
               </select>
             </div>
 
@@ -225,40 +237,75 @@ const PRNRequests = () => {
               <div className="text-center py-10 text-gray-500">
                 <FileText className="w-12 h-12 mx-auto mb-4 text-gray-300" />
                 <p className="font-medium">{searchTerm ? "No PRN requests match your search" : "No PRN requests found"}</p>
-                <p className="text-sm text-gray-400 mt-2">
-                  {requests.length === 0 
-                    ? "Click 'New' to create your first PRN request" 
-                    : "Try adjusting your search"}
-                </p>
               </div>
             ) : (
-              <table className="w-full text-sm min-w-[800px]">
+              <table className="w-full text-sm min-w-[1000px]">
                 <thead className="bg-blue-50">
                   <tr>
-                    <th className="px-4 py-3 text-left">ID</th>
-                    <th className="px-4 py-3 text-left">MSISDN</th>
+                    <th className="px-4 py-3 text-left">#Ref</th>
+                    <th className="px-4 py-3 text-left">Trans Date</th>
                     <th className="px-4 py-3 text-left">Amount</th>
+                    <th className="px-4 py-3 text-left">Tax Type</th>
+                    <th className="px-4 py-3 text-left">PRN</th>
+                    <th className="px-4 py-3 text-left">KRA</th>
+                    <th className="px-4 py-3 text-left">Safaricom</th>
                     <th className="px-4 py-3 text-left">TRX Code</th>
-                    <th className="px-4 py-3 text-left">Time In</th>
-                    <th className="px-4 py-3 text-left">Created At</th>
                     <th className="px-4 py-3 text-left">Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredRequests.map((r) => (
-                    <tr key={r.id} className="hover:bg-blue-50 transition-colors border-b">
-                      <td className="px-4 py-3 font-mono text-blue-600">#{r.id || "-"}</td>
-                      <td className="px-4 py-3">{r.msisdn || <span className="text-gray-400 italic">empty</span>}</td>
-                      <td className="px-4 py-3 font-semibold text-green-600">
-                        {r.amount ? `KES ${r.amount.toLocaleString()}` : <span className="text-gray-400">KES 0</span>}
+                  {filteredRequests.map((r, i) => (
+                    <tr key={r.id || i} className="hover:bg-blue-50 transition-colors border-b">
+                      <td className="px-4 py-3 font-mono text-blue-600 font-semibold">
+                        {r.ref || r.id || "-"}
                       </td>
-                      <td className="px-4 py-3">{r.trxCode || <span className="text-gray-400 italic">empty</span>}</td>
-                      <td className="px-4 py-3 text-xs">{formatDate(r.time_in)}</td>
-                      <td className="px-4 py-3 text-xs">{formatDate(r.CreatedAt)}</td>
+                      <td className="px-4 py-3 text-xs">
+                        {formatDate(r.transDate)}
+                      </td>
+                      <td className="px-4 py-3 font-semibold text-green-600">
+                        {r.amount ? `KES ${parseFloat(r.amount.toString()).toLocaleString()}` : "-"}
+                      </td>
                       <td className="px-4 py-3">
-                        <Button variant="ghost" size="icon">
-                          <Eye className="w-4 h-4" />
-                        </Button>
+                        <Badge variant="outline" className="text-xs">
+                          {r.taxType || "-"}
+                        </Badge>
+                      </td>
+                      <td className="px-4 py-3 font-mono text-xs">
+                        {r.prn || "-"}
+                      </td>
+                      <td className="px-4 py-3">
+                        {r.kra ? (
+                          <Badge className={r.kra.includes("Success") ? "bg-green-500 text-white text-xs" : "bg-red-500 text-white text-xs"}>
+                            {r.kra.substring(0, 20)}...
+                          </Badge>
+                        ) : "-"}
+                      </td>
+                      <td className="px-4 py-3 text-xs max-w-xs truncate" title={r.safaricom}>
+                        {r.safaricom || "-"}
+                      </td>
+                      <td className="px-4 py-3 font-mono text-xs">
+                        {r.trxCode || "-"}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            title="View details"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                          {r.id && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleRetryPayment(r.id!)}
+                              title="Retry payment"
+                            >
+                              <RotateCcw className="w-4 h-4 text-orange-600" />
+                            </Button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
