@@ -51,22 +51,21 @@ const WithdrawalRequest = () => {
         ? res.data
         : res.data?.data || [];
 
-      const mappedData = rawData.map((item: any) => ({
-        id: item.id,
-        msisdn: item.Msisdn || item.msisdn || "",
-        amount: item.Amount?.toString() || item.amount || "",
-        charges: item.charges?.toString() || item.Charges?.toString() || "",
-        netPayout:
-          item.net_payout?.toString() ||
-          item.NetPayout?.toString() ||
-          "",
-        sourceIp: item.SourceIp || item.source_ip || "",
-        transactionId: item.TransactionID || item.transaction_id || "",
-        approved: item.approved || "",
-        sentTo: item.sent_to || "",
-        apiResponse: item.api_response || "",
-        status: item.status || "PENDING",
-      }));
+ const mappedData = rawData.map((item: any) => ({
+  id: item.id,
+  ref: item.id,
+  time: item.CreatedAt,
+  msisdn: item.Msisdn,
+  amount: item.Amount,
+  charges: item.charges,
+  netPayout: item.net_payout,
+  sourceIp: item.SourceIp,
+  transactionId: item.TransactionID,
+  approved: item.approved === 1 ? "Yes" : "No",
+  sentTo: item.sent === 1 ? "Done" : "Pending",
+  status: item.sent === 1 ? "SENT" : "PENDING",
+}));
+
 
       console.log("Mapped withdrawals:", mappedData);
       setWithdrawals(mappedData);
