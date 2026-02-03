@@ -41,7 +41,6 @@ const PRNRequests = () => {
       
       const res = await api.get("/prodPrnLog");
       
-      // Backend returns { data: [...], meta: {...} }
       const data = res.data?.data || [];
       
       console.log("PRN Requests received:", data);
@@ -94,7 +93,6 @@ const PRNRequests = () => {
   const handleRetryPayment = async (id: number) => {
     try {
       console.log("Retrying payment for ID:", id);
-      // Call the retry endpoint - adjust based on your API
       await api.post(`/withdrawalRetry/${id}`);
       await fetchPRNs();
     } catch (err: any) {

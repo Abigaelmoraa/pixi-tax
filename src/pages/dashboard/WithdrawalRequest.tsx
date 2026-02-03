@@ -10,23 +10,25 @@ interface WithdrawalRequestFormData {
   id?: number;
   msisdn: string;
   amount: string;
-  charges: string;
-  netPayout: string;
+  charges?: string;
+  netPayout?: string;
   sourceIp: string;
   transactionId: string;
   approved: string;
   sentTo: string;
   apiResponse: string;
   status: string;
+  time?: string;
 }
 
 const WithdrawalRequest = () => {
   const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
   const [formData, setFormData] = useState<WithdrawalRequestFormData>({
     msisdn: "",
     amount: "",
-    charges: "",
-    netPayout: "",
     sourceIp: "",
     transactionId: "",
     approved: "",
@@ -36,42 +38,34 @@ const WithdrawalRequest = () => {
   });
 
   const [withdrawals, setWithdrawals] = useState<WithdrawalRequestFormData[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  // ✅ FIXED HERE ONLY
   const fetchWithdrawals = async () => {
     try {
       setLoading(true);
-      setError("");
-
       const res = await api.get("/withdrawalRequest");
 
       const rawData = Array.isArray(res.data)
         ? res.data
         : res.data?.data || [];
 
- const mappedData = rawData.map((item: any) => ({
-  id: item.id,
-  ref: item.id,
-  time: item.CreatedAt,
-  msisdn: item.Msisdn,
-  amount: item.Amount,
-  charges: item.charges,
-  netPayout: item.net_payout,
-  sourceIp: item.SourceIp,
-  transactionId: item.TransactionID,
-  approved: item.approved === 1 ? "Yes" : "No",
-  sentTo: item.sent === 1 ? "Done" : "Pending",
-  status: item.sent === 1 ? "SENT" : "PENDING",
-}));
+      const mappedData = rawData.map((item: any) => ({
+        id: item.id,
+        time: item.CreatedAt,
+        msisdn: item.Msisdn,
+        amount: item.Amount,
+        charges: item.charges || "0",
+        netPayout: item.net_payout || "0",
+        sourceIp: item.SourceIp,
+        transactionId: item.TransactionID,
+        approved: item.approved === 1 ? "Yes" : "No",
+        sentTo: item.sent === 1 ? "Done" : "Pending",
+        apiResponse: item.ApiResponse || "-",
+        status: item.sent === 1 ? "SENT" : "PENDING",
+      }));
 
-
-      console.log("Mapped withdrawals:", mappedData);
       setWithdrawals(mappedData);
     } catch (err: any) {
-      console.error("Fetch error:", err);
-      setError(err.response?.data?.message || "Failed to fetch withdrawals");
+      setError("Failed to fetch withdrawals");
     } finally {
       setLoading(false);
     }
@@ -83,16 +77,14 @@ const WithdrawalRequest = () => {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     try {
+      setLoading(true);
       await api.post("/withdrawalRequest", formData);
       await fetchWithdrawals();
       setShowForm(false);
       setFormData({
         msisdn: "",
         amount: "",
-        charges: "",
-        netPayout: "",
         sourceIp: "",
         transactionId: "",
         approved: "",
@@ -101,39 +93,34 @@ const WithdrawalRequest = () => {
         status: "PENDING",
       });
     } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to save withdrawal request");
+      setError("Failed to save withdrawal request");
     } finally {
       setLoading(false);
     }
   };
 
+  const formatCurrency = (value?: string) => {
+    if (!value) return "-";
+    return `KES ${parseFloat(value).toLocaleString()}`;
+  };
+
   const getStatusBadge = (status: string) => {
-    if (!status) return <Badge variant="secondary">Unknown</Badge>;
-    switch (status.toLowerCase()) {
-      case "approved":
-        return <Badge className="bg-green-500 text-white">Approved</Badge>;
-      case "sent":
+    switch (status) {
+      case "SENT":
         return <Badge className="bg-blue-500 text-white">Sent</Badge>;
-      case "pending":
+      case "PENDING":
         return <Badge className="bg-yellow-500 text-white">Pending</Badge>;
-      case "rejected":
-        return <Badge className="bg-red-500 text-white">Rejected</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
   };
 
-  const formatCurrency = (value: string) => {
-    if (!value) return "-";
-    return `KES ${parseFloat(value).toLocaleString()}`;
-  };
-
   return (
     <div className="p-6">
-      <Card className="border-0 shadow-lg">
+      <Card className="shadow-lg border-0">
         <CardHeader className="border-b bg-gradient-to-r from-blue-200 to-cyan-200">
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2 text-blue-900">
+          <div className="flex justify-between items-center">
+            <CardTitle className="flex gap-2 items-center text-blue-900">
               <Wallet className="w-5 h-5" />
               Withdrawal Requests
             </CardTitle>
@@ -145,8 +132,8 @@ const WithdrawalRequest = () => {
                   Refresh
                 </Button>
                 <Button
-                  className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white"
                   onClick={() => setShowForm(true)}
+                  className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   New
@@ -156,47 +143,88 @@ const WithdrawalRequest = () => {
           </div>
         </CardHeader>
 
-        {!showForm && (
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[1000px]">
-                <thead className="bg-blue-50">
-                  <tr>
-                    <th className="px-4 py-3 text-left">MSISDN</th>
-                    <th className="px-4 py-3 text-left">Amount</th>
-                    <th className="px-4 py-3 text-left">Charges</th>
-                    <th className="px-4 py-3 text-left">Net Payout</th>
-                    <th className="px-4 py-3 text-left">Source IP</th>
-                    <th className="px-4 py-3 text-left">Transaction ID</th>
-                    <th className="px-4 py-3 text-left">Approved</th>
-                    <th className="px-4 py-3 text-left">Sent To</th>
-                    <th className="px-4 py-3 text-left">Status</th>
-                    <th className="px-4 py-3 text-right">Actions</th>
-                  </tr>
-                </thead>
+        {/* ================= FORM PAGE ================= */}
+        {showForm && (
+          <CardContent className="p-6">
+            <form onSubmit={handleSave} className="grid md:grid-cols-2 gap-4">
+              <Input placeholder="Msisdn" value={formData.msisdn}
+                onChange={(e) => setFormData({ ...formData, msisdn: e.target.value })} />
 
-                <tbody>
-                  {withdrawals.map((w, index) => (
-                    <tr key={w.id || index} className="border-b">
-                      <td className="px-4 py-3">{w.msisdn || "-"}</td>
-                      <td className="px-4 py-3">{formatCurrency(w.amount)}</td>
-                      <td className="px-4 py-3">{formatCurrency(w.charges)}</td>
-                      <td className="px-4 py-3">{formatCurrency(w.netPayout)}</td>
-                      <td className="px-4 py-3">{w.sourceIp || "-"}</td>
-                      <td className="px-4 py-3">{w.transactionId || "-"}</td>
-                      <td className="px-4 py-3">{w.approved || "-"}</td>
-                      <td className="px-4 py-3">{w.sentTo || "-"}</td>
-                      <td className="px-4 py-3">{getStatusBadge(w.status)}</td>
-                      <td className="px-4 py-3 text-right">
-                        <Button variant="ghost" size="icon">
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+              <Input placeholder="Amount" value={formData.amount}
+                onChange={(e) => setFormData({ ...formData, amount: e.target.value })} />
+
+              <Input placeholder="Source IP" value={formData.sourceIp}
+                onChange={(e) => setFormData({ ...formData, sourceIp: e.target.value })} />
+
+              <Input placeholder="Transaction ID" value={formData.transactionId}
+                onChange={(e) => setFormData({ ...formData, transactionId: e.target.value })} />
+
+              <Input placeholder="Approved (Yes / No)" value={formData.approved}
+                onChange={(e) => setFormData({ ...formData, approved: e.target.value })} />
+
+              <Input placeholder="Sent (Done / Pending)" value={formData.sentTo}
+                onChange={(e) => setFormData({ ...formData, sentTo: e.target.value })} />
+
+              <Input placeholder="Api Response" value={formData.apiResponse}
+                onChange={(e) => setFormData({ ...formData, apiResponse: e.target.value })} />
+
+              <div className="col-span-full flex justify-end gap-2">
+                <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={loading}
+                  className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white">
+                  Save
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        )}
+
+        {/* ================= TABLE PAGE ================= */}
+        {!showForm && (
+          <CardContent className="p-0 overflow-x-auto">
+            <table className="w-full min-w-[1200px]">
+              <thead className="bg-blue-50">
+                <tr>
+                  <th className="px-4 py-3">#Ref</th>
+                  <th className="px-4 py-3">Time</th>
+                  <th className="px-4 py-3">Msisdn</th>
+                  <th className="px-4 py-3">Amount</th>
+                  <th className="px-4 py-3">Charges</th>
+                  <th className="px-4 py-3">Net Payout</th>
+                  <th className="px-4 py-3">SourceIp</th>
+                  <th className="px-4 py-3">TransactionId</th>
+                  <th className="px-4 py-3">Approved</th>
+                  <th className="px-4 py-3">Sent To</th>
+                  <th className="px-4 py-3">ApiResponse</th>
+                  <th className="px-4 py-3 text-right">Action</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {withdrawals.map((w, i) => (
+                  <tr key={i} className="border-b">
+                    <td className="px-4 py-3">{w.id}</td>
+                    <td className="px-4 py-3">{w.time}</td>
+                    <td className="px-4 py-3">{w.msisdn}</td>
+                    <td className="px-4 py-3">{formatCurrency(w.amount)}</td>
+                    <td className="px-4 py-3">{formatCurrency(w.charges)}</td>
+                    <td className="px-4 py-3">{formatCurrency(w.netPayout)}</td>
+                    <td className="px-4 py-3">{w.sourceIp}</td>
+                    <td className="px-4 py-3">{w.transactionId}</td>
+                    <td className="px-4 py-3">{w.approved}</td>
+                    <td className="px-4 py-3">{w.sentTo}</td>
+                    <td className="px-4 py-3">{w.apiResponse}</td>
+                    <td className="px-4 py-3 text-right">
+                      <Button variant="ghost" size="icon">
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </CardContent>
         )}
       </Card>
