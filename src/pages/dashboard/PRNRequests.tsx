@@ -38,18 +38,46 @@ const PRNRequests = () => {
     try {
       setLoading(true);
       setError("");
+      
+      console.log("Fetching PRN requests...");
       const res = await api.get("/prodPrnLog");
       
-      // ✅ FIX: Handle different response structures
-      const data = Array.isArray(res.data) 
-        ? res.data 
-        : res.data?.data || [];
+      console.log("Full response:", res);
+      console.log("Response data:", res.data);
       
-      console.log("PRN data received:", data); // Debug log
+      // ✅ FIX: Handle ALL possible response structures
+      let data = [];
+      
+      if (Array.isArray(res.data)) {
+        data = res.data;
+      } else if (res.data && Array.isArray(res.data.data)) {
+        data = res.data.data;
+      } else if (res.data && typeof res.data === 'object') {
+        // Sometimes backend returns single object, wrap in array
+        data = [res.data];
+      }
+      
+      console.log("Processed data:", data);
+      console.log("Data length:", data.length);
+      
       setRequests(data);
+      
+      // If we got data but it's empty, that's not an error
+      if (data.length === 0) {
+        console.log("No PRN requests found (empty array)");
+      }
+      
     } catch (err: any) {
-      console.error("Fetch error:", err);
-      setError(err.response?.data?.message || "Failed to fetch PRN requests");
+      console.error("Fetch error details:", err);
+      console.error("Error response:", err.response);
+      
+      const errorMsg = err.response?.data?.message || 
+                       err.response?.data?.error || 
+                       err.message || 
+                       "Failed to fetch PRN requests";
+      
+      setError(errorMsg);
+      setRequests([]); // Set to empty array on error
     } finally {
       setLoading(false);
     }
@@ -76,6 +104,7 @@ const PRNRequests = () => {
         taxType: formData.taxType,
       };
 
+      console.log("Saving PRN request:", payload);
       await api.post("/pRNRequest", payload);
       
       // Refresh the list
@@ -93,16 +122,20 @@ const PRNRequests = () => {
 
   // Filter requests based on search
   const filteredRequests = requests.filter((r) => {
+    if (!searchTerm) return true;
+    
     const search = searchTerm.toLowerCase();
     return (
-      r.ref?.toLowerCase().includes(search) ||
-      r.transactionDate?.toLowerCase().includes(search) ||
-      r.amount?.toLowerCase().includes(search) ||
-      r.taxType?.toLowerCase().includes(search) ||
-      r.prn?.toLowerCase().includes(search) ||
-      r.status?.toLowerCase().includes(search)
+      (r.ref && r.ref.toLowerCase().includes(search)) ||
+      (r.transactionDate && r.transactionDate.toLowerCase().includes(search)) ||
+      (r.amount && r.amount.toString().toLowerCase().includes(search)) ||
+      (r.taxType && r.taxType.toLowerCase().includes(search)) ||
+      (r.prn && r.prn.toLowerCase().includes(search)) ||
+      (r.status && r.status.toLowerCase().includes(search))
     );
   });
+
+  console.log("Render state:", { loading, error, requestsCount: requests.length, filteredCount: filteredRequests.length });
 
   return (
     <div className="p-6">
@@ -110,16 +143,13 @@ const PRNRequests = () => {
         {/* HEADER */}
         <CardHeader className="border-b bg-gradient-to-r from-blue-200 to-cyan-200 px-4 py-3">
           <div className="flex items-center justify-between w-full">
-            {/* ✅ LEFT: Title */}
             <CardTitle className="flex items-center gap-2 text-blue-900 text-lg font-bold">
               <FileText className="w-5 h-5" /> PRN Requests
             </CardTitle>
 
-            {/* ✅ RIGHT: Search + Buttons */}
             <div className="flex items-center gap-2">
               {!showForm && (
                 <>
-                  {/* Search Bar */}
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input
@@ -130,7 +160,6 @@ const PRNRequests = () => {
                     />
                   </div>
 
-                  {/* Refresh Button */}
                   <Button
                     variant="outline"
                     size="sm"
@@ -140,7 +169,6 @@ const PRNRequests = () => {
                     <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
                   </Button>
 
-                  {/* New Button */}
                   <Button
                     size="sm"
                     className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white flex items-center gap-1"
@@ -155,9 +183,10 @@ const PRNRequests = () => {
         </CardHeader>
 
         {/* Error Banner */}
-        {error && !loading && (
+        {error && (
           <div className="p-4 bg-red-50 border-b border-red-200">
-            <p className="text-red-600 text-sm">⚠️ {error}</p>
+            <p className="text-red-600 text-sm font-semibold">⚠️ {error}</p>
+            <p className="text-red-500 text-xs mt-1">Check browser console (F12) for details</p>
           </div>
         )}
 
@@ -220,10 +249,22 @@ const PRNRequests = () => {
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
                 <p className="mt-2 text-gray-600">Loading PRN requests...</p>
               </div>
+            ) : error ? (
+              <div className="text-center py-10 text-red-500">
+                <p className="font-semibold mb-2">Failed to load PRN requests</p>
+                <p className="text-sm text-gray-600 mb-4">{error}</p>
+                <Button onClick={fetchPRNs} variant="outline">
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Try Again
+                </Button>
+              </div>
             ) : filteredRequests.length === 0 ? (
               <div className="text-center py-10 text-gray-500">
                 <FileText className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                <p>{searchTerm ? "No PRN requests match your search" : "No PRN requests found"}</p>
+                <p className="font-medium">{searchTerm ? "No PRN requests match your search" : "No PRN requests found"}</p>
+                <p className="text-sm text-gray-400 mt-1">
+                  {requests.length === 0 ? "Create your first PRN request using the 'New' button" : "Try adjusting your search"}
+                </p>
               </div>
             ) : (
               <table className="w-full text-sm min-w-[800px]">
