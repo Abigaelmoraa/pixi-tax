@@ -25,7 +25,6 @@ const DashboardLayout = () => {
     fetchUser();
   }, []);
 
-  // ✅ Check if current page is the main dashboard
   const isDashboardPage = location.pathname === "/dashboard" || location.pathname === "/dashboard/";
 
   if (loading) {
@@ -45,7 +44,6 @@ const DashboardLayout = () => {
     <div className="flex min-h-screen w-full bg-gray-50">
       <DashboardSidebar />
       <main className="flex-1 flex flex-col overflow-hidden">
-        {/* ✅ Show header ONLY on main dashboard page */}
         {isDashboardPage && (
           <DashboardHeader title="Dashboard" subtitle="Welcome back" />
         )}

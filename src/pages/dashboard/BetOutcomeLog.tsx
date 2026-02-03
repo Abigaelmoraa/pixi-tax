@@ -34,7 +34,6 @@ const BetOutcomeLog = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Fetch Bet Outcomes from backend
   const fetchOutcomes = async () => {
     try {
       setLoading(true);
