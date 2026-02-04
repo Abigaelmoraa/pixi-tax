@@ -23,7 +23,6 @@ const TaxPayoutResponse = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Fetch data from backend
   useEffect(() => {
     const fetchPayouts = async () => {
       try {
