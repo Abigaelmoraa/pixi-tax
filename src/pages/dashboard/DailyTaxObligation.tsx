@@ -39,7 +39,7 @@ const DailyTaxObligation = () => {
       setLoading(true);
       setError("");
       // ✅ FIX: Changed from /dailyTaxObligations to /dailyTaxObligation (singular)
-      const res = await api.get("/dailyTaxObligation");
+      const res = await api.get("/DailyTaxObligation");
       
       // Handle different response structures
       const data = Array.isArray(res.data)
@@ -65,7 +65,7 @@ const DailyTaxObligation = () => {
     setLoading(true);
     try {
       // ✅ FIX: Changed to singular endpoint
-      await api.post("/dailyTaxObligation", formData);
+      await api.post("/DailyTaxObligation", formData);
       
       // Refresh the list
       await fetchObligations();
