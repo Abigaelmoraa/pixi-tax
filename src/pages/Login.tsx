@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calculator, Mail, Lock, Eye, EyeOff, ArrowLeft, Loader2, Sparkles } from "lucide-react";
+import { Calculator, Mail, Lock, Eye, EyeOff, ArrowLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { getCurrentUser, loginUser } from "@/services/api";
 
@@ -59,7 +59,7 @@ const Login = () => {
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
       {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000"></div>
@@ -70,72 +70,67 @@ const Login = () => {
         <div className="w-full max-w-6xl">
           <div className="flex flex-col lg:flex-row bg-white rounded-3xl shadow-2xl overflow-hidden backdrop-blur-sm bg-opacity-95">
             
-            {/* Left Side - Branding & Illustration */}
-            <div className="relative lg:w-1/2 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 p-8 sm:p-12 lg:p-16 flex flex-col justify-between min-h-[300px] lg:min-h-[600px]">
-              {/* Decorative circles */}
-              <div className="absolute top-10 right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
-              <div className="absolute bottom-10 left-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+            {/* Left Side - Image */}
+            <div className="hidden lg:block lg:w-1/2 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/20 via-purple-600/20 to-pink-600/20 z-10"></div>
+              <img
+                src="/login-image.png"
+                alt="Login"
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  // Fallback if image doesn't exist
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.parentElement!.innerHTML = `
+                    <div class="w-full h-full bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 flex items-center justify-center p-12">
+                      <div class="text-white text-center space-y-6">
+                        <div class="w-20 h-20 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mx-auto shadow-2xl">
+                          <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                        <h2 class="text-5xl font-bold">Pixi Tax</h2>
+                        <p class="text-xl text-indigo-100 max-w-md mx-auto">Manage your tax obligations efficiently with our comprehensive platform.</p>
+                      </div>
+                    </div>
+                  `;
+                }}
+              />
               
-              <div className="relative z-10">
-                {/* Logo */}
-                <div className="flex items-center gap-3 mb-8">
-                  <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg">
-                    <Calculator className="w-7 h-7 text-white" />
-                  </div>
-                  <span className="text-3xl font-bold text-white">Pixi Tax</span>
+              {/* Overlay Logo on Image */}
+              <div className="absolute top-8 left-8 z-20 flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center shadow-lg border border-white/30">
+                  <Calculator className="w-7 h-7 text-white" />
                 </div>
-
-                {/* Welcome Message */}
-                <div className="space-y-4 mb-8">
-                  <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight">
-                    Welcome<br />Back
-                  </h1>
-                  <p className="text-lg text-indigo-100 max-w-md">
-                    Manage your tax obligations efficiently with our comprehensive platform.
-                  </p>
-                </div>
-
-                {/* Features */}
-                <div className="space-y-3 text-indigo-100">
-                  <div className="flex items-center gap-3">
-                    <Sparkles className="w-5 h-5" />
-                    <span>Real-time tax calculations</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Sparkles className="w-5 h-5" />
-                    <span>Automated compliance reporting</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Sparkles className="w-5 h-5" />
-                    <span>Secure payment processing</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Bottom decoration */}
-              <div className="relative z-10 mt-8">
-                <p className="text-sm text-indigo-200">
-                  Trusted by businesses across Kenya
-                </p>
+                <span className="text-2xl font-bold text-white drop-shadow-lg">Pixi</span>
               </div>
             </div>
 
             {/* Right Side - Login Form */}
             <div className="w-full lg:w-1/2 p-6 sm:p-10 lg:p-16 flex flex-col justify-center">
               
-              {/* Back Button */}
-              <Link
-                to="/"
-                className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-purple-600 mb-6 transition-colors group w-fit"
-              >
-                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                <span>Back to home</span>
+              {/* Mobile Logo - Only shows on small screens */}
+              <div className="lg:hidden flex items-center gap-3 mb-8">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg">
+                  <Calculator className="w-7 h-7 text-white" />
+                </div>
+                <span className="text-2xl font-bold text-gray-900">Pixi</span>
+              </div>
+
+              {/* Back Button - Simple Purple Button */}
+              <Link to="/">
+                <Button
+                  variant="outline"
+                  className="mb-6 border-2 border-purple-200 text-purple-600 hover:bg-purple-50 hover:border-purple-300 transition-colors"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back to Home
+                </Button>
               </Link>
 
               {/* Form Header */}
               <div className="mb-8">
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">Sign in</h2>
-                <p className="text-gray-600">Enter your credentials to access your account</p>
+                <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Welcome back</h2>
+                <p className="text-gray-600">Sign in to your account to continue</p>
               </div>
 
               {/* Login Form */}
@@ -193,7 +188,7 @@ const Login = () => {
                   </div>
                 </div>
 
-                {/* Forgot Password Link */}
+                {/* Remember Me & Forgot Password */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
                     <input
@@ -236,7 +231,7 @@ const Login = () => {
                   <div className="w-full border-t border-gray-200"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-white text-gray-500">New to Pixi Tax?</span>
+                  <span className="px-4 bg-white text-gray-500">New to Pixi?</span>
                 </div>
               </div>
 
