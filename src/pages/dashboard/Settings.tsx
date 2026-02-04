@@ -41,11 +41,8 @@ const Settings = () => {
       : { theme: "system", language: "en" };
   });
 
-  // Save all settings to localStorage
-  const handleSave = () => {
-    localStorage.setItem("notifications", JSON.stringify(notifications));
-    localStorage.setItem("profile", JSON.stringify(profile));
-    localStorage.setItem("appearance", JSON.stringify(appearance));
+  // Function to show success toast
+  const handleSaveToast = () => {
     toast.success("Settings saved successfully!");
   };
 
@@ -94,57 +91,36 @@ const Settings = () => {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name</Label>
-                    <Input
-                      id="firstName"
-                      placeholder="Enter first name"
-                      value={profile.firstName}
-                      onChange={(e) => setProfile({ ...profile, firstName: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName">Last Name</Label>
-                    <Input
-                      id="lastName"
-                      placeholder="Enter last name"
-                      value={profile.lastName}
-                      onChange={(e) => setProfile({ ...profile, lastName: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="Enter email"
-                      value={profile.email}
-                      onChange={(e) => setProfile({ ...profile, email: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Phone</Label>
-                    <Input
-                      id="phone"
-                      placeholder="Enter phone number"
-                      value={profile.phone}
-                      onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="company">Company</Label>
-                    <Input
-                      id="company"
-                      placeholder="Enter company name"
-                      value={profile.company}
-                      onChange={(e) => setProfile({ ...profile, company: e.target.value })}
-                    />
-                  </div>
+                  {[
+                    { id: "firstName", label: "First Name" },
+                    { id: "lastName", label: "Last Name" },
+                    { id: "email", label: "Email", type: "email" },
+                    { id: "phone", label: "Phone" },
+                    { id: "company", label: "Company", full: true },
+                  ].map((field) => (
+                    <div
+                      key={field.id}
+                      className={`space-y-2 ${field.full ? "md:col-span-2" : ""}`}
+                    >
+                      <Label htmlFor={field.id}>{field.label}</Label>
+                      <Input
+                        id={field.id}
+                        type={field.type || "text"}
+                        placeholder={`Enter ${field.label.toLowerCase()}`}
+                        value={profile[field.id as keyof typeof profile]}
+                        onChange={(e) => {
+                          const updated = { ...profile, [field.id]: e.target.value };
+                          setProfile(updated);
+                          localStorage.setItem("profile", JSON.stringify(updated));
+                        }}
+                      />
+                    </div>
+                  ))}
                 </div>
 
                 <div className="flex justify-end">
                   <Button
-                    onClick={handleSave}
+                    onClick={handleSaveToast}
                     className="bg-gradient-to-r from-purple-500 to-blue-500 text-white border-0 hover:from-purple-600 hover:to-blue-600"
                   >
                     <Save className="w-4 h-4 mr-2" /> Save Changes
@@ -167,16 +143,18 @@ const Settings = () => {
                     <div className="capitalize font-medium">{type.replace(/([A-Z])/g, ' $1')}</div>
                     <Switch
                       checked={notifications[type as keyof typeof notifications]}
-                      onCheckedChange={(checked) =>
-                        setNotifications({ ...notifications, [type]: checked })
-                      }
+                      onCheckedChange={(checked) => {
+                        const updated = { ...notifications, [type]: checked };
+                        setNotifications(updated);
+                        localStorage.setItem("notifications", JSON.stringify(updated));
+                      }}
                     />
                   </div>
                 ))}
 
                 <div className="flex justify-end">
                   <Button
-                    onClick={handleSave}
+                    onClick={handleSaveToast}
                     className="bg-gradient-to-r from-yellow-400 to-orange-400 text-white border-0 hover:from-yellow-500 hover:to-orange-500"
                   >
                     <Save className="w-4 h-4 mr-2" /> Save Preferences
@@ -194,22 +172,20 @@ const Settings = () => {
                 <CardDescription className="text-red-600">Manage your account security</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <Label htmlFor="currentPassword">Current Password</Label>
-                  <Input id="currentPassword" type="password" placeholder="Enter current password" />
-                </div>
-                <div className="space-y-4">
-                  <Label htmlFor="newPassword">New Password</Label>
-                  <Input id="newPassword" type="password" placeholder="Enter new password" />
-                </div>
-                <div className="space-y-4">
-                  <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                  <Input id="confirmPassword" type="password" placeholder="Confirm new password" />
-                </div>
+                {[
+                  { id: "currentPassword", label: "Current Password" },
+                  { id: "newPassword", label: "New Password" },
+                  { id: "confirmPassword", label: "Confirm New Password" },
+                ].map((field) => (
+                  <div key={field.id} className="space-y-4">
+                    <Label htmlFor={field.id}>{field.label}</Label>
+                    <Input id={field.id} type="password" placeholder={`Enter ${field.label.toLowerCase()}`} />
+                  </div>
+                ))}
 
                 <div className="flex justify-end">
                   <Button
-                    onClick={handleSave}
+                    onClick={handleSaveToast}
                     className="bg-gradient-to-r from-red-400 to-pink-500 text-white border-0 hover:from-red-500 hover:to-pink-600"
                   >
                     <Save className="w-4 h-4 mr-2" /> Save Security Settings
@@ -231,7 +207,11 @@ const Settings = () => {
                   <Label>Theme</Label>
                   <Select
                     value={appearance.theme}
-                    onValueChange={(value) => setAppearance({ ...appearance, theme: value })}
+                    onValueChange={(value) => {
+                      const updated = { ...appearance, theme: value };
+                      setAppearance(updated);
+                      localStorage.setItem("appearance", JSON.stringify(updated));
+                    }}
                   >
                     <SelectTrigger className="w-full md:w-[200px]">
                       <SelectValue placeholder="Select theme" />
@@ -248,7 +228,11 @@ const Settings = () => {
                   <Label>Language</Label>
                   <Select
                     value={appearance.language}
-                    onValueChange={(value) => setAppearance({ ...appearance, language: value })}
+                    onValueChange={(value) => {
+                      const updated = { ...appearance, language: value };
+                      setAppearance(updated);
+                      localStorage.setItem("appearance", JSON.stringify(updated));
+                    }}
                   >
                     <SelectTrigger className="w-full md:w-[200px]">
                       <SelectValue placeholder="Select language" />
@@ -264,7 +248,7 @@ const Settings = () => {
 
                 <div className="flex justify-end">
                   <Button
-                    onClick={handleSave}
+                    onClick={handleSaveToast}
                     className="bg-gradient-to-r from-emerald-400 to-teal-500 text-white border-0 hover:from-emerald-500 hover:to-teal-600"
                   >
                     <Save className="w-4 h-4 mr-2" /> Save Preferences
