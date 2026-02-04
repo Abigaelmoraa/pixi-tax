@@ -195,68 +195,72 @@ const Settings = () => {
             </Card>
           </TabsContent>
 
-          {/* Appearance Tab */}
-          <TabsContent value="appearance">
-            <Card className="shadow-lg border-0 bg-gradient-to-r from-emerald-50 to-teal-50">
-              <CardHeader>
-                <CardTitle className="text-emerald-700">Appearance Settings</CardTitle>
-                <CardDescription className="text-emerald-600">Customize your preferences</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <Label>Theme</Label>
-                  <Select
-                    value={appearance.theme}
-                    onValueChange={(value) => {
-                      const updated = { ...appearance, theme: value };
-                      setAppearance(updated);
-                      localStorage.setItem("appearance", JSON.stringify(updated));
-                    }}
-                  >
-                    <SelectTrigger className="w-full md:w-[200px]">
-                      <SelectValue placeholder="Select theme" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="light">Light</SelectItem>
-                      <SelectItem value="dark">Dark</SelectItem>
-                      <SelectItem value="system">System</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+         <TabsContent value="appearance">
+  <Card className="shadow-lg border-0 bg-gradient-to-r from-emerald-50 to-teal-50">
+    <CardHeader>
+      <CardTitle className="text-emerald-700">Appearance Settings</CardTitle>
+      <CardDescription className="text-emerald-600">Customize your preferences</CardDescription>
+    </CardHeader>
+    <CardContent className="space-y-6">
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* Theme */}
+        <div className="space-y-2">
+          <Label>Theme</Label>
+          <Select
+            value={appearance.theme}
+            onValueChange={(value) => {
+              const updated = { ...appearance, theme: value };
+              setAppearance(updated);
+              localStorage.setItem("appearance", JSON.stringify(updated));
+            }}
+          >
+            <SelectTrigger className="w-full md:w-[200px]">
+              <SelectValue placeholder="Select theme" />
+            </SelectTrigger>
+            <SelectContent className="w-full md:w-[200px]">
+              <SelectItem value="light">Light</SelectItem>
+              <SelectItem value="dark">Dark</SelectItem>
+              <SelectItem value="system">System</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-                <div className="space-y-4">
-                  <Label>Language</Label>
-                  <Select
-                    value={appearance.language}
-                    onValueChange={(value) => {
-                      const updated = { ...appearance, language: value };
-                      setAppearance(updated);
-                      localStorage.setItem("appearance", JSON.stringify(updated));
-                    }}
-                  >
-                    <SelectTrigger className="w-full md:w-[200px]">
-                      <SelectValue placeholder="Select language" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="en">English</SelectItem>
-                      <SelectItem value="es">Spanish</SelectItem>
-                      <SelectItem value="fr">French</SelectItem>
-                      <SelectItem value="de">German</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+        {/* Language */}
+        <div className="space-y-2">
+          <Label>Language</Label>
+          <Select
+            value={appearance.language}
+            onValueChange={(value) => {
+              const updated = { ...appearance, language: value };
+              setAppearance(updated);
+              localStorage.setItem("appearance", JSON.stringify(updated));
+            }}
+          >
+            <SelectTrigger className="w-full md:w-[200px]">
+              <SelectValue placeholder="Select language" />
+            </SelectTrigger>
+            <SelectContent className="w-full md:w-[200px]">
+              <SelectItem value="en">English</SelectItem>
+              <SelectItem value="es">Spanish</SelectItem>
+              <SelectItem value="fr">French</SelectItem>
+              <SelectItem value="de">German</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
 
-                <div className="flex justify-end">
-                  <Button
-                    onClick={handleSaveToast}
-                    className="bg-gradient-to-r from-emerald-400 to-teal-500 text-white border-0 hover:from-emerald-500 hover:to-teal-600"
-                  >
-                    <Save className="w-4 h-4 mr-2" /> Save Preferences
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+      <div className="flex justify-end">
+        <Button
+          onClick={() => toast.success("Settings saved successfully!")}
+          className="bg-gradient-to-r from-emerald-400 to-teal-500 text-white border-0 hover:from-emerald-500 hover:to-teal-600"
+        >
+          <Save className="w-4 h-4 mr-2" /> Save Preferences
+        </Button>
+      </div>
+    </CardContent>
+  </Card>
+</TabsContent>
+
         </Tabs>
       </div>
     </>
