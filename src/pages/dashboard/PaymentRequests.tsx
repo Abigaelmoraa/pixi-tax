@@ -75,17 +75,17 @@ export default function PaymentRequests() {
   }, []);
 
   const formatCurrency = (value?: string | number) => {
-    if (!value) return "-";
+    if (!value) return "";
     const num = typeof value === "string" ? parseFloat(value) : value;
-    return isNaN(num)
-      ? "-"
-      : `KES ${num.toLocaleString("en-KE", {
-          minimumFractionDigits: 2,
-        })}`;
+    if (isNaN(num)) return "";
+    return `KES ${num.toLocaleString("en-KE", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
   };
 
   const formatDateTime = (dateStr?: string) => {
-    if (!dateStr) return "-";
+    if (!dateStr) return "";
     return new Date(dateStr).toLocaleString("en-KE");
   };
 
@@ -159,25 +159,25 @@ export default function PaymentRequests() {
 
                 <TableBody>
                   {requests.map((r, index) => (
-                    <TableRow key={r.requestId || index}>
+                    <TableRow key={r.requestId || r.id || index}>
                       <TableCell className="font-mono text-xs">
-                        {index + 1} · {r.ref ?? "-"}
+                        {index + 1}{r.ref ? ` ${r.ref}` : ""}
                       </TableCell>
                       <TableCell>{formatDateTime(r.timeIn)}</TableCell>
                       <TableCell className="font-semibold text-emerald-700">
                         {formatCurrency(r.amount)}
                       </TableCell>
-                      <TableCell>{r.partyA ?? "-"}</TableCell>
-                      <TableCell>{r.partyB ?? "-"}</TableCell>
-                      <TableCell>{r.accountReference ?? "-"}</TableCell>
+                      <TableCell>{r.partyA ?? ""}</TableCell>
+                      <TableCell>{r.partyB ?? ""}</TableCell>
+                      <TableCell>{r.accountReference ?? ""}</TableCell>
                       <TableCell>{responseBadge(r.responseCode)}</TableCell>
-                      <TableCell>{r.responseDescription ?? "-"}</TableCell>
+                      <TableCell>{r.responseDescription ?? ""}</TableCell>
                       <TableCell className="text-red-600">
-                        {r.errorMessage ?? "-"}
+                        {r.errorMessage ?? ""}
                       </TableCell>
-                      <TableCell>{r.errorCode ?? "-"}</TableCell>
+                      <TableCell>{r.errorCode ?? ""}</TableCell>
                       <TableCell className="font-mono text-xs">
-                        {r.requestId ?? "-"}
+                        {r.requestId ?? ""}
                       </TableCell>
                     </TableRow>
                   ))}
