@@ -42,12 +42,9 @@ const PRNRequests = () => {
       setLoading(true);
       setError("");
       
-      // API Documentation: GET /api/prodPrnLog (Protected endpoint)
       const res = await api.get("/prodPrnLog");
-      
       console.log("✓ PRN requests fetched successfully:", res.data);
       
-      // Handle different response structures
       let data: PRNRequest[];
       
       if (Array.isArray(res.data)) {
@@ -116,14 +113,9 @@ const PRNRequests = () => {
       };
 
       console.log("Creating PRN request:", payload);
-      
-      // API Documentation: POST /api/pRNRequest (Protected endpoint)
       await api.post("/pRNRequest", payload);
-      
       console.log("✓ PRN request created successfully");
-      
-      // Refresh the list
-      await fetchPRNs();
+       await fetchPRNs();
 
       // Reset form
       setFormData({ transDate: "", amount: "", taxType: "" });
@@ -133,11 +125,11 @@ const PRNRequests = () => {
       
       if (err.response) {
         const message = err.response.data?.message || err.response.statusText;
-        setFormError(`Failed to save: ${message}`);
+        setFormError(`Failed to request: ${message}`);
       } else if (err.request) {
         setFormError("No response from server. Please check your connection.");
       } else {
-        setFormError(err.message || "Failed to save PRN request");
+        setFormError(err.message || "Failed to request PRN");
       }
     } finally {
       setLoading(false);
@@ -148,9 +140,7 @@ const PRNRequests = () => {
     try {
       console.log("Retrying payment for ID:", id);
       
-      // API Documentation: POST /api/withdrawalRetry/:id (Protected endpoint)
       await api.post(`/withdrawalRetry/${id}`);
-      
       console.log("✓ Payment retry initiated");
       
       // Refresh the list
@@ -315,7 +305,7 @@ const PRNRequests = () => {
               >
                 <option value="">Select tax type</option>
                 <option value="EXCISE">EXCISE (Deposits)</option>
-                <option value="IT_WHT_0222">IT_WHT_0222 (Withholdings)</option>
+                <option value="WITHHOLDINGS">WITHHOLDINGS (Withdrawals)</option>
               </select>
             </div>
 
@@ -331,7 +321,7 @@ const PRNRequests = () => {
                 Cancel
               </Button>
               <Button onClick={handleSave} disabled={loading}>
-                {loading ? "Saving..." : "Save"}
+                {loading ? "Requesting..." : "Request"}
               </Button>
             </div>
           </CardContent>
