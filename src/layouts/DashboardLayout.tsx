@@ -41,13 +41,16 @@ const DashboardLayout = () => {
   if (user === null) return <Navigate to="/login" replace />;
 
   return (
-    <div className="flex min-h-screen w-full bg-gray-50">
+    <div className="flex h-screen w-full bg-gray-50 overflow-hidden">
+      {/* Fixed Sidebar - will not scroll with main content */}
       <DashboardSidebar />
+      
+      {/* Main Content Area - scrollable */}
       <main className="flex-1 flex flex-col overflow-hidden">
         {isDashboardPage && (
           <DashboardHeader title="Dashboard" subtitle="Welcome back" />
         )}
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-y-auto">
           <Outlet />
         </div>
       </main>
