@@ -103,12 +103,14 @@ const ChangePassword = () => {
 
         <CardContent>
           <form className="space-y-6" onSubmit={handleSubmit}>
+            {/* Error */}
             {error && (
               <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3">
                 {error}
               </div>
             )}
 
+            {/* Success */}
             {success && (
               <div className="text-sm text-green-600 bg-green-50 border border-green-200 rounded-lg p-3">
                 {success}
@@ -124,6 +126,7 @@ const ChangePassword = () => {
                   type={showCurrent ? "text" : "password"}
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
+                  placeholder="Enter current password"
                   className="pl-9 pr-10"
                   required
                 />
@@ -142,25 +145,57 @@ const ChangePassword = () => {
             {/* New Password */}
             <div className="space-y-2">
               <Label>New Password</Label>
-              <Input
-                type={showNew ? "text" : "password"}
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                required
-              />
+              <div className="relative">
+                <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-pink-500" />
+                <Input
+                  type={showNew ? "text" : "password"}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Enter new password"
+                  className="pl-9 pr-10"
+                  required
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-1 top-1/2 -translate-y-1/2"
+                  onClick={() => setShowNew(!showNew)}
+                >
+                  {showNew ? <EyeOff /> : <Eye />}
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Minimum 8 characters
+              </p>
             </div>
 
             {/* Confirm Password */}
             <div className="space-y-2">
               <Label>Confirm New Password</Label>
-              <Input
-                type={showConfirm ? "text" : "password"}
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-              />
+              <div className="relative">
+                <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-500" />
+                <Input
+                  type={showConfirm ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirm new password"
+                  className="pl-9 pr-10"
+                  required
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-1 top-1/2 -translate-y-1/2"
+                  onClick={() => setShowConfirm(!showConfirm)}
+                >
+                  {showConfirm ? <EyeOff /> : <Eye />}
+                </Button>
+              </div>
             </div>
 
+            {/* Submit */}
             <div className="flex justify-end pt-4">
               <Button
                 type="submit"
