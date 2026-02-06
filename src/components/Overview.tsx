@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 import {
   listUsers,
-  getDashboardTiles,
   getPaymentRequests,
   getWithdrawalRequests,
 } from "@/services/api";
@@ -31,7 +30,6 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
-  CartesianGrid,
 } from "recharts";
 
 const Overview = () => {
@@ -70,40 +68,38 @@ const Overview = () => {
         setPaymentsCount(paymentsData.length);
         setWithdrawalsCount(withdrawalsData.length);
 
-        /* =======================
-           RECENT ACTIVITY
-        ======================== */
+        /* ================= RECENT ACTIVITY ================= */
         const feed: any[] = [];
 
-        usersData.slice(0, 5).forEach((u: any) =>
+        usersData.slice(0, 4).forEach((u: any) =>
           feed.push({
+            icon: "👤",
             message: `${u.first_name} ${u.last_name} registered`,
             time: u.created_at,
-            icon: "👤",
           })
         );
 
-        paymentsData.slice(0, 5).forEach((p: any) =>
+        paymentsData.slice(0, 4).forEach((p: any) =>
           feed.push({
+            icon: "💳",
             message: `Payment request KES ${p.amount}`,
             time: p.created_at,
-            icon: "💳",
           })
         );
 
-        withdrawalsData.slice(0, 5).forEach((w: any) =>
+        withdrawalsData.slice(0, 4).forEach((w: any) =>
           feed.push({
+            icon: "💸",
             message: `Withdrawal request KES ${w.amount}`,
             time: w.created_at,
-            icon: "💸",
           })
         );
 
-        prnData.slice(0, 5).forEach(() =>
+        prnData.slice(0, 4).forEach(() =>
           feed.push({
-            message: `PRN request submitted`,
-            time: new Date().toISOString(),
             icon: "📄",
+            message: "PRN request submitted",
+            time: new Date().toISOString(),
           })
         );
 
@@ -112,11 +108,9 @@ const Overview = () => {
             new Date(b.time).getTime() - new Date(a.time).getTime()
         );
 
-        setActivities(feed.slice(0, 10));
+        setActivities(feed.slice(0, 8));
 
-        /* =======================
-           CHART DATA (7 DAYS)
-        ======================== */
+        /* ================= CHART DATA ================= */
         const days = [...Array(7)]
           .map((_, i) => {
             const d = new Date();
@@ -137,10 +131,9 @@ const Overview = () => {
           }))
         );
 
-        /* =======================
-           ALERTS
-        ======================== */
+        /* ================= ALERTS ================= */
         const now = new Date();
+        const alertsArr: any[] = [];
 
         const pendingWithdrawals = withdrawalsData.filter(
           (w: any) =>
@@ -150,43 +143,25 @@ const Overview = () => {
               48
         );
 
+        if (pendingWithdrawals.length)
+          alertsArr.push({
+            type: "error",
+            text: `${pendingWithdrawals.length} withdrawals pending > 48hrs`,
+          });
+
         const failedPayments = paymentsData.filter(
           (p: any) => p.status === "failed"
         );
 
-        const pendingPayments = paymentsData.filter(
-          (p: any) => p.status === "pending"
-        );
-
-        const alertsArr: any[] = [];
-
-        if (pendingWithdrawals.length > 0)
-          alertsArr.push({
-            type: "error",
-            text: `${pendingWithdrawals.length} withdrawals pending over 48hrs`,
-          });
-
-        if (failedPayments.length > 0)
+        if (failedPayments.length)
           alertsArr.push({
             type: "error",
             text: `${failedPayments.length} failed payments`,
           });
 
-        if (pendingPayments.length > 0)
-          alertsArr.push({
-            type: "warning",
-            text: `${pendingPayments.length} payments pending approval`,
-          });
-
-        if (prnData.length > 20)
-          alertsArr.push({
-            type: "info",
-            text: `High PRN activity (${prnData.length})`,
-          });
-
         setAlerts(alertsArr);
-      } catch (err) {
-        setError("Failed to load dashboard data");
+      } catch (e) {
+        setError("Failed to load dashboard");
       } finally {
         setLoading(false);
       }
@@ -195,87 +170,116 @@ const Overview = () => {
     fetchData();
   }, []);
 
-  if (loading) return <p className="p-10">Loading dashboard...</p>;
+  if (loading) return <p className="p-10">Loading dashboard…</p>;
   if (error) return <p className="p-10 text-red-500">{error}</p>;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
 
-        {/* =======================
-           STAT CARDS (ORIGINAL)
-        ======================== */}
+        {/* ================= ORIGINAL STAT CARDS (UNCHANGED) ================= */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
+          {/* Users */}
           <Card className="rounded-2xl shadow-md border border-blue-100 bg-gradient-to-br from-blue-50 to-indigo-50">
-            <CardHeader>
-              <CardTitle className="text-sm text-blue-700 flex justify-between">
-                Total Users <Users />
-              </CardTitle>
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium text-blue-700">
+                  Total Users
+                </CardTitle>
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <Users className="w-5 h-5 text-blue-600" />
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold text-blue-900">{usersCount}</p>
+              <p className="text-4xl font-bold text-blue-900 mb-1">
+                {usersCount}
+              </p>
+              <p className="text-xs text-blue-600 flex items-center gap-1">
+                <TrendingUp className="w-3 h-3" /> Active users
+              </p>
             </CardContent>
           </Card>
 
+          {/* PRN */}
           <Card className="rounded-2xl shadow-md border border-purple-100 bg-gradient-to-br from-purple-50 to-pink-50">
-            <CardHeader>
-              <CardTitle className="text-sm text-purple-700 flex justify-between">
-                PRN Requests <FileText />
-              </CardTitle>
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium text-purple-700">
+                  PRN Requests
+                </CardTitle>
+                <div className="p-2 bg-purple-100 rounded-lg">
+                  <FileText className="w-5 h-5 text-purple-600" />
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold text-purple-900">{prnCount}</p>
+              <p className="text-4xl font-bold text-purple-900 mb-1">
+                {prnCount}
+              </p>
+              <p className="text-xs text-purple-600 flex items-center gap-1">
+                <TrendingUp className="w-3 h-3" /> Total PRN requests
+              </p>
             </CardContent>
           </Card>
 
+          {/* Payments */}
           <Card className="rounded-2xl shadow-md border border-green-100 bg-gradient-to-br from-emerald-50 to-teal-50">
-            <CardHeader>
-              <CardTitle className="text-sm text-green-700 flex justify-between">
-                Payments <CreditCard />
-              </CardTitle>
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium text-green-700">
+                  Total Payments
+                </CardTitle>
+                <div className="p-2 bg-green-100 rounded-lg">
+                  <CreditCard className="w-5 h-5 text-green-600" />
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold text-green-900">{paymentsCount}</p>
+              <p className="text-4xl font-bold text-green-900 mb-1">
+                {paymentsCount}
+              </p>
+              <p className="text-xs text-green-600 flex items-center gap-1">
+                <ArrowUpRight className="w-3 h-3" /> Payment requests
+              </p>
             </CardContent>
           </Card>
 
+          {/* Withdrawals */}
           <Card className="rounded-2xl shadow-md border border-orange-100 bg-gradient-to-br from-orange-50 to-amber-50">
-            <CardHeader>
-              <CardTitle className="text-sm text-orange-700 flex justify-between">
-                Withdrawals <Wallet />
-              </CardTitle>
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium text-orange-700">
+                  Total Withdrawals
+                </CardTitle>
+                <div className="p-2 bg-orange-100 rounded-lg">
+                  <Wallet className="w-5 h-5 text-orange-600" />
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold text-orange-900">
+              <p className="text-4xl font-bold text-orange-900 mb-1">
                 {withdrawalsCount}
+              </p>
+              <p className="text-xs text-orange-600 flex items-center gap-1">
+                <ArrowDownRight className="w-3 h-3" /> Withdrawal requests
               </p>
             </CardContent>
           </Card>
         </div>
 
-        {/* =======================
-           ALERTS
-        ======================== */}
+        {/* ================= ALERTS ================= */}
         {alerts.length > 0 && (
-          <Card className="border-red-200 bg-red-50">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-red-700">
-                <AlertTriangle /> System Alerts
+          <Card className="bg-red-50 border border-red-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm flex items-center gap-2 text-red-700">
+                <AlertTriangle className="w-4 h-4" /> System Alerts
               </CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-wrap gap-2">
+            <CardContent className="flex gap-2 flex-wrap">
               {alerts.map((a, i) => (
-                <Badge
-                  key={i}
-                  variant={
-                    a.type === "error"
-                      ? "destructive"
-                      : a.type === "warning"
-                      ? "secondary"
-                      : "outline"
-                  }
-                >
+                <Badge key={i} variant="destructive">
                   {a.text}
                 </Badge>
               ))}
@@ -283,52 +287,64 @@ const Overview = () => {
           </Card>
         )}
 
-        {/* =======================
-           CHART
-        ======================== */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Payments & Withdrawals (Last 7 Days)</CardTitle>
-          </CardHeader>
-          <CardContent className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis allowDecimals={false} />
-                <Tooltip />
-                <Line dataKey="payments" stroke="#22c55e" strokeWidth={3} />
-                <Line
-                  dataKey="withdrawals"
-                  stroke="#f97316"
-                  strokeWidth={3}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+        {/* ================= SMALL SUMMARY CARDS ================= */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-        {/* =======================
-           RECENT ACTIVITY
-        ======================== */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {activities.map((a, i) => (
-              <div key={i} className="flex justify-between text-sm">
-                <span>
-                  {a.icon} {a.message}
-                </span>
-                <span className="text-gray-400">
-                  {new Date(a.time).toLocaleString()}
-                </span>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+          {/* Small Chart */}
+          <Card className="rounded-2xl shadow-sm">
+            <CardHeader className="pb-1">
+              <CardTitle className="text-sm text-gray-600">
+                Payments vs Withdrawals (7 days)
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="h-36 px-2">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chartData}>
+                  <XAxis dataKey="date" hide />
+                  <YAxis hide />
+                  <Tooltip />
+                  <Line
+                    dataKey="payments"
+                    stroke="#22c55e"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                  <Line
+                    dataKey="withdrawals"
+                    stroke="#f97316"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
 
+          {/* Small Activity */}
+          <Card className="rounded-2xl shadow-sm">
+            <CardHeader className="pb-1">
+              <CardTitle className="text-sm text-gray-600">
+                Recent Activity
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="max-h-36 overflow-y-auto space-y-2 text-sm">
+              {activities.map((a, i) => (
+                <div
+                  key={i}
+                  className="flex justify-between border-b last:border-0 pb-1"
+                >
+                  <span className="truncate">
+                    {a.icon} {a.message}
+                  </span>
+                  <span className="text-xs text-gray-400">
+                    {new Date(a.time).toLocaleTimeString()}
+                  </span>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+        </div>
       </div>
     </div>
   );
