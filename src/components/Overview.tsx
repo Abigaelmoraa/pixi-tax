@@ -17,12 +17,6 @@ import {
   AlertTriangle,
   Activity,
   Calendar,
-  DollarSign,
-  CheckCircle,
-  XCircle,
-  Clock,
-  Database,
-  Shield,
 } from "lucide-react";
 import {
   listUsers,
@@ -36,9 +30,6 @@ import {
   Line,
   BarChart,
   Bar,
-  PieChart,
-  Pie,
-  Cell,
   XAxis,
   YAxis,
   Tooltip,
@@ -55,33 +46,16 @@ const Overview = () => {
   const [prnCount, setPrnCount] = useState(0);
   const [paymentsCount, setPaymentsCount] = useState(0);
   const [withdrawalsCount, setWithdrawalsCount] = useState(0);
-  const [stakeCount, setStakeCount] = useState(0);
-  const [taxObligationsCount, setTaxObligationsCount] = useState(0);
-
-  // Financial metrics
-  const [totalPaymentAmount, setTotalPaymentAmount] = useState(0);
-  const [totalWithdrawalAmount, setTotalWithdrawalAmount] = useState(0);
-  const [totalTaxAmount, setTotalTaxAmount] = useState(0);
-  const [totalStakeAmount, setTotalStakeAmount] = useState(0);
-
-  // PRN specific metrics
-  const [prnSuccessCount, setPrnSuccessCount] = useState(0);
-  const [prnFailedCount, setPrnFailedCount] = useState(0);
-  const [prnPendingCount, setPrnPendingCount] = useState(0);
-  const [totalPrnAmount, setTotalPrnAmount] = useState(0);
 
   const [activities, setActivities] = useState<any[]>([]);
   const [chartData, setChartData] = useState<any[]>([]);
   const [alerts, setAlerts] = useState<any[]>([]);
-  const [prnStatusData, setPrnStatusData] = useState<any[]>([]);
-  const [taxBreakdown, setTaxBreakdown] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
 
-        // Fetch all data
         const usersRes = await listUsers();
         const usersData = usersRes.data?.data || usersRes.data || [];
 
@@ -92,78 +66,18 @@ const Overview = () => {
         const paymentsData = paymentsRes.data?.data || paymentsRes.data || [];
 
         const withdrawalsRes = await getWithdrawalRequests();
-        const withdrawalsData = withdrawalsRes.data?.data || withdrawalsRes.data || [];
+        const withdrawalsData =
+          withdrawalsRes.data?.data || withdrawalsRes.data || [];
 
-        const stakeRes = await api.get("/receiveBulkStake");
-        const stakeData = stakeRes.data?.data || stakeRes.data || [];
-
-        const taxRes = await api.get("/dailyTaxObligation");
-        const taxData = taxRes.data?.data || taxRes.data || [];
-
-        // Set counts
         setUsersCount(usersData.length);
         setPrnCount(prnData.length);
         setPaymentsCount(paymentsData.length);
         setWithdrawalsCount(withdrawalsData.length);
-        setStakeCount(stakeData.length);
-        setTaxObligationsCount(taxData.length);
-
-        // Calculate financial totals
-        const paymentTotal = paymentsData.reduce((sum: number, p: any) => 
-          sum + (parseFloat(p.amount) || 0), 0);
-        setTotalPaymentAmount(paymentTotal);
-
-        const withdrawalTotal = withdrawalsData.reduce((sum: number, w: any) => 
-          sum + (parseFloat(w.amount) || 0), 0);
-        setTotalWithdrawalAmount(withdrawalTotal);
-
-        const taxTotal = taxData.reduce((sum: number, t: any) => 
-          sum + (parseFloat(t.totalTaxAmount) || 0), 0);
-        setTotalTaxAmount(taxTotal);
-
-        const stakeTotal = stakeData.reduce((sum: number, s: any) => 
-          sum + (parseFloat(s.stakeAmt) || 0), 0);
-        setTotalStakeAmount(stakeTotal);
-
-        // PRN Metrics
-        const prnSuccess = prnData.filter((p: any) => 
-          p.kra?.toLowerCase().includes("success") || p.safaricom?.toLowerCase().includes("success")
-        ).length;
-        const prnFailed = prnData.filter((p: any) => 
-          p.kra?.toLowerCase().includes("fail") || p.kra?.toLowerCase().includes("error")
-        ).length;
-        const prnPending = prnData.length - prnSuccess - prnFailed;
-
-        setPrnSuccessCount(prnSuccess);
-        setPrnFailedCount(prnFailed);
-        setPrnPendingCount(prnPending);
-
-        const prnTotal = prnData.reduce((sum: number, p: any) => 
-          sum + (parseFloat(p.amount) || 0), 0);
-        setTotalPrnAmount(prnTotal);
-
-        // PRN Status Pie Chart Data
-        setPrnStatusData([
-          { name: "Successful", value: prnSuccess, color: "#22c55e" },
-          { name: "Failed", value: prnFailed, color: "#ef4444" },
-          { name: "Pending", value: prnPending, color: "#f59e0b" },
-        ]);
-
-        // Tax Breakdown
-        const depositTax = taxData.reduce((sum: number, t: any) => 
-          sum + (parseFloat(t.taxOnDeposit) || 0), 0);
-        const withdrawalTax = taxData.reduce((sum: number, t: any) => 
-          sum + (parseFloat(t.taxOnWithdrawal) || 0), 0);
-
-        setTaxBreakdown([
-          { name: "Deposit Tax", value: depositTax, color: "#3b82f6" },
-          { name: "Withdrawal Tax", value: withdrawalTax, color: "#f97316" },
-        ]);
 
         /* ================= RECENT ACTIVITY ================= */
         const feed: any[] = [];
 
-        usersData.slice(0, 2).forEach((u: any) =>
+        usersData.slice(0, 3).forEach((u: any) =>
           feed.push({
             type: "user",
             icon: Users,
@@ -175,7 +89,7 @@ const Overview = () => {
           })
         );
 
-        paymentsData.slice(0, 2).forEach((p: any) =>
+        paymentsData.slice(0, 3).forEach((p: any) =>
           feed.push({
             type: "payment",
             icon: CreditCard,
@@ -187,7 +101,7 @@ const Overview = () => {
           })
         );
 
-        withdrawalsData.slice(0, 2).forEach((w: any) =>
+        withdrawalsData.slice(0, 3).forEach((w: any) =>
           feed.push({
             type: "withdrawal",
             icon: Wallet,
@@ -199,28 +113,15 @@ const Overview = () => {
           })
         );
 
-        prnData.slice(0, 3).forEach((prn: any) => {
-          const status = prn.kra?.toLowerCase().includes("success") ? "completed" : "submitted";
+        prnData.slice(0, 3).forEach((prn: any) =>
           feed.push({
             type: "prn",
             icon: FileText,
             iconBg: "bg-purple-100",
             iconColor: "text-purple-600",
-            title: `PRN Request ${status}`,
-            description: `Tax payment ${prn.taxType || 'request'} - KES ${parseFloat(prn.amount || 0).toLocaleString()}`,
+            title: "PRN Request",
+            description: `Tax payment request for KES ${parseFloat(prn.amount || 0).toLocaleString()}`,
             time: prn.transDate || new Date().toISOString(),
-          });
-        });
-
-        stakeData.slice(0, 2).forEach((s: any) =>
-          feed.push({
-            type: "stake",
-            icon: Database,
-            iconBg: "bg-cyan-100",
-            iconColor: "text-cyan-600",
-            title: "New Stake Placed",
-            description: `Bet ${s.betId} - KES ${parseFloat(s.stakeAmt || 0).toLocaleString()}`,
-            time: s.dateOfStake || new Date().toISOString(),
           })
         );
 
@@ -229,7 +130,7 @@ const Overview = () => {
             new Date(b.time).getTime() - new Date(a.time).getTime()
         );
 
-        setActivities(feed.slice(0, 12));
+        setActivities(feed.slice(0, 10));
 
         /* ================= CHART DATA ================= */
         const days = [...Array(7)]
@@ -252,9 +153,6 @@ const Overview = () => {
               withdrawals: withdrawalsData.filter((w: any) =>
                 w.created_at?.startsWith(day)
               ).length,
-              stakes: stakeData.filter((s: any) =>
-                s.dateOfStake?.startsWith(day)
-              ).length,
             };
           })
         );
@@ -263,7 +161,6 @@ const Overview = () => {
         const now = new Date();
         const alertsArr: any[] = [];
 
-        // Pending withdrawals > 48hrs
         const pendingWithdrawals = withdrawalsData.filter(
           (w: any) =>
             w.status === "pending" &&
@@ -278,36 +175,18 @@ const Overview = () => {
             text: `${pendingWithdrawals.length} withdrawals pending > 48hrs`,
           });
 
-        // Failed payments
         const failedPayments = paymentsData.filter(
-          (p: any) => p.responseCode !== "0" && p.responseCode
+          (p: any) => p.status === "failed"
         );
 
         if (failedPayments.length)
           alertsArr.push({
             type: "error",
-            text: `${failedPayments.length} failed payment requests`,
+            text: `${failedPayments.length} failed payments`,
           });
-
-        // Failed PRN requests
-        if (prnFailed > 0) {
-          alertsArr.push({
-            type: "warning",
-            text: `${prnFailed} PRN requests failed - requires attention`,
-          });
-        }
-
-        // Tax obligations not submitted
-        const unsubmittedTax = taxData.filter((t: any) => !t.trxCode && !t.prnCode).length;
-        if (unsubmittedTax > 0) {
-          alertsArr.push({
-            type: "warning",
-            text: `${unsubmittedTax} tax obligations pending submission`,
-          });
-        }
 
         setAlerts(alertsArr);
-      } catch (e: any) {
+      } catch (e) {
         console.error("Dashboard error:", e);
         setError("Failed to load dashboard");
       } finally {
@@ -328,13 +207,6 @@ const Overview = () => {
     if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
     if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
     return date.toLocaleDateString();
-  };
-
-  const formatCurrency = (amount: number) => {
-    return `KES ${amount.toLocaleString('en-KE', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    })}`;
   };
 
   if (loading) {
@@ -375,7 +247,7 @@ const Overview = () => {
           </p>
         </div>
 
-        {/* ================= STAT CARDS ROW 1 ================= */}
+        {/* ================= STAT CARDS ================= */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Users */}
           <Card className="rounded-2xl shadow-md border border-blue-100 bg-gradient-to-br from-blue-50 to-indigo-50 hover:shadow-lg transition-shadow">
@@ -415,14 +287,9 @@ const Overview = () => {
               <p className="text-4xl font-bold text-purple-900 mb-1">
                 {prnCount.toLocaleString()}
               </p>
-              <div className="flex items-center gap-2 text-xs mt-2">
-                <Badge className="bg-green-500 text-white text-[10px] px-1.5 py-0.5">
-                  {prnSuccessCount} Success
-                </Badge>
-                <Badge className="bg-red-500 text-white text-[10px] px-1.5 py-0.5">
-                  {prnFailedCount} Failed
-                </Badge>
-              </div>
+              <p className="text-xs text-purple-600 flex items-center gap-1">
+                <TrendingUp className="w-3 h-3" /> Total PRN requests
+              </p>
             </CardContent>
           </Card>
 
@@ -443,7 +310,7 @@ const Overview = () => {
                 {paymentsCount.toLocaleString()}
               </p>
               <p className="text-xs text-green-600 flex items-center gap-1">
-                <ArrowUpRight className="w-3 h-3" /> {formatCurrency(totalPaymentAmount)}
+                <ArrowUpRight className="w-3 h-3" /> Payment requests
               </p>
             </CardContent>
           </Card>
@@ -465,102 +332,7 @@ const Overview = () => {
                 {withdrawalsCount.toLocaleString()}
               </p>
               <p className="text-xs text-orange-600 flex items-center gap-1">
-                <ArrowDownRight className="w-3 h-3" /> {formatCurrency(totalWithdrawalAmount)}
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* ================= STAT CARDS ROW 2 - Financial Summary ================= */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Total Stakes */}
-          <Card className="rounded-2xl shadow-md border border-cyan-100 bg-gradient-to-br from-cyan-50 to-blue-50 hover:shadow-lg transition-shadow">
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-medium text-cyan-700">
-                  Total Stakes
-                </CardTitle>
-                <div className="p-2 bg-cyan-100 rounded-lg">
-                  <Database className="w-5 h-5 text-cyan-600" />
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-4xl font-bold text-cyan-900 mb-1">
-                {stakeCount.toLocaleString()}
-              </p>
-              <p className="text-xs text-cyan-600">
-                {formatCurrency(totalStakeAmount)}
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* Tax Collected */}
-          <Card className="rounded-2xl shadow-md border border-red-100 bg-gradient-to-br from-red-50 to-pink-50 hover:shadow-lg transition-shadow">
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-medium text-red-700">
-                  Tax Collected
-                </CardTitle>
-                <div className="p-2 bg-red-100 rounded-lg">
-                  <Shield className="w-5 h-5 text-red-600" />
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-4xl font-bold text-red-900 mb-1">
-                {taxObligationsCount}
-              </p>
-              <p className="text-xs text-red-600">
-                {formatCurrency(totalTaxAmount)}
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* PRN Amount */}
-          <Card className="rounded-2xl shadow-md border border-indigo-100 bg-gradient-to-br from-indigo-50 to-purple-50 hover:shadow-lg transition-shadow">
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-medium text-indigo-700">
-                  PRN Total Amount
-                </CardTitle>
-                <div className="p-2 bg-indigo-100 rounded-lg">
-                  <DollarSign className="w-5 h-5 text-indigo-600" />
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-indigo-900 mb-1">
-                {formatCurrency(totalPrnAmount)}
-              </p>
-              <p className="text-xs text-indigo-600">
-                Tax payments processed
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* Net Flow */}
-          <Card className="rounded-2xl shadow-md border border-gray-200 bg-gradient-to-br from-gray-50 to-slate-100 hover:shadow-lg transition-shadow">
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-medium text-gray-700">
-                  Net Flow
-                </CardTitle>
-                <div className="p-2 bg-gray-200 rounded-lg">
-                  <TrendingUp className="w-5 h-5 text-gray-600" />
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className={`text-3xl font-bold mb-1 ${
-                (totalPaymentAmount - totalWithdrawalAmount) >= 0 
-                  ? 'text-green-900' 
-                  : 'text-red-900'
-              }`}>
-                {formatCurrency(totalPaymentAmount - totalWithdrawalAmount)}
-              </p>
-              <p className="text-xs text-gray-600">
-                Payments - Withdrawals
+                <ArrowDownRight className="w-3 h-3" /> Withdrawal requests
               </p>
             </CardContent>
           </Card>
@@ -571,16 +343,12 @@ const Overview = () => {
           <Card className="bg-red-50 border border-red-200 rounded-2xl">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm flex items-center gap-2 text-red-700 font-semibold">
-                <AlertTriangle className="w-5 h-5" /> System Alerts ({alerts.length})
+                <AlertTriangle className="w-5 h-5" /> System Alerts
               </CardTitle>
             </CardHeader>
             <CardContent className="flex gap-2 flex-wrap">
               {alerts.map((a, i) => (
-                <Badge 
-                  key={i} 
-                  variant={a.type === 'error' ? 'destructive' : 'default'}
-                  className={`px-3 py-1 ${a.type === 'warning' ? 'bg-yellow-500 text-white' : ''}`}
-                >
+                <Badge key={i} variant="destructive" className="px-3 py-1">
                   {a.text}
                 </Badge>
               ))}
@@ -588,9 +356,9 @@ const Overview = () => {
           </Card>
         )}
 
-        {/* ================= MAIN CHARTS ROW ================= */}
+        {/* ================= CHARTS & ACTIVITY ================= */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Transaction Chart - 2 columns */}
+          {/* Chart - Takes 2 columns */}
           <Card className="lg:col-span-2 rounded-2xl shadow-md border border-gray-100">
             <CardHeader className="border-b bg-gradient-to-r from-slate-50 to-blue-50">
               <div className="flex items-center justify-between">
@@ -601,7 +369,7 @@ const Overview = () => {
                   </CardTitle>
                   <p className="text-xs text-gray-500 mt-1">Last 7 days activity</p>
                 </div>
-                <div className="flex gap-3 text-xs">
+                <div className="flex gap-4 text-xs">
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-green-500"></div>
                     <span className="text-gray-600">Payments</span>
@@ -609,10 +377,6 @@ const Overview = () => {
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-orange-500"></div>
                     <span className="text-gray-600">Withdrawals</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-cyan-500"></div>
-                    <span className="text-gray-600">Stakes</span>
                   </div>
                 </div>
               </div>
@@ -650,18 +414,12 @@ const Overview = () => {
                     radius={[8, 8, 0, 0]}
                     name="Withdrawals"
                   />
-                  <Bar 
-                    dataKey="stakes" 
-                    fill="#06b6d4" 
-                    radius={[8, 8, 0, 0]}
-                    name="Stakes"
-                  />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
 
-          {/* Recent Activity - 1 column */}
+          {/* Recent Activity - Takes 1 column */}
           <Card className="rounded-2xl shadow-md border border-gray-100">
             <CardHeader className="border-b bg-gradient-to-r from-slate-50 to-purple-50">
               <CardTitle className="text-base font-semibold text-gray-800 flex items-center gap-2">
@@ -707,99 +465,6 @@ const Overview = () => {
                     })}
                   </div>
                 )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* ================= BOTTOM CHARTS ROW ================= */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* PRN Status Distribution */}
-          <Card className="rounded-2xl shadow-md border border-gray-100">
-            <CardHeader className="border-b bg-gradient-to-r from-purple-50 to-pink-50">
-              <CardTitle className="text-base font-semibold text-gray-800 flex items-center gap-2">
-                <FileText className="w-5 h-5 text-purple-600" />
-                PRN Request Status
-              </CardTitle>
-              <p className="text-xs text-gray-500 mt-1">Distribution of PRN requests</p>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <ResponsiveContainer width="100%" height={250}>
-                <PieChart>
-                  <Pie
-                    data={prnStatusData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, value, percent }) => 
-                      `${name}: ${value} (${(percent * 100).toFixed(0)}%)`
-                    }
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {prnStatusData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="flex justify-center gap-4 mt-4 text-sm">
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                  <span>{prnSuccessCount} Successful</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <XCircle className="w-4 h-4 text-red-500" />
-                  <span>{prnFailedCount} Failed</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-yellow-500" />
-                  <span>{prnPendingCount} Pending</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Tax Breakdown */}
-          <Card className="rounded-2xl shadow-md border border-gray-100">
-            <CardHeader className="border-b bg-gradient-to-r from-red-50 to-orange-50">
-              <CardTitle className="text-base font-semibold text-gray-800 flex items-center gap-2">
-                <Shield className="w-5 h-5 text-red-600" />
-                Tax Collection Breakdown
-              </CardTitle>
-              <p className="text-xs text-gray-500 mt-1">Deposit vs Withdrawal tax</p>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <ResponsiveContainer width="100%" height={250}>
-                <PieChart>
-                  <Pie
-                    data={taxBreakdown}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, value }) => 
-                      `${name}: ${formatCurrency(value)}`
-                    }
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {taxBreakdown.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    formatter={(value: any) => formatCurrency(value)}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="mt-4 text-center">
-                <p className="text-2xl font-bold text-gray-800">
-                  {formatCurrency(totalTaxAmount)}
-                </p>
-                <p className="text-xs text-gray-500">Total Tax Collected</p>
               </div>
             </CardContent>
           </Card>
