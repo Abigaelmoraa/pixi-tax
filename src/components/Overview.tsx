@@ -17,6 +17,12 @@ import {
   AlertTriangle,
   Activity,
   Calendar,
+  DollarSign,
+  Database,
+  Shield,
+  CheckCircle,
+  XCircle,
+  Clock,
 } from "lucide-react";
 import {
   listUsers,
@@ -26,60 +32,141 @@ import {
 import api from "@/services/api";
 
 import {
-  LineChart,
-  Line,
   BarChart,
   Bar,
+  PieChart,
+  Pie,
+  Cell,
   XAxis,
   YAxis,
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
-  Legend,
 } from "recharts";
 
 const Overview = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Counts
   const [usersCount, setUsersCount] = useState(0);
   const [prnCount, setPrnCount] = useState(0);
   const [paymentsCount, setPaymentsCount] = useState(0);
   const [withdrawalsCount, setWithdrawalsCount] = useState(0);
+  const [stakeCount, setStakeCount] = useState(0);
+  const [taxObligationsCount, setTaxObligationsCount] = useState(0);
+
+  // Financial metrics
+  const [totalPaymentAmount, setTotalPaymentAmount] = useState(0);
+  const [totalWithdrawalAmount, setTotalWithdrawalAmount] = useState(0);
+  const [totalTaxAmount, setTotalTaxAmount] = useState(0);
+  const [totalStakeAmount, setTotalStakeAmount] = useState(0);
+  const [totalPrnAmount, setTotalPrnAmount] = useState(0);
+
+  // PRN metrics
+  const [prnSuccessCount, setPrnSuccessCount] = useState(0);
+  const [prnFailedCount, setPrnFailedCount] = useState(0);
+  const [prnPendingCount, setPrnPendingCount] = useState(0);
+
+  // Payment status metrics
+  const [paymentsSuccess, setPaymentsSuccess] = useState(0);
+  const [paymentsFailed, setPaymentsFailed] = useState(0);
 
   const [activities, setActivities] = useState<any[]>([]);
   const [chartData, setChartData] = useState<any[]>([]);
   const [alerts, setAlerts] = useState<any[]>([]);
+  const [prnStatusData, setPrnStatusData] = useState<any[]>([]);
+  const [paymentStatusData, setPaymentStatusData] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
 
-        const usersRes = await listUsers();
+        // Fetch all data
+        const [usersRes, prnRes, paymentsRes, withdrawalsRes, stakeRes, taxRes] = await Promise.all([
+          listUsers(),
+          api.get("/prodPrnLog"),
+          getPaymentRequests(),
+          getWithdrawalRequests(),
+          api.get("/receiveBulkStake"),
+          api.get("/dailyTaxObligation"),
+        ]);
+
         const usersData = usersRes.data?.data || usersRes.data || [];
-
-        const prnRes = await api.get("/prodPrnLog");
         const prnData = prnRes.data?.data || prnRes.data || [];
-
-        const paymentsRes = await getPaymentRequests();
         const paymentsData = paymentsRes.data?.data || paymentsRes.data || [];
+        const withdrawalsData = withdrawalsRes.data?.data || withdrawalsRes.data || [];
+        const stakeData = stakeRes.data?.data || stakeRes.data || [];
+        const taxData = taxRes.data?.data || taxRes.data || [];
 
-        const withdrawalsRes = await getWithdrawalRequests();
-        const withdrawalsData =
-          withdrawalsRes.data?.data || withdrawalsRes.data || [];
-
+        // Set counts
         setUsersCount(usersData.length);
         setPrnCount(prnData.length);
         setPaymentsCount(paymentsData.length);
         setWithdrawalsCount(withdrawalsData.length);
+        setStakeCount(stakeData.length);
+        setTaxObligationsCount(taxData.length);
+
+        // Calculate financial totals
+        const paymentTotal = paymentsData.reduce((sum: number, p: any) => 
+          sum + (parseFloat(p.amount) || 0), 0);
+        setTotalPaymentAmount(paymentTotal);
+
+        const withdrawalTotal = withdrawalsData.reduce((sum: number, w: any) => 
+          sum + (parseFloat(w.amount) || 0), 0);
+        setTotalWithdrawalAmount(withdrawalTotal);
+
+        const taxTotal = taxData.reduce((sum: number, t: any) => 
+          sum + (parseFloat(t.totalTaxAmount) || 0), 0);
+        setTotalTaxAmount(taxTotal);
+
+        const stakeTotal = stakeData.reduce((sum: number, s: any) => 
+          sum + (parseFloat(s.stakeAmt) || 0), 0);
+        setTotalStakeAmount(stakeTotal);
+
+        const prnTotal = prnData.reduce((sum: number, p: any) => 
+          sum + (parseFloat(p.amount) || 0), 0);
+        setTotalPrnAmount(prnTotal);
+
+        // PRN Status breakdown
+        const prnSuccess = prnData.filter((p: any) => 
+          p.kra?.toLowerCase().includes("success") || p.safaricom?.toLowerCase().includes("success")
+        ).length;
+        const prnFailed = prnData.filter((p: any) => 
+          p.kra?.toLowerCase().includes("fail") || p.kra?.toLowerCase().includes("error")
+        ).length;
+        const prnPending = prnData.length - prnSuccess - prnFailed;
+
+        setPrnSuccessCount(prnSuccess);
+        setPrnFailedCount(prnFailed);
+        setPrnPendingCount(prnPending);
+
+        setPrnStatusData([
+          { name: "Successful", value: prnSuccess, color: "#22c55e" },
+          { name: "Failed", value: prnFailed, color: "#ef4444" },
+          { name: "Pending", value: prnPending, color: "#f59e0b" },
+        ].filter(item => item.value > 0));
+
+        // Payment Status breakdown
+        const paySuccess = paymentsData.filter((p: any) => p.responseCode === "0").length;
+        const payFailed = paymentsData.filter((p: any) => p.responseCode && p.responseCode !== "0").length;
+        const payPending = paymentsData.length - paySuccess - payFailed;
+
+        setPaymentsSuccess(paySuccess);
+        setPaymentsFailed(payFailed);
+
+        setPaymentStatusData([
+          { name: "Successful", value: paySuccess, color: "#22c55e" },
+          { name: "Failed", value: payFailed, color: "#ef4444" },
+          { name: "Pending", value: payPending, color: "#f59e0b" },
+        ].filter(item => item.value > 0));
 
         /* ================= RECENT ACTIVITY ================= */
         const feed: any[] = [];
 
-        usersData.slice(0, 3).forEach((u: any) =>
+        usersData.slice(0, 2).forEach((u: any) =>
           feed.push({
-            type: "user",
             icon: Users,
             iconBg: "bg-blue-100",
             iconColor: "text-blue-600",
@@ -91,19 +178,17 @@ const Overview = () => {
 
         paymentsData.slice(0, 3).forEach((p: any) =>
           feed.push({
-            type: "payment",
             icon: CreditCard,
             iconBg: "bg-green-100",
             iconColor: "text-green-600",
             title: "Payment Request",
-            description: `Payment of KES ${parseFloat(p.amount || 0).toLocaleString()} received`,
-            time: p.created_at || new Date().toISOString(),
+            description: `Payment of KES ${parseFloat(p.amount || 0).toLocaleString()} - ${p.responseCode === "0" ? "Success" : "Pending"}`,
+            time: p.timeIn || p.created_at || new Date().toISOString(),
           })
         );
 
-        withdrawalsData.slice(0, 3).forEach((w: any) =>
+        withdrawalsData.slice(0, 2).forEach((w: any) =>
           feed.push({
-            type: "withdrawal",
             icon: Wallet,
             iconBg: "bg-orange-100",
             iconColor: "text-orange-600",
@@ -113,24 +198,31 @@ const Overview = () => {
           })
         );
 
-        prnData.slice(0, 3).forEach((prn: any) =>
+        prnData.slice(0, 3).forEach((prn: any) => {
+          const isSuccess = prn.kra?.toLowerCase().includes("success");
           feed.push({
-            type: "prn",
             icon: FileText,
-            iconBg: "bg-purple-100",
-            iconColor: "text-purple-600",
-            title: "PRN Request",
-            description: `Tax payment request for KES ${parseFloat(prn.amount || 0).toLocaleString()}`,
+            iconBg: isSuccess ? "bg-green-100" : "bg-purple-100",
+            iconColor: isSuccess ? "text-green-600" : "text-purple-600",
+            title: `PRN Request ${isSuccess ? "Completed" : "Submitted"}`,
+            description: `${prn.taxType || 'Tax payment'} - KES ${parseFloat(prn.amount || 0).toLocaleString()}`,
             time: prn.transDate || new Date().toISOString(),
+          });
+        });
+
+        stakeData.slice(0, 2).forEach((s: any) =>
+          feed.push({
+            icon: Database,
+            iconBg: "bg-cyan-100",
+            iconColor: "text-cyan-600",
+            title: "New Stake Placed",
+            description: `Bet ${s.betId} - KES ${parseFloat(s.stakeAmt || 0).toLocaleString()} (${s.stakeType})`,
+            time: s.dateOfStake || new Date().toISOString(),
           })
         );
 
-        feed.sort(
-          (a, b) =>
-            new Date(b.time).getTime() - new Date(a.time).getTime()
-        );
-
-        setActivities(feed.slice(0, 10));
+        feed.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
+        setActivities(feed.slice(0, 12));
 
         /* ================= CHART DATA ================= */
         const days = [...Array(7)]
@@ -146,13 +238,10 @@ const Overview = () => {
             const dayName = new Date(day).toLocaleDateString('en-US', { weekday: 'short' });
             return {
               date: dayName,
-              fullDate: day,
-              payments: paymentsData.filter((p: any) =>
-                p.created_at?.startsWith(day)
-              ).length,
-              withdrawals: withdrawalsData.filter((w: any) =>
-                w.created_at?.startsWith(day)
-              ).length,
+              payments: paymentsData.filter((p: any) => p.timeIn?.startsWith(day) || p.created_at?.startsWith(day)).length,
+              withdrawals: withdrawalsData.filter((w: any) => w.created_at?.startsWith(day)).length,
+              stakes: stakeData.filter((s: any) => s.dateOfStake?.startsWith(day)).length,
+              prn: prnData.filter((p: any) => p.transDate?.startsWith(day)).length,
             };
           })
         );
@@ -161,34 +250,49 @@ const Overview = () => {
         const now = new Date();
         const alertsArr: any[] = [];
 
-        const pendingWithdrawals = withdrawalsData.filter(
-          (w: any) =>
-            w.status === "pending" &&
-            (now.getTime() - new Date(w.created_at).getTime()) /
-              (1000 * 60 * 60) >
-              48
-        );
-
-        if (pendingWithdrawals.length)
+        // Failed payments
+        if (payFailed > 0) {
           alertsArr.push({
             type: "error",
-            text: `${pendingWithdrawals.length} withdrawals pending > 48hrs`,
+            text: `${payFailed} payment request${payFailed > 1 ? 's' : ''} failed`,
           });
+        }
 
-        const failedPayments = paymentsData.filter(
-          (p: any) => p.status === "failed"
-        );
+        // Failed PRN requests
+        if (prnFailed > 0) {
+          alertsArr.push({
+            type: "warning",
+            text: `${prnFailed} PRN request${prnFailed > 1 ? 's' : ''} failed - requires attention`,
+          });
+        }
 
-        if (failedPayments.length)
+        // Pending withdrawals > 48hrs
+        const pendingWithdrawals = withdrawalsData.filter((w: any) => {
+          if (!w.created_at) return false;
+          const hoursSince = (now.getTime() - new Date(w.created_at).getTime()) / (1000 * 60 * 60);
+          return w.status === "pending" && hoursSince > 48;
+        });
+
+        if (pendingWithdrawals.length) {
           alertsArr.push({
             type: "error",
-            text: `${failedPayments.length} failed payments`,
+            text: `${pendingWithdrawals.length} withdrawal${pendingWithdrawals.length > 1 ? 's' : ''} pending > 48hrs`,
           });
+        }
+
+        // Unsubmitted tax obligations
+        const unsubmittedTax = taxData.filter((t: any) => !t.trxCode && !t.prnCode).length;
+        if (unsubmittedTax > 0) {
+          alertsArr.push({
+            type: "warning",
+            text: `${unsubmittedTax} tax obligation${unsubmittedTax > 1 ? 's' : ''} pending submission`,
+          });
+        }
 
         setAlerts(alertsArr);
-      } catch (e) {
+      } catch (e: any) {
         console.error("Dashboard error:", e);
-        setError("Failed to load dashboard");
+        setError("Failed to load dashboard data");
       } finally {
         setLoading(false);
       }
@@ -206,7 +310,14 @@ const Overview = () => {
     if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
     if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
     if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
-    return date.toLocaleDateString();
+    return date.toLocaleDateString('en-KE');
+  };
+
+  const formatCurrency = (amount: number) => {
+    return `KES ${amount.toLocaleString('en-KE', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })}`;
   };
 
   if (loading) {
@@ -223,7 +334,8 @@ const Overview = () => {
   if (error) {
     return (
       <div className="p-10">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-600">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-600 flex items-center gap-3">
+          <AlertTriangle className="w-5 h-5" />
           {error}
         </div>
       </div>
@@ -247,10 +359,10 @@ const Overview = () => {
           </p>
         </div>
 
-        {/* ================= STAT CARDS ================= */}
+        {/* ================= PRIMARY STAT CARDS ================= */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Users */}
-          <Card className="rounded-2xl shadow-md border border-blue-100 bg-gradient-to-br from-blue-50 to-indigo-50 hover:shadow-lg transition-shadow">
+          <Card className="rounded-2xl shadow-md border border-blue-100 bg-gradient-to-br from-blue-50 to-indigo-50 hover:shadow-lg transition-all hover:scale-105 duration-200">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm font-medium text-blue-700">
@@ -272,7 +384,7 @@ const Overview = () => {
           </Card>
 
           {/* PRN */}
-          <Card className="rounded-2xl shadow-md border border-purple-100 bg-gradient-to-br from-purple-50 to-pink-50 hover:shadow-lg transition-shadow">
+          <Card className="rounded-2xl shadow-md border border-purple-100 bg-gradient-to-br from-purple-50 to-pink-50 hover:shadow-lg transition-all hover:scale-105 duration-200">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm font-medium text-purple-700">
@@ -287,18 +399,23 @@ const Overview = () => {
               <p className="text-4xl font-bold text-purple-900 mb-1">
                 {prnCount.toLocaleString()}
               </p>
-              <p className="text-xs text-purple-600 flex items-center gap-1">
-                <TrendingUp className="w-3 h-3" /> Total PRN requests
-              </p>
+              <div className="flex gap-2 mt-2">
+                <Badge className="bg-green-500 text-white text-[10px] px-1.5 py-0.5">
+                  {prnSuccessCount} OK
+                </Badge>
+                <Badge className="bg-red-500 text-white text-[10px] px-1.5 py-0.5">
+                  {prnFailedCount} Failed
+                </Badge>
+              </div>
             </CardContent>
           </Card>
 
           {/* Payments */}
-          <Card className="rounded-2xl shadow-md border border-green-100 bg-gradient-to-br from-emerald-50 to-teal-50 hover:shadow-lg transition-shadow">
+          <Card className="rounded-2xl shadow-md border border-green-100 bg-gradient-to-br from-emerald-50 to-teal-50 hover:shadow-lg transition-all hover:scale-105 duration-200">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm font-medium text-green-700">
-                  Total Payments
+                  Payments
                 </CardTitle>
                 <div className="p-2 bg-green-100 rounded-lg">
                   <CreditCard className="w-5 h-5 text-green-600" />
@@ -309,18 +426,18 @@ const Overview = () => {
               <p className="text-4xl font-bold text-green-900 mb-1">
                 {paymentsCount.toLocaleString()}
               </p>
-              <p className="text-xs text-green-600 flex items-center gap-1">
-                <ArrowUpRight className="w-3 h-3" /> Payment requests
+              <p className="text-xs text-green-600 truncate">
+                {formatCurrency(totalPaymentAmount)}
               </p>
             </CardContent>
           </Card>
 
           {/* Withdrawals */}
-          <Card className="rounded-2xl shadow-md border border-orange-100 bg-gradient-to-br from-orange-50 to-amber-50 hover:shadow-lg transition-shadow">
+          <Card className="rounded-2xl shadow-md border border-orange-100 bg-gradient-to-br from-orange-50 to-amber-50 hover:shadow-lg transition-all hover:scale-105 duration-200">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm font-medium text-orange-700">
-                  Total Withdrawals
+                  Withdrawals
                 </CardTitle>
                 <div className="p-2 bg-orange-100 rounded-lg">
                   <Wallet className="w-5 h-5 text-orange-600" />
@@ -331,9 +448,72 @@ const Overview = () => {
               <p className="text-4xl font-bold text-orange-900 mb-1">
                 {withdrawalsCount.toLocaleString()}
               </p>
-              <p className="text-xs text-orange-600 flex items-center gap-1">
-                <ArrowDownRight className="w-3 h-3" /> Withdrawal requests
+              <p className="text-xs text-orange-600 truncate">
+                {formatCurrency(totalWithdrawalAmount)}
               </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* ================= FINANCIAL SUMMARY CARDS ================= */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Stakes */}
+          <Card className="rounded-2xl shadow-md border border-cyan-100 bg-gradient-to-br from-cyan-50 to-blue-50">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-cyan-700 flex items-center gap-2">
+                <Database className="w-4 h-4" />
+                Total Stakes
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-2xl font-bold text-cyan-900">{stakeCount.toLocaleString()}</p>
+              <p className="text-xs text-cyan-600 mt-1">{formatCurrency(totalStakeAmount)}</p>
+            </CardContent>
+          </Card>
+
+          {/* Tax */}
+          <Card className="rounded-2xl shadow-md border border-red-100 bg-gradient-to-br from-red-50 to-pink-50">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-red-700 flex items-center gap-2">
+                <Shield className="w-4 h-4" />
+                Tax Collected
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-2xl font-bold text-red-900">{taxObligationsCount}</p>
+              <p className="text-xs text-red-600 mt-1">{formatCurrency(totalTaxAmount)}</p>
+            </CardContent>
+          </Card>
+
+          {/* PRN Amount */}
+          <Card className="rounded-2xl shadow-md border border-indigo-100 bg-gradient-to-br from-indigo-50 to-purple-50">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-indigo-700 flex items-center gap-2">
+                <DollarSign className="w-4 h-4" />
+                PRN Amount
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-2xl font-bold text-indigo-900">{formatCurrency(totalPrnAmount)}</p>
+              <p className="text-xs text-indigo-600 mt-1">Tax payments</p>
+            </CardContent>
+          </Card>
+
+          {/* Net Flow */}
+          <Card className="rounded-2xl shadow-md border border-gray-200 bg-gradient-to-br from-gray-50 to-slate-100">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                <TrendingUp className="w-4 h-4" />
+                Net Flow
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className={`text-2xl font-bold ${
+                (totalPaymentAmount - totalWithdrawalAmount) >= 0 ? 'text-green-900' : 'text-red-900'
+              }`}>
+                {formatCurrency(totalPaymentAmount - totalWithdrawalAmount)}
+              </p>
+              <p className="text-xs text-gray-600 mt-1">Pay - Withdraw</p>
             </CardContent>
           </Card>
         </div>
@@ -343,12 +523,17 @@ const Overview = () => {
           <Card className="bg-red-50 border border-red-200 rounded-2xl">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm flex items-center gap-2 text-red-700 font-semibold">
-                <AlertTriangle className="w-5 h-5" /> System Alerts
+                <AlertTriangle className="w-5 h-5" /> 
+                System Alerts ({alerts.length})
               </CardTitle>
             </CardHeader>
             <CardContent className="flex gap-2 flex-wrap">
               {alerts.map((a, i) => (
-                <Badge key={i} variant="destructive" className="px-3 py-1">
+                <Badge 
+                  key={i} 
+                  variant={a.type === 'error' ? 'destructive' : 'default'}
+                  className={`px-3 py-1 ${a.type === 'warning' ? 'bg-yellow-500 hover:bg-yellow-600 text-white' : ''}`}
+                >
                   {a.text}
                 </Badge>
               ))}
@@ -356,33 +541,19 @@ const Overview = () => {
           </Card>
         )}
 
-        {/* ================= CHARTS & ACTIVITY ================= */}
+        {/* ================= MAIN CONTENT GRID ================= */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Chart - Takes 2 columns */}
+          {/* Transaction Overview Chart - 2 columns */}
           <Card className="lg:col-span-2 rounded-2xl shadow-md border border-gray-100">
             <CardHeader className="border-b bg-gradient-to-r from-slate-50 to-blue-50">
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-base font-semibold text-gray-800 flex items-center gap-2">
-                    <Activity className="w-5 h-5 text-blue-600" />
-                    Transaction Overview
-                  </CardTitle>
-                  <p className="text-xs text-gray-500 mt-1">Last 7 days activity</p>
-                </div>
-                <div className="flex gap-4 text-xs">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                    <span className="text-gray-600">Payments</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-orange-500"></div>
-                    <span className="text-gray-600">Withdrawals</span>
-                  </div>
-                </div>
-              </div>
+              <CardTitle className="text-base font-semibold text-gray-800 flex items-center gap-2">
+                <Activity className="w-5 h-5 text-blue-600" />
+                Transaction Activity (Last 7 Days)
+              </CardTitle>
+              <p className="text-xs text-gray-500 mt-1">Daily breakdown of all transactions</p>
             </CardHeader>
             <CardContent className="pt-6">
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={320}>
                 <BarChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis 
@@ -402,24 +573,34 @@ const Overview = () => {
                       boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
                     }}
                   />
-                  <Bar 
-                    dataKey="payments" 
-                    fill="#22c55e" 
-                    radius={[8, 8, 0, 0]}
-                    name="Payments"
-                  />
-                  <Bar 
-                    dataKey="withdrawals" 
-                    fill="#f97316" 
-                    radius={[8, 8, 0, 0]}
-                    name="Withdrawals"
-                  />
+                  <Bar dataKey="payments" fill="#22c55e" radius={[6, 6, 0, 0]} name="Payments" />
+                  <Bar dataKey="withdrawals" fill="#f97316" radius={[6, 6, 0, 0]} name="Withdrawals" />
+                  <Bar dataKey="stakes" fill="#06b6d4" radius={[6, 6, 0, 0]} name="Stakes" />
+                  <Bar dataKey="prn" fill="#a855f7" radius={[6, 6, 0, 0]} name="PRN" />
                 </BarChart>
               </ResponsiveContainer>
+              <div className="flex justify-center gap-4 mt-4 text-xs flex-wrap">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                  <span className="text-gray-600">Payments</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-orange-500"></div>
+                  <span className="text-gray-600">Withdrawals</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-cyan-500"></div>
+                  <span className="text-gray-600">Stakes</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-purple-500"></div>
+                  <span className="text-gray-600">PRN Requests</span>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
-          {/* Recent Activity - Takes 1 column */}
+          {/* Recent Activity - 1 column */}
           <Card className="rounded-2xl shadow-md border border-gray-100">
             <CardHeader className="border-b bg-gradient-to-r from-slate-50 to-purple-50">
               <CardTitle className="text-base font-semibold text-gray-800 flex items-center gap-2">
@@ -429,7 +610,7 @@ const Overview = () => {
               <p className="text-xs text-gray-500 mt-1">Latest system events</p>
             </CardHeader>
             <CardContent className="p-0">
-              <div className="max-h-[340px] overflow-y-auto">
+              <div className="max-h-[380px] overflow-y-auto">
                 {activities.length === 0 ? (
                   <div className="p-6 text-center text-gray-400">
                     <Activity className="w-12 h-12 mx-auto mb-2 opacity-20" />
@@ -440,10 +621,7 @@ const Overview = () => {
                     {activities.map((activity, i) => {
                       const Icon = activity.icon;
                       return (
-                        <div
-                          key={i}
-                          className="p-4 hover:bg-gray-50 transition-colors"
-                        >
+                        <div key={i} className="p-4 hover:bg-gray-50 transition-colors cursor-pointer">
                           <div className="flex gap-3">
                             <div className={`flex-shrink-0 w-10 h-10 rounded-lg ${activity.iconBg} flex items-center justify-center`}>
                               <Icon className={`w-5 h-5 ${activity.iconColor}`} />
@@ -468,6 +646,103 @@ const Overview = () => {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* ================= STATUS BREAKDOWN CHARTS ================= */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* PRN Status */}
+          {prnStatusData.length > 0 && (
+            <Card className="rounded-2xl shadow-md border border-gray-100">
+              <CardHeader className="border-b bg-gradient-to-r from-purple-50 to-pink-50">
+                <CardTitle className="text-base font-semibold text-gray-800 flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-purple-600" />
+                  PRN Request Status
+                </CardTitle>
+                <p className="text-xs text-gray-500 mt-1">Distribution by status</p>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <ResponsiveContainer width="100%" height={240}>
+                  <PieChart>
+                    <Pie
+                      data={prnStatusData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                      outerRadius={80}
+                      dataKey="value"
+                    >
+                      {prnStatusData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="flex justify-center gap-4 mt-4 text-sm">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                    <span>{prnSuccessCount}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <XCircle className="w-4 h-4 text-red-500" />
+                    <span>{prnFailedCount}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-yellow-500" />
+                    <span>{prnPendingCount}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Payment Status */}
+          {paymentStatusData.length > 0 && (
+            <Card className="rounded-2xl shadow-md border border-gray-100">
+              <CardHeader className="border-b bg-gradient-to-r from-green-50 to-emerald-50">
+                <CardTitle className="text-base font-semibold text-gray-800 flex items-center gap-2">
+                  <CreditCard className="w-5 h-5 text-green-600" />
+                  Payment Request Status
+                </CardTitle>
+                <p className="text-xs text-gray-500 mt-1">Distribution by status</p>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <ResponsiveContainer width="100%" height={240}>
+                  <PieChart>
+                    <Pie
+                      data={paymentStatusData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                      outerRadius={80}
+                      dataKey="value"
+                    >
+                      {paymentStatusData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="flex justify-center gap-4 mt-4 text-sm">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                    <span>{paymentsSuccess}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <XCircle className="w-4 h-4 text-red-500" />
+                    <span>{paymentsFailed}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-yellow-500" />
+                    <span>{paymentsCount - paymentsSuccess - paymentsFailed}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>
