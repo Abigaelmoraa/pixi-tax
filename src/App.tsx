@@ -22,6 +22,9 @@ import ChangePassword from "./pages/dashboard/ChangePassword";
 import WithdrawalRequest from "./pages/dashboard/WithdrawalRequest";
 import NotFound from "./pages/NotFound";
 
+// ✅ Import TaxTest page
+import TaxTest from "./pages/dashboard/testform";
+
 function App() {
   return (
     <Router>
@@ -50,6 +53,9 @@ function App() {
           <Route path="profile" element={<Profile />} />
           <Route path="change-password" element={<ChangePassword />} />
           <Route path="withdrawal-request" element={<WithdrawalRequest />} />
+
+          {/* ✅ TaxTest route */}
+          <Route path="tax-test" element={<TaxTest />} />
         </Route>
 
         {/* Fallback */}
