@@ -2,35 +2,58 @@ import axios, { AxiosInstance, AxiosResponse } from "axios";
 
 const api: AxiosInstance = axios.create({
   baseURL: "https://db.x1.pitch90agent.com/api",
-  headers: {
-    "Content-Type": "application/json",
+  headers: { "Content-Type": "application/json" },
+  withCredentials: true,
+});
+
+// --- REQUEST INTERCEPTOR ---
+api.interceptors.request.use(
+  (config) => {
+    console.log("🚀 API Request:", {
+      method: config.method?.toUpperCase(),
+      url: config.url,
+      data: config.data,
+    });
+    return config;
   },
-  withCredentials: true, 
-});
-
-api.interceptors.request.use((config) => {
-  return config;
-});
-
-api.interceptors.response.use(
-  (response) => response,
   (error) => {
-    const originalRequest = error.config;
+    console.error("❌ Request Error:", error);
+    return Promise.reject(error);
+  }
+);
 
+// --- RESPONSE INTERCEPTOR ---
+api.interceptors.response.use(
+  (response) => {
+    console.log("✅ API Response:", {
+      url: response.config.url,
+      status: response.status,
+      data: response.data,
+    });
+    return response;
+  },
+  (error) => {
+    console.error("❌ API Error:", {
+      url: error.config?.url,
+      status: error.response?.status,
+      message: error.response?.data?.message || error.message,
+      data: error.response?.data,
+    });
+
+    const originalRequest = error.config;
     if (
       error.response?.status === 401 &&
       !originalRequest.url?.includes("/login") &&
       !originalRequest.url?.includes("/userRegister")
     ) {
-      // Don't hard-refresh the SPA (clears console / causes "blink").
-      // Let route guards (e.g. DashboardLayout) handle navigation to /login.
-      // If you want a global redirect, implement it via react-router navigation instead.
+      // Handle auth redirect in your route guards / components
     }
     return Promise.reject(error);
   }
 );
 
-interface ApiResponse<T = any> {
+// --- TYPES ---
+export interface ApiResponse<T = any> {
   data?: T;
   message?: string;
   user?: any;
@@ -38,92 +61,189 @@ interface ApiResponse<T = any> {
   response_code?: string | number;
 }
 
+// --- HELPER: Standardize Response ---
+const standardizeResponse = <T = any>(response: AxiosResponse): ApiResponse<T> => {
+  return {
+    data: response.data?.data || response.data,
+    message: response.data?.message || "Success",
+    status: response.data?.status || "success",
+    response_code: response.data?.response_code || response.status,
+  };
+};
+
 // --- AUTH ---
-export const loginUser = async (data: { email: string; password: string }) => {
-  const res: AxiosResponse<ApiResponse> = await api.post("/login", data);
-  // Cookie-based auth: backend returns status fields and sets cookies via Set-Cookie.
-  // Return the full response so callers can check response_code/status/message reliably.
-  return res.data;
+export const loginUser = async (data: { email: string; password: string }): Promise<ApiResponse> => {
+  const res = await api.post("/login", data);
+  return standardizeResponse(res);
 };
 
 export const registerUser = async (data: {
   name: string;
   email: string;
   password: string;
-}) => {
+}): Promise<ApiResponse> => {
   const res = await api.post("/userRegister", data);
-  return res.data;
+  return standardizeResponse(res);
 };
 
-export const logoutUser = async () => {
-  return api.post("/logout"); // Cookie will be cleared by backend
+export const logoutUser = async (): Promise<ApiResponse> => {
+  const res = await api.post("/logout");
+  return standardizeResponse(res);
 };
 
-// --- USER ---
 export const getCurrentUser = async () => {
   const res = await api.get("/user");
-  // Backend may return either { user }, { data }, or a success envelope without user info.
-  // As long as this request is 200, treat it as an authenticated session.
-  return res.data?.user ?? res.data?.data ?? res.data ?? true;
+  const data = standardizeResponse(res);
+  return data.data?.user ?? data.data ?? true;
 };
 
 // --- DASHBOARD ---
-export const getDashboardTiles = () => api.get("/dashboardTiles");
+export const getDashboardTiles = async (): Promise<ApiResponse> => {
+  const res = await api.get("/dashboardTiles");
+  return standardizeResponse(res);
+};
 
-export const getDashboardTilesStudio = () =>
-  api.get("/dashboardTilesStudio");
+export const getDashboardTilesStudio = async (): Promise<ApiResponse> => {
+  const res = await api.get("/dashboardTilesStudio");
+  return standardizeResponse(res);
+};
 
 // --- PAYMENTS ---
-export const getPaymentRequests = () => api.get("/paymentRequest");
-export const createPaymentRequest = (data: Record<string, any>) =>
-  api.post("/paymentRequest", data);
+export const getPaymentRequests = async (): Promise<ApiResponse> => {
+  const res = await api.get("/paymentRequest");
+  return standardizeResponse(res);
+};
 
-export const getWithdrawalRequests = () => api.get("/withdrawalRequest");
-export const createWithdrawalRequest = (data: Record<string, any>) =>
-  api.post("/withdrawalRequest", data);
+export const createPaymentRequest = async (data: Record<string, any>): Promise<ApiResponse> => {
+  const res = await api.post("/paymentRequest", data);
+  return standardizeResponse(res);
+};
 
-export const b2cPayoutResponse = (data: Record<string, any>) =>
-  api.post("/b2cPayoutResponse", data);
+export const getWithdrawalRequests = async (): Promise<ApiResponse> => {
+  const res = await api.get("/withdrawalRequest");
+  return standardizeResponse(res);
+};
 
-export const taxPayoutResponse = (data: Record<string, any>) =>
-  api.post("/taxPayoutResponse", data);
+export const createWithdrawalRequest = async (data: Record<string, any>): Promise<ApiResponse> => {
+  const res = await api.post("/withdrawalRequest", data);
+  return standardizeResponse(res);
+};
+
+// --- TAX MODULE ---
+export const logTaxData = async (data: Record<string, any>): Promise<ApiResponse> => {
+  const res = await api.post("/taxDataLog", data);
+  return standardizeResponse(res);
+};
+
+export const logTaxDataSandbox = async (data: Record<string, any>): Promise<ApiResponse> => {
+  const res = await api.post("/taxDataLogSandbox", data);
+  return standardizeResponse(res);
+};
+
+export const taxPayoutResponse = async (data: Record<string, any>): Promise<ApiResponse> => {
+  const res = await api.post("/taxPayoutResponse", data);
+  return standardizeResponse(res);
+};
+
+// Batch testing helper
+export const runBatchTaxTests = async (testCases: Record<string, any>[]) => {
+  const results: { input: any; response: any; success: boolean }[] = [];
+  for (const test of testCases) {
+    try {
+      const res = await logTaxData(test);
+      results.push({ input: test, response: res, success: true });
+    } catch (err: any) {
+      results.push({ 
+        input: test, 
+        response: err.response?.data || err.message, 
+        success: false 
+      });
+    }
+  }
+  return {
+    total: testCases.length,
+    successful: results.filter(r => r.success).length,
+    failed: results.filter(r => !r.success).length,
+    results,
+  };
+};
 
 // --- MPESA IPN ---
-export const listMpesaIPN = () => api.get("/mpesaIPN");
+export const listMpesaIPN = async (): Promise<ApiResponse> => {
+  const res = await api.get("/mpesaIPN");
+  return standardizeResponse(res);
+};
 
-export const createMpesaIPN = (data: Record<string, any>) =>
-  api.post("/mpesaIPN", data);
+export const createMpesaIPN = async (data: Record<string, any>): Promise<ApiResponse> => {
+  const res = await api.post("/mpesaIPN", data);
+  return standardizeResponse(res);
+};
 
-export const getMpesaIPN = (id: string) => api.get(`/mpesaIPN/${id}`);
+export const getMpesaIPN = async (id: string): Promise<ApiResponse> => {
+  const res = await api.get(`/mpesaIPN/${id}`);
+  return standardizeResponse(res);
+};
 
-export const updateMpesaIPN = (id: string, data: Record<string, any>) =>
-  api.put(`/mpesaIPN/${id}`, data);
+export const updateMpesaIPN = async (id: string, data: Record<string, any>): Promise<ApiResponse> => {
+  const res = await api.put(`/mpesaIPN/${id}`, data);
+  return standardizeResponse(res);
+};
 
-export const deleteMpesaIPN = (id: string) => api.delete(`/mpesaIPN/${id}`);
+export const deleteMpesaIPN = async (id: string): Promise<ApiResponse> => {
+  const res = await api.delete(`/mpesaIPN/${id}`);
+  return standardizeResponse(res);
+};
 
 // --- CLIENTS ---
-export const listClients = () => api.get("/client");
+export const listClients = async (): Promise<ApiResponse> => {
+  const res = await api.get("/client");
+  return standardizeResponse(res);
+};
 
-export const createClient = (data: Record<string, any>) => api.post("/client", data);
+export const createClient = async (data: Record<string, any>): Promise<ApiResponse> => {
+  const res = await api.post("/client", data);
+  return standardizeResponse(res);
+};
 
-export const getClient = (id: string) => api.get(`/client/${id}`);
+export const getClient = async (id: string): Promise<ApiResponse> => {
+  const res = await api.get(`/client/${id}`);
+  return standardizeResponse(res);
+};
 
-export const updateClient = (id: string, data: Record<string, any>) =>
-  api.put(`/client/${id}`, data);
+export const updateClient = async (id: string, data: Record<string, any>): Promise<ApiResponse> => {
+  const res = await api.put(`/client/${id}`, data);
+  return standardizeResponse(res);
+};
 
-export const deleteClient = (id: string) => api.delete(`/client/${id}`);
+export const deleteClient = async (id: string): Promise<ApiResponse> => {
+  const res = await api.delete(`/client/${id}`);
+  return standardizeResponse(res);
+};
 
 // --- USERS ---
-export const listUsers = () => api.get("/users");
+export const listUsers = async (): Promise<ApiResponse> => {
+  const res = await api.get("/users");
+  return standardizeResponse(res);
+};
 
-export const createUser = (data: Record<string, any>) => api.post("/users", data);
+export const createUser = async (data: Record<string, any>): Promise<ApiResponse> => {
+  const res = await api.post("/users", data);
+  return standardizeResponse(res);
+};
 
-export const getUser = (id: string) => api.get(`/users/${id}`);
+export const getUser = async (id: string): Promise<ApiResponse> => {
+  const res = await api.get(`/users/${id}`);
+  return standardizeResponse(res);
+};
 
-export const updateUser = (id: string, data: Record<string, any>) =>
-  api.put(`/users/${id}`, data);
+export const updateUser = async (id: string, data: Record<string, any>): Promise<ApiResponse> => {
+  const res = await api.put(`/users/${id}`, data);
+  return standardizeResponse(res);
+};
 
-export const deleteUser = (id: string) => api.delete(`/users/${id}`);
-
+export const deleteUser = async (id: string): Promise<ApiResponse> => {
+  const res = await api.delete(`/users/${id}`);
+  return standardizeResponse(res);
+};
 
 export default api;
