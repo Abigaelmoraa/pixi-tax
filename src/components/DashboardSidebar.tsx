@@ -36,6 +36,7 @@ const DashboardSidebar = () => {
 
   const secondaryNavItems = [
     { icon: Settings, label: "Settings", path: "/dashboard/settings", color: "text-slate-400" },
+    { icon: Database, label: "Test Form", path: "/dashboard/tax-test", color: "text-indigo-400" }, // NEW
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -118,7 +119,7 @@ const DashboardSidebar = () => {
           ))}
         </div>
 
-        {/* Settings */}
+        {/* Settings + Tax Test */}
         <div className="mt-10">
           {!collapsed && (
             <p className="text-[11px] font-medium uppercase tracking-wider text-gray-400 px-3 mb-4">
